@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %} Log in | {% endblock %}
+
+{% block content %}
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsive Webpage</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+    
+    header {
+        display: flex;
+        flex-direction: column; /* 버튼들을 위아래로 배치 */
+        align-items: flex-start; /* 왼쪽 정렬 */
+        padding: 10px;
+        background-color: #f0f0f0;
+    }
+    
+    #userProfileBtn, #userStatusBtn {
+        margin-bottom: 10px; /* 버튼들 간의 간격 설정 */
+        padding: 5px 10px;
+        background-color: #ccc;
+        border: none;
+        cursor: pointer;
+        display: block; /* 버튼들을 block 요소로 설정 */
+    }
+    
+    #pongGame {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    #gameTitle {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+    
+    #gameOptions {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Add border to userListContainer */
+    #userListContainer {
+        overflow-y: auto;
+        max-height: calc(50vh - 50px);
+        padding: 10px;
+        width: 300px;
+        margin-left: 0%;
+        border: 1px solid #ccc; /* Add border */
+    }
+
+    /* Add border to chatContainer */
+    #chatContainer {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 10px;
+        margin-left: auto;
+        width: 30%;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc; /* Add border */
+    }
+
+        /* "online_user" 이름 스타일 */
+    #onlineUserLabel {
+        margin-left: 10px;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    /* "live_chat" 이름 스타일 */
+    #liveChatLabel {
+        margin-left: auto;
+        width: 30%;
+        margin-top: 10px;
+        font-weight: bold;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+    <button id="userProfileBtn">user_profile</button>
+    <button id="userStatusBtn">user_status</button>
+</header>
+
+<div id="onlineUserLabel">online_user</div>
+<div id="userListContainer">
+    <!-- List of online users -->
+    <div>Username 1</div>
+    <div>Username 2</div> 
+    <div>Username 3</div> 
+</div>
+
+<div id="pongGame">
+    <div id="gameTitle">PONG GAME</div>
+    <div id="gameOptions">
+        <button id="withComputerBtn">with_computer</button>
+        <button id="withUsersBtn">with_users</button>
+    </div>
+</div>
+
+<div id="liveChatLabel">Live_Chat</div>
+<div id="chatContainer">
+    <div style="display: flex; align-items: center; height: 100h;">
+    <a href="{% url 'chatting:rooms' %}" class = "px-5 py-3 rounded-xl text-white bg-teal-600 hover:bg-teal-700">Join Chatting</a>
+</div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      var withComputerBtn = document.getElementById("withComputerBtn");
+      withComputerBtn.addEventListener("click", function() {
+          window.location.href = "{% url 'ft_user:pong_with_computer' %}"; // 이동할 페이지의 경로를 넣어주세요.
+      });
+  });
+  </script>
+
+
+</body>
+{% endblock%}

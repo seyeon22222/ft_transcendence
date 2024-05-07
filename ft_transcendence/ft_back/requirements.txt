@@ -1,0 +1,10 @@
+Django>=5.0,<6.0
+psycopg2>=2.8
+django-cors-headers
+requests
+djangorestframework
+django-filter
+Channels
+daphne
+channels-postgres
+websocket
