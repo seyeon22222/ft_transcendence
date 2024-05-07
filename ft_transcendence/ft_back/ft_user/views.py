@@ -86,22 +86,39 @@ class FriendDeleteView(APIView):
 def firstpage(request):
 	return render(request, "firstPage.html")
 
-def user_login(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            print("인증 성공")
-            login(request, user)
-            return redirect("ft_user:success")
-        else:
-            # ToDo 중복 사용자 생성 시 에러 발생
-            print("failed")
-            return render(request, "login.html")
-    else:
-        return render(request, "login.html")
+# def user_login(request):
+#     if request.method == "POST":
+#         username = request.POST["username"]
+#         password = request.POST["password"]
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             print("인증 성공")
+#             login(request, user)
+#             return redirect("ft_user:success")
+#         else:
+#             # ToDo 중복 사용자 생성 시 에러 발생
+#             print("failed")
+#             return render(request, "login.html")
+#     else:
+#         return render(request, "login.html")
 
+class User_login(APIView):
+    def post(self, request, user_id):
+        user_request = get_object_or_404(MyUser, id=user_id)
+        if user_request.username != request.username:
+            return Response({'message' : "아이디가 없습니다."}, status = status.HTTP_400_BAD_REQUEST)
+        elif user_request.password != request.password:
+            return Response({'message' : "패스워드가 틀립니다."}, status = status.HTTP_400_BAD_REQEUST)
+        else:
+            user = authenticate(request, username=request.username, password=request.password)
+            if user is not None:
+                print("로그인 성공")
+                login(request, user)
+                return Response({'message' : "로그인 성공"}, status = status.HTTP_200_OK)
+            else:
+                 print("로그인 실패")
+                 return Response({'message' : "로그인 실패"}, status = status.HTTP_400_BAD_REQUEST)
+            
 def login_suc(request):
     return render(request, "success.html")
 
@@ -110,8 +127,22 @@ def logout_page(request):
     return redirect("ft_user:login")
 
 
-def sign_up(request):
-    if request.method == "POST":
+# def sign_up(request):
+#     if request.method == "POST":
+#         form = signForm(request.POST)
+#         if form.is_valid():
+#             username = form.cleaned_data['username']
+#             password = form.cleaned_data['password']
+#             email = form.cleaned_data['email']
+#             user = MyUser.objects.create_user(username, email=email, password=password)
+#             user.save()
+#         return redirect("ft_user:firstpage")
+#     else:
+#         form = signForm()
+#         return render(request, "sign_up.html")
+    
+class Sign_up(APIView):
+    def post(self, request, user_id):
         form = signForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -119,11 +150,8 @@ def sign_up(request):
             email = form.cleaned_data['email']
             user = MyUser.objects.create_user(username, email=email, password=password)
             user.save()
-        return redirect("ft_user:firstpage")
-    else:
-        form = signForm()
-        return render(request, "sign_up.html")
-    
+        return Response({'message' : "유저 생성 완료"}, status = status.HTTP_200_OK)
+
 
 def pong_with_com(request):
     return render(request, "pong.html")
