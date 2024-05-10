@@ -93,7 +93,7 @@ export function renderSuccess() {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
-              'X-CSRFToken': csrftoken
+              'X-CSRFToken': csrftoken,
           },
           body: JSON.stringify({})
       });
@@ -101,7 +101,6 @@ export function renderSuccess() {
       if (response.ok) {
         const data = await response.json();
         alert(data.message);
-        // 로그아웃 성공 후 처리할 작업
         location.hash = '/'; // 처음 페이지로 이동
       } else {
         const error = await response.json();
@@ -111,12 +110,6 @@ export function renderSuccess() {
       console.error('로그아웃 요청 중 오류 발생:', error);
     }
   });
-  
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
 
   return successContainer;
 }

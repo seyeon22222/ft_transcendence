@@ -24,7 +24,7 @@ export function renderLogin() {
   buttonContainer.appendChild(loginButton);
 
   const signupButton = document.createElement('button');
-  signupButton.type = 'submit2';
+  signupButton.type = 'button';
   signupButton.textContent = '회원가입';
   signupButton.classList.add('px-5', 'py-3', 'rounded-xl', 'text-white', 'bg-teal-800', 'hover:bg-teal-700');
   buttonContainer.appendChild(signupButton);
@@ -34,16 +34,18 @@ export function renderLogin() {
   loginForm.appendChild(buttonContainer);
   
 
-  loginForm.addEventListener('submit', async (event) => {
+  loginButton.addEventListener('click', async (event) => {
     event.preventDefault();
     const username = usernameInput.value;
     const password = passwordInput.value;
-
+    const csrftoken = Cookies.get('csrftoken');
+    console.log("In loginButton");
     try {
       const response = await fetch(`user/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
         },
         body: JSON.stringify({ username, password }),
       });
@@ -52,7 +54,6 @@ export function renderLogin() {
         const data = await response.json();
         alert(data.message);
         location.hash = 'user/login_suc';
-        // 로그인 성공 시 추가 작업 수행 (예: 홈페이지로 리디렉션 등)
       } else {
         const error = await response.json();
         alert(error.message);
@@ -62,30 +63,25 @@ export function renderLogin() {
     }
   });
 
-  loginForm.addEventListener('submit2', async (event) => {
-    event.preventDefault();
-    const username = usernameInput.value;
-    const password = passwordInput.value;
-
+  signupButton.addEventListener('click', async function() {
+    console.log("In signupButton");
     try {
-      const response = await fetch(`/user/sign_up/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+      const csrftoken = Cookies.get('csrftoken');
+      const response = await fetch('user/sign_up_view', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrftoken,
+          },
+          body: JSON.stringify({})
       });
-
       if (response.ok) {
-        const data = await response.json();
-        alert(data.message);
-        // 로그인 성공 시 추가 작업 수행 (예: 홈페이지로 리디렉션 등)
+        location.hash = 'user/sign_up_view';
       } else {
-        const error = await response.json();
-        alert(error.message);
+        const error = 404;
       }
     } catch (error) {
-      console.error('로그인 요청 중 오류 발생:', error);
+      console.error('회원가입 페이지 이동 중 에러 발생:', error);
     }
   });
   

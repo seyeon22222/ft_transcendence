@@ -1,15 +1,16 @@
 import { renderLogin } from '../src/login.js';
 import { renderPong } from '../src/pong.js';
-import { renderSignup } from '../src/signup.js';
+import { renderSignupView } from '../src/signupview.js';
 import { renderSuccess } from '../src/success.js';
 import { renderRoom } from '../src/room.js';
 import { renderRooms } from '../src/rooms.js';
+
 const routes = {
   '/user/login_suc/': renderSuccess,
-  '/user/sign_up/': renderSignup,
+  '/user/sign_up_view/': renderSignupView,
   '/chat/room/': renderRoom,
   '/chat/rooms/': renderRooms,
-  '/user/pong' : renderPong,
+  '/user/pong/' : renderPong,
   '/': renderLogin,
 };
 
