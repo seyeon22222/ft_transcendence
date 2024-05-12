@@ -1,9 +1,12 @@
+// 권한 확인 및 유지 기능부터 구현해야함
+
 import { renderLogin } from '../src/login.js';
 import { renderPong } from '../src/pong.js';
 import { renderSignupView } from '../src/signupview.js';
 import { renderSuccess } from '../src/success.js';
 import { renderRoom } from '../src/room.js';
 import { renderRooms } from '../src/rooms.js';
+import { renderprofileView } from '../src/profile.js';
 
 const routes = {
   '/user/login_suc/': renderSuccess,
@@ -11,6 +14,7 @@ const routes = {
   '/chat/room/': renderRoom,
   '/chat/rooms/': renderRooms,
   '/user/pong/' : renderPong,
+  '/user/view/' : renderprofileView,
   '/': renderLogin,
 };
 
@@ -41,20 +45,21 @@ const router = async () => {
   const user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
   let render;
   let path;
+
   if (user_location.length === 0 || user_location[0] === "") {
     path = '/';
   } else {
     let temp_path;
     path = "/";
     for (temp_path of user_location) {
-        path += temp_path + "/";
+      path += temp_path + "/";
     }
   }
+
   render = routes[path] || renderNotFound;
   const renderedContent = await render();
   requestAnimationFrame(() => {
-    content.innerHTML = '';
-    content.appendChild(renderedContent);
+    content.replaceChildren(renderedContent);
   });
 };
 
@@ -88,41 +93,3 @@ function renderNotFound() {
 //     contentDiv.innerHTML = handler();
 //   }
 // }
-
-function fetchRoomData() {
-  // 실제 서버에서 room 데이터를 가져오는 로직을 구현해야 함
-  // 예시 데이터
-  const roomData = {
-    name: 'Room 1',
-    slug: 'room-1',
-  };
-  return roomData;
-}
-
-function fetchMessages() {
-  // 실제 서버에서 messages 데이터를 가져오는 로직을 구현해야 함
-  // 예시 데이터
-  const messagesData = [
-    { user: { username: 'User 1' }, content: 'Hello, world!' },
-    { user: { username: 'User 2' }, content: 'Hi there!' },
-  ];
-  return messagesData;
-}
-
-function fetchUserData() {
-  // 실제 서버에서 user 데이터를 가져오는 로직을 구현해야 함
-  // 예시 데이터
-  const userData = { username: 'CurrentUser' };
-  return userData;
-}
-
-function fetchRoomsData() {
-  // 실제 서버에서 rooms 데이터를 가져오는 로직을 구현해야 함
-  // 예시 데이터
-  const roomsData = [
-    { name: 'Room 1', slug: 'room-1' },
-    { name: 'Room 2', slug: 'room-2' },
-    { name: 'Room 3', slug: 'room-3' },
-  ];
-  return roomsData;
-}

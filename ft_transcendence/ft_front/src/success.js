@@ -1,6 +1,9 @@
 export function renderSuccess() {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+
   const successContainer = document.createElement('div');
-  const newline = document.createElement('br');
+
   // header
   const header = document.createElement('header');
   const userProfileBtn = document.createElement('button');
@@ -13,15 +16,11 @@ export function renderSuccess() {
   logoutLabel.id = 'logout';
   logoutLabel.textContent = 'logout';
   header.appendChild(userProfileBtn);
-  header.appendChild(newline);
+  header.appendChild(document.createElement('br'));
   header.appendChild(userStatusBtn);
-  header.appendChild(newline);
-  header.appendChild(newline);
-  header.appendChild(newline);
-  header.appendChild(newline);
+  header.appendChild(document.createElement('br'));
   header.appendChild(logoutLabel);
   successContainer.appendChild(header);
-
 
   // online user label
   const onlineUserLabel = document.createElement('div');
@@ -58,7 +57,7 @@ export function renderSuccess() {
   withUsersBtn.id = 'withUsersBtn';
   withUsersBtn.textContent = 'with_users';
   gameOptions.appendChild(withComputerBtn);
-  gameOptions.appendChild(newline);
+  gameOptions.appendChild(document.createElement('br'));
   gameOptions.appendChild(withUsersBtn);
   pongGame.appendChild(gameTitle);
   pongGame.appendChild(gameOptions);
@@ -69,39 +68,48 @@ export function renderSuccess() {
   liveChatLabel.id = 'liveChatLabel';
   liveChatLabel.textContent = 'Live_Chat';
   successContainer.appendChild(liveChatLabel);
+  successContainer.appendChild(document.createElement('br'));
+  successContainer.appendChild(document.createElement('br'));
+  successContainer.appendChild(document.createElement('br'));
 
   // chat container
   const chatContainer = document.createElement('div');
   chatContainer.id = 'chatContainer';
   const chatLink = document.createElement('a');
-  chatLink.href = "{% url 'chatting:rooms' %}";
-  chatLink.classList.add('px-5', 'py-3', 'rounded-xl', 'text-white', 'bg-teal-600', 'hover:bg-teal-700');
+  chatLink.href = "chat/rooms";
+  chatLink.classList.add('px-5', 'py-3', 'rounded-xl', 'text-white', 'bg-teal-300', 'hover:bg-teal-300');
   chatLink.textContent = 'Join Chatting';
   chatContainer.appendChild(chatLink);
   successContainer.appendChild(chatContainer);
 
+  content.appendChild(successContainer);
+
   // with computer button event listener
   withComputerBtn.addEventListener('click', function() {
-    window.location.href = "{% url 'ft_user:pong_with_computer' %}";
+    window.location.href = "user/pong";
+  });
+
+  userProfileBtn.addEventListener('click', async function() {
+    location.hash = 'user/view' ;
   });
 
   logoutLabel.addEventListener('click', async function() {
     try {
-      const csrftoken = Cookies.get('csrftoken');
+      const csrftoken = getCookie('csrftoken');
 
       const response = await fetch('/user/logout', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrftoken,
-          },
-          body: JSON.stringify({})
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({})
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         alert(data.message);
-        location.hash = '/'; // 처음 페이지로 이동
+        location.hash = '/';
       } else {
         const error = await response.json();
         alert(error.message);
@@ -112,4 +120,19 @@ export function renderSuccess() {
   });
 
   return successContainer;
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
 }

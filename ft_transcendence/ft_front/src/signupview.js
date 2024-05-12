@@ -52,15 +52,14 @@ export function renderSignupView() {
         alert(data.message);
         location.hash = '/'; // 처음 페이지로 이동
       } else {
-        const error = 404;
+        const error = await response.json();
+        alert(error.message);
       }
     } catch (error) {
       console.error('회원가입 실패:', error);
     }
   });
-
-
-
+  
   content.appendChild(signupForm);
   return signupForm;
 }

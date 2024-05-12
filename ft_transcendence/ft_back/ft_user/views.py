@@ -23,9 +23,12 @@ class UserViewSet(APIView):
     def get_queryset(self):
         return MyUser.objects.all()
 
-    def get(self, request):
+    def get(self, request, user_id):
         queryset = MyUser.objects.all()
         serializer = UserSerializer(queryset, many=True)
+        print(user_id)
+        print(queryset)
+        print(request)
         return Response(serializer.data)
 
     def post(self, request):
@@ -134,3 +137,9 @@ class UserLoginView(APIView):
 
     def get(self, request):
         return Response(status=status.HTTP_200_OK)
+    
+
+
+# class CurrentUser(APIView):
+
+#     def get(self, request):
