@@ -148,11 +148,6 @@ class Sign_up(APIView):
 
             if profile_picture:
                 user.profile_picture = profile_picture
-                imageURL = user.profile_picture.url if user.profile_picture else None
-                user.imageURL = imageURL
-
-            # debug
-            print("profile_picture : ", profile_picture)
     
             user.save()
 

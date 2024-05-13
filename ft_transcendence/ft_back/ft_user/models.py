@@ -6,7 +6,6 @@ import uuid
 class MyUser(AbstractUser):
     user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(unique=True)
-    imageURL = models.URLField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     friends = models.ManyToManyField('self', blank=True)
     def __str__(self):
