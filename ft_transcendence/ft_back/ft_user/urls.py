@@ -5,13 +5,13 @@ from ft_user.views import (
     UserViewSet, FriendView, 
     FriendRejectView ,FriendAcceptView,
     FriendDeleteView, User_login, Sign_up, SignupView,
-    UserLoginView, Logout,
+    UserLoginView, Logout, GetUserData, CurrentUser,
 )
 
 app_name = "ft_user"
 
 urlpatterns = [
-    path('user/info', UserViewSet.as_view(), name='user'),
+    path('user/info', GetUserData.as_view(), name='user'),
     path('user/login', User_login.as_view(), name='login'),
     path('user/sign_up_view', SignupView.as_view(), name='sign_up_view'),
     path('user/sign_up', Sign_up.as_view(), name='sign_up'),

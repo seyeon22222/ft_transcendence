@@ -1,20 +1,19 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .serializers import (
     UserSerializer,
     FriendSerializer,
 )
 from .models import MyUser
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from ft_user.models import MyUser, Friends
 from ft_user.forms import signForm
-from django.views.generic import View, TemplateView
 from django.http import JsonResponse
+from django.contrib.sessions.models import Session
+from django.utils import timezone
 # Create your views here.
 
 class UserViewSet(APIView):
@@ -23,12 +22,9 @@ class UserViewSet(APIView):
     def get_queryset(self):
         return MyUser.objects.all()
 
-    def get(self, request, user_id):
+    def get(self, request):
         queryset = MyUser.objects.all()
         serializer = UserSerializer(queryset, many=True)
-        print(user_id)
-        print(queryset)
-        print(request)
         return Response(serializer.data)
 
     def post(self, request):
@@ -138,8 +134,45 @@ class UserLoginView(APIView):
     def get(self, request):
         return Response(status=status.HTTP_200_OK)
     
+class CurrentUser(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_users():
+        queryset = MyUser.objects.all()
+        active_sessions= Session.objects.filter(expire_date__gte=timezone.now())
+        user_list = []
+        for session in active_sessions:
+            data = session.get_decoded()
+            user_list.append(data.get('_auth_user_id', None))
+        return MyUser.objects.filter(user_id__in=user_list)
+    
+    def get(self, request):
+        current_users = CurrentUser.get_users()
+        usernames = [user.username for user in current_users]
+        return Response(usernames.data)
 
 
-# class CurrentUser(APIView):
+class GetUserData(APIView):
+    permission_classes = [IsAuthenticated]
 
-#     def get(self, request):
+    def get(self, request):
+        queryset = MyUser.objects.all()
+        current_user = request.user
+        flag = False
+        for db in queryset:
+            if db.username == current_user.username:
+                flag = True
+        if flag:
+            user_data = {
+                'user_id' : current_user.user_id,
+                'username': current_user.username,
+                'email': current_user.email
+            }
+            return Response(user_data, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+    def post(self, request):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        imageURL = request.data.get('image')
