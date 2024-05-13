@@ -1,5 +1,6 @@
 export function login_js() {
     const loginForm = document.getElementById("login_form");
+    const signupButton = document.getElementById("signup_button");
 
     loginForm.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -29,6 +30,10 @@ export function login_js() {
         } catch (error) {
             console.error('로그인 요청 중 오류 발생 : ', error);
         }
+    })
+
+    signupButton.addEventListener('click', async () => {
+        location.href = '/#signup';
     })
 
     return null;
