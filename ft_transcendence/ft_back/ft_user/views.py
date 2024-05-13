@@ -15,6 +15,9 @@ from ft_user.models import MyUser, Friends
 from ft_user.forms import signForm
 from django.views.generic import View, TemplateView
 from django.http import JsonResponse
+
+import os
+from django.http import HttpResponse  # Import HttpResponse
 # Create your views here.
 
 class UserViewSet(APIView):
@@ -116,19 +119,47 @@ class SignupView(APIView):
     def post(self, request):
         return Response(status=status.HTTP_200_OK)
 
+# class Sign_up(APIView):
+
+#     def post(self, request):
+#         form = signForm(request.data)
+#         if form.is_valid():
+#             username = form.cleaned_data['username']
+#             password = form.cleaned_data['password']
+#             email = form.cleaned_data['email']
+#             user = MyUser.objects.create_user(username, email=email, password=password)
+#             user.save()
+#             return Response({'message' : "유저 생성 완료"}, status = status.HTTP_200_OK)
+#         else:
+#             return Response({'message' : "유저 생성 실패"}, status = status.HTTP_400_BAD_REQUEST)
+
 class Sign_up(APIView):
 
     def post(self, request):
-        form = signForm(request.data)
+        form = signForm(request.POST, request.FILES)  # Include request.FILES for handling file uploads
+
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             email = form.cleaned_data['email']
+            profile_picture = request.FILES.get('profile_picture')
+
             user = MyUser.objects.create_user(username, email=email, password=password)
+
+            if profile_picture:
+                # Assign the uploaded image to the profile_picture field
+                user.profile_picture = profile_picture
+
+            # Generate a URL for the image
+            imageURL = user.profile_picture.url if user.profile_picture else None
+
+            # Update the user with the generated URL
+            user.imageURL = imageURL
             user.save()
-            return Response({'message' : "유저 생성 완료"}, status = status.HTTP_200_OK)
+
+            return Response({'message': "유저 생성 완료", 'imageURL': imageURL}, status=status.HTTP_200_OK)
         else:
-            return Response({'message' : "유저 생성 실패"}, status = status.HTTP_400_BAD_REQUEST)
+            return Response({'message': "유저 생성 실패", 'errors': form.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class Logout(APIView):
     permission_classes = [IsAuthenticated]
@@ -150,9 +181,10 @@ class CheckLogin(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=301)
-    
 
-
-# class CurrentUser(APIView):
-
-#     def get(self, request):
+class UserImage(APIView):
+    def get(self, request, filename):
+        image_path = os.path.join('profile_pictures/', filename)
+        with open(image_path, 'rb') as f:
+            image_data = f.read()
+        return HttpResponse(image_data, content_type="image/jpeg")

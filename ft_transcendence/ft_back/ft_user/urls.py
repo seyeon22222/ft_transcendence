@@ -5,7 +5,7 @@ from ft_user.views import (
     UserViewSet, FriendView, 
     FriendRejectView ,FriendAcceptView,
     FriendDeleteView, User_login, Sign_up, SignupView,
-    UserLoginView, Logout, CheckLogin
+    UserLoginView, Logout, CheckLogin, UserImage
 )
 
 app_name = "ft_user"
@@ -22,4 +22,5 @@ urlpatterns = [
     path('friends/reject', FriendRejectView.as_view(), name='reject'),
     path('friends/delete', FriendDeleteView.as_view(), name='delete'),
     path('user/check_login', CheckLogin.as_view(), name="check_login"),
+    path('profile_pictures/<str:filename>/', UserImage.as_view(), name="user_image"),
 ]

@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MyUser
-        fields = ['username', 'password', 'email', 'imageURL', 'game_stat', 'match_info']
+        fields = ['username', 'password', 'email', 'imageURL', 'profile_picture', 'game_stat', 'match_info']
 
 class FriendSerializer(serializers.ModelSerializer):
     from_user = serializers.SlugRelatedField(
