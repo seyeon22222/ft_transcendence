@@ -1,3 +1,5 @@
+import { login_view } from './home_login.js'
+
 export function home_js() {
     const csrftoken = Cookies.get('csrftoken');
 
@@ -10,40 +12,9 @@ export function home_js() {
             },
         })
         .then(response => {
-            if (response.ok) {
-                const div_logout = document.getElementById("logout_div");
-
-                const logoutButton = document.createElement("button");
-                logoutButton.type = "button";
-                logoutButton.className = "btn btn-primary";
-                logoutButton.textContent = "Logout";
-                
-                logoutButton.addEventListener('click', async function() {
-                    try {
-                        const response = await fetch('user/logout', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrftoken,
-                            },
-                            body: JSON.stringify({})
-                        });
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            alert(data.message);
-                            location.href = '/'; // 임시, 수정필요
-                        } else {
-                            const error = await response.json();
-                            alert(error.message);
-                        }
-
-                    } catch (error) {
-                        console.error('로그아웃 중 오류 발생 : ', error);
-                    }
-                });
-
-                div_logout.appendChild(logoutButton);
+            if (response.status === 200) {
+                const div = document.getElementById('login_view');
+                div.innerHTML = login_view();
             } else {
                 const div_login = document.getElementById("login_div");
                 const loginLink = document.createElement("a");

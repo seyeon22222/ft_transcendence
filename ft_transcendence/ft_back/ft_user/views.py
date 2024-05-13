@@ -95,6 +95,7 @@ class FriendDeleteView(APIView):
         return Response({'message' : "친구를 삭제했습니다."}, status = status.HTTP_200_OK)
 
 class User_login(APIView):
+
     queryset = MyUser.objects.all()
     serializer_class = UserSerializer
     
@@ -111,10 +112,12 @@ class User_login(APIView):
             return Response({'message': "로그인 실패"}, status=status.HTTP_400_BAD_REQUEST)
 
 class SignupView(APIView):
+
     def post(self, request):
         return Response(status=status.HTTP_200_OK)
 
 class Sign_up(APIView):
+
     def post(self, request):
         form = signForm(request.data)
         if form.is_valid():
@@ -128,13 +131,16 @@ class Sign_up(APIView):
             return Response({'message' : "유저 생성 실패"}, status = status.HTTP_400_BAD_REQUEST)
 
 class Logout(APIView):
-    def post(self, request):
-        logout(request)
-        return Response({'message' : "로그아웃 성공"}, status=status.HTTP_200_OK)
-
-class UserLoginView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        if request.user.is_authenticated:
+            logout(request)
+            return Response({'message' : "로그아웃 성공"}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message' : "로그인이 되어 있지 않음"}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserLoginView(APIView):
     def get(self, request):
         return Response(status=status.HTTP_200_OK)
 
@@ -143,7 +149,7 @@ class CheckLogin(APIView):
         if request.user.is_authenticated:
             return Response(status=status.HTTP_200_OK)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=301)
     
 
 
