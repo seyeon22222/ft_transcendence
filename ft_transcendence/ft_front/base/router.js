@@ -30,6 +30,8 @@ function resolveRoutes(user_location) {
 };
 
 const router = async() => {
+
+  console.log("router called");
   let render;
 
   const content = document.getElementById("content");

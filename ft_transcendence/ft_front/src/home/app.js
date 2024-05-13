@@ -1,4 +1,5 @@
 import { login_view } from './home_login.js'
+import router from '../../base/router.js'
 
 export function home_js() {
     const csrftoken = Cookies.get('csrftoken');
@@ -13,9 +14,39 @@ export function home_js() {
         })
         .then(response => {
             if (response.status === 200) {
+                console.log("asdasd");
                 const div = document.getElementById('login_view');
                 div.innerHTML = login_view();
+
+                const button = document.getElementById('logout_button');
+
+                button.addEventListener('click', async function() {
+                    try {
+                        const response = await fetch('user/logout', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrftoken,
+                            },
+                            body: JSON.stringify({})
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            alert(data.message);
+                            // location.href = '/#';
+                            router();
+                        } else {
+                            const error = await response.json();
+                            alert(error.message);
+                        }
+
+                    } catch (error) {
+                        console.error('로그아웃 중 오류 발생 : ', error);
+                }})
+
             } else {
+                console.log('qweqweqw');
                 const div_login = document.getElementById("login_div");
                 const loginLink = document.createElement("a");
                 loginLink.href = "/#login";

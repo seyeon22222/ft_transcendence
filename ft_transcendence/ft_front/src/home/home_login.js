@@ -28,6 +28,10 @@ export function login_view() {
         <!-- Chat contents here -->
     </div>
 
+    <div id="logout">
+        <button id="logout_button" class="px-5 py-3 rounded-xl text-white bg-teal-600 hover:bg-teal-700">Log Out</a>
+    </div>
+
     <script>
         // 컴퓨터와 핑퐁 게임하는 화면으로 넘어가는 이벤트
         document.addEventListener("DOMContentLoaded", function() {
