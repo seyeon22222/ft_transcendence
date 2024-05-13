@@ -1,21 +1,14 @@
-// 권한 확인 및 유지 기능부터 구현해야함
-
-import { renderLogin } from '../src/login.js';
-import { renderPong } from '../src/pong.js';
-import { renderSignupView } from '../src/signupview.js';
-import { renderSuccess } from '../src/success.js';
-import { renderRoom } from '../src/room.js';
-import { renderRooms } from '../src/rooms.js';
-import { renderprofileView } from '../src/profile.js';
+import { home_html } from "../src/home/html.js"
+import { home_js } from "../src/home/app.js"
+import { login_html } from "../src/login/html.js"
+import { login_js } from "../src/login/app.js"
+import { signup_html } from "../src/signup/html.js"
+import { signup_js } from "../src/signup/app.js"
 
 const routes = {
-  '/user/login_suc/': renderSuccess,
-  '/user/sign_up_view/': renderSignupView,
-  '/chat/room/': renderRoom,
-  '/chat/rooms/': renderRooms,
-  '/user/pong/' : renderPong,
-  '/user/view/' : renderprofileView,
-  '/': renderLogin,
+    "/": [home_html, home_js],
+    "/login": [login_html, login_js],
+    "/signup": [signup_html, signup_js],
 };
 
 const getHash = () =>
@@ -25,51 +18,32 @@ function resolveRoutes(user_location) {
   let render;
   let catch_path;
 
-  if (getHash() != "/") {
-      catch_path = `/${user_location[0]}/:id`;
-  } else {
-      catch_path = `/${user_location[0]}`;
-  }
+  catch_path = `/${user_location[0]}`;
 
   if (routes[catch_path] && user_location.length >= 1 && user_location.length <= 2) {
       render = routes[`/${user_location[0]}`];
   } else {
-      render = routes["/404"];
+      // 404 error handling
   }
 
   return render;
 };
 
-const router = async () => {
-  const content = document.getElementById("content");
-  const user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
+const router = async() => {
   let render;
-  let path;
 
-  if (user_location.length === 0 || user_location[0] === "") {
-    path = '/';
-  } else {
-    let temp_path;
-    path = "/";
-    for (temp_path of user_location) {
-      path += temp_path + "/";
-    }
+  const content = document.getElementById("content");
+
+  let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
+  render = resolveRoutes(user_location);
+
+  content.innerHTML = await render[0]();
+  for (let index = 1; index < render.length; index++) {
+      await render[index]();
   }
-
-  render = routes[path] || renderNotFound;
-  const renderedContent = await render();
-  requestAnimationFrame(() => {
-    content.replaceChildren(renderedContent);
-  });
 };
 
 export default router;
-
-function renderNotFound() {
-  const content = document.getElementById("content");
-  content.innerHTML = '<h1>404 Not Found</h1>';
-}
-
 
 // const contentDiv = document.getElementById('content');
 

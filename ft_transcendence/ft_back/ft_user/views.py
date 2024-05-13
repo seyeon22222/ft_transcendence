@@ -137,6 +137,13 @@ class UserLoginView(APIView):
 
     def get(self, request):
         return Response(status=status.HTTP_200_OK)
+
+class CheckLogin(APIView):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
     
 
 
