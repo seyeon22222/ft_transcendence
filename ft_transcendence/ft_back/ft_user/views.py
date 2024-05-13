@@ -147,19 +147,18 @@ class Sign_up(APIView):
             user = MyUser.objects.create_user(username, email=email, password=password)
 
             if profile_picture:
-                # Assign the uploaded image to the profile_picture field
                 user.profile_picture = profile_picture
+                imageURL = user.profile_picture.url if user.profile_picture else None
+                user.imageURL = imageURL
 
-            # Generate a URL for the image
-            imageURL = user.profile_picture.url if user.profile_picture else None
-
-            # Update the user with the generated URL
-            user.imageURL = imageURL
+            # debug
+            print("profile_picture : ", profile_picture)
+    
             user.save()
 
-            return Response({'message': "유저 생성 완료", 'imageURL': imageURL}, status=status.HTTP_200_OK)
+            return Response({'message': "유저 생성 완료"}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': "유저 생성 실패", 'errors': form.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': "유저 생성 실패"}, status=status.HTTP_400_BAD_REQUEST)
 
 class Logout(APIView):
     permission_classes = [IsAuthenticated]
