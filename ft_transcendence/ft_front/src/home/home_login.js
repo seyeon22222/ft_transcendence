@@ -1,7 +1,7 @@
 export function login_view() {
     return `
     <div class="button-container">
-        <button onclick="showProfile()" id="userProfileBtn">user_profile</button>
+        <button id="userProfileBtn">user_profile</button>
         <button onclick="showUsersStatus()"id="userStatusBtn">user_status</button>
     </div>
 

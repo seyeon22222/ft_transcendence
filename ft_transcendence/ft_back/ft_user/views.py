@@ -19,21 +19,19 @@ from django.http import JsonResponse
 
 class UserViewSet(APIView):
     permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        return MyUser.objects.all()
 
-    def get(self, request, user_id):
-        queryset = MyUser.objects.all()
+    def get_queryset(self):
+        return MyUser.objects.filter(user_id=self.request.user.user_id)
+
+    def get(self, request):
+        queryset = self.get_queryset()
         serializer = UserSerializer(queryset, many=True)
-        print(user_id)
-        print(queryset)
-        print(request)
+        print(serializer.data)
         return Response(serializer.data)
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
-        if serializer.is_vaild():
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)

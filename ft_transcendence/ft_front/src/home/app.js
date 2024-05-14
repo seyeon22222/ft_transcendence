@@ -14,39 +14,17 @@ export function home_js() {
         })
         .then(response => {
             if (response.status === 200) {
-                console.log("asdasd");
                 const div = document.getElementById('login_view');
                 div.innerHTML = login_view();
 
-                const button = document.getElementById('logout_button');
-
-                button.addEventListener('click', async function() {
-                    try {
-                        const response = await fetch('user/logout', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrftoken,
-                            },
-                            body: JSON.stringify({})
-                        });
-
-                        if (response.ok) {
-                            const data = await response.json();
-                            alert(data.message);
-                            // location.href = '/#';
-                            router();
-                        } else {
-                            const error = await response.json();
-                            alert(error.message);
-                        }
-
-                    } catch (error) {
-                        console.error('로그아웃 중 오류 발생 : ', error);
-                }})
+                const logoutButton = document.getElementById('logout_button');
+                logout_button(logoutButton, csrftoken);
+                const profileButton = document.getElementById('userProfileBtn');
+                profileButton.addEventListener('click', async function() {
+                    location.href = "/#profile"
+                });
 
             } else {
-                console.log('qweqweqw');
                 const div_login = document.getElementById("login_div");
                 const loginLink = document.createElement("a");
                 loginLink.href = "/#login";
@@ -68,3 +46,34 @@ export function home_js() {
 
     return null;
 }
+
+
+function logout_button(button, csrftoken) {
+    button.addEventListener('click', async function() {
+        try {
+            const response = await fetch('user/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({})
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(data.message);
+                router();
+            } else {
+                const error = await response.json();
+                alert(error.message);
+            }
+
+        } catch (error) {
+            console.error('로그아웃 중 오류 발생 : ', error);
+    }})
+}
+
+// function profileView() {
+//     const 
+// }

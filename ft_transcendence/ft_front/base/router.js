@@ -4,11 +4,14 @@ import { login_html } from "../src/login/html.js"
 import { login_js } from "../src/login/app.js"
 import { signup_html } from "../src/signup/html.js"
 import { signup_js } from "../src/signup/app.js"
+import { profile_view } from "../src/view/app.js"
+import { profile_html } from "../src/view/html.js"
 
 const routes = {
     "/": [home_html, home_js],
     "/login": [login_html, login_js],
     "/signup": [signup_html, signup_js],
+    "/profile": [profile_html, profile_view],
 };
 
 const getHash = () =>
@@ -31,7 +34,6 @@ function resolveRoutes(user_location) {
 
 const router = async() => {
 
-  console.log("router called");
   let render;
 
   const content = document.getElementById("content");
