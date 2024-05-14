@@ -187,7 +187,8 @@ class UserImageView(APIView):
         with open(image_path, 'rb') as f:
             image_data = f.read()
         image_base64 = base64.b64encode(image_data).decode('utf-8')
-        return HttpResponse(image_base64, content_type="text/plain")
+        return HttpResponse(image_data, content_type="image/jpeg")
+        # return HttpResponse(image_base64, content_type="text/plain")
 
 class ProfileImageUploadView(View):
     def post(self, request):
@@ -219,11 +220,12 @@ class UserInfoChange(APIView):
         if email:
             user.email = email
         if profile_picture:
-            filename = f"{request.user.id}_{profile_picture.name}"
-            file_path = os.path.join('profile_pictures', filename)
-            with open(file_path, 'wb+') as f:
-                for chunk in profile_picture.chunks():
-                    f.write(chunk)
+            user.profile_picture = profile_picture
+            # filename = f"{request.user.id}_{profile_picture.name}"
+            # file_path = os.path.join('profile_pictures', filename)
+            # with open(file_path, 'wb+') as f:
+            #     for chunk in profile_picture.chunks():
+            #         f.write(chunk)
 
         user.save()
         return Response({'message': '데이터 변경 성공'}, status=status.HTTP_200_OK)

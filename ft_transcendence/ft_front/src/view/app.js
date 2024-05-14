@@ -23,7 +23,6 @@ export async function profile_view() {
   if (data) {
     const name = document.getElementById("username_input");
     const email = document.getElementById("email_input");
-    const image = document.getElementById("image");
 
     name.placeholder = data[0].username;
     email.placeholder = data[0].email;
@@ -33,98 +32,136 @@ export async function profile_view() {
   }
 
   const changeData = document.getElementById("edit_button");
-  changeData.addEventListener("click", async function() {
-    try{
-      const csrftoken = Cookies.get('csrftoken');
-      const formData = new FormData();
-      formData.append('username', username);
-      formData.append('email', email);
-      const response = fetch('user/change_info', {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken' : csrftoken,
-        },
-        body: formData
-      });
-      console.log(response);
-      if (response.ok) {
-        const data = await response.json();
-        alert(data.message);
-        location.href = '/';
-      }
-    } catch(error) {
-      console.log("error:", error);
-    }
+  changeData.addEventListener("click", async function (event) {
+    event.preventDefault();
     try {
       const csrftoken = Cookies.get('csrftoken');
       const formData = new FormData();
-      formData.append('profile_picture', file);
+      formData.append('username', document.getElementById("username_input").value);
+      formData.append('email', document.getElementById("email_input").value);
+      if (document.getElementById("new_image_input").files[0]) {
+        formData.append('profile_picture', document.getElementById("new_image_input").files[0]);
+      } else {
+        formData.append('profile_picture', document.getElementById("profile-image").value || '');
+      }
 
-      const response = await fetch('profile/upload/', {
+      const response = fetch('user/change_info', {
         method: 'POST',
         headers: {
           'X-CSRFToken': csrftoken,
         },
-        body: formData,
-        credentials: 'include',
+        body: formData
       });
 
       if (response.ok) {
         const data = await response.json();
-        if (data.filename) {
-          const imageContainer = document.getElementById("profile-image");
-          const img = document.createElement("img");
-          img.src = `/profile_pictures/${data.filename}`;
-          img.alt = "프로필 이미지";
-          imageContainer.innerHTML = "";
-          imageContainer.appendChild(img);
-        } else {
-          console.error('이미지 업로드 실패:', data.error);
-        }
-      } else {
-        const error = await response.json();
-        console.error('이미지 업로드 실패:', error);
       }
     } catch (error) {
-      console.error('이미지 업로드 중 오류 발생:', error);
+      console.log("error:", error);
     }
+    location.href = '/#';
   });
 
+  // try {
+  //   const csrftoken = Cookies.get('csrftoken');
+  //   const formData = new FormData();
+  //   formData.append('profile_picture', file);
+
+  //   const response = await fetch('profile/upload/', {
+  //     method: 'POST',
+  //     headers: {
+  //       'X-CSRFToken': csrftoken,
+  //     },
+  //     body: formData,
+  //     credentials: 'include',
+  //   });
+
+  //   if (response.ok) {
+  //     const data = await response.json();
+  //     if (data.filename) {
+  //       const imageContainer = document.getElementById("profile-image");
+  //       const img = document.createElement("img");
+  //       img.src = `/profile_pictures/${data.filename}`;
+  //       img.alt = "프로필 이미지";
+  //       imageContainer.innerHTML = "";
+  //       imageContainer.appendChild(img);
+  //     } else {
+  //       console.error('이미지 업로드 실패:', data.error);
+  //     }
+  //   } else {
+  //     const error = await response.json();
+  //     console.error('이미지 업로드 실패:', error);
+  //   }
+  // } catch (error) {
+  //   console.error('이미지 업로드 중 오류 발생:', error);
+  // }
 }
 
 async function image_view(data) {
   const imageContainer = document.getElementById("profile-image");
   imageContainer.innerHTML = "";
-  console.log(data[0]['profile_picture']);
-  if (data[0]['profile_picture']) {
-    
+  
+  console.log(data[0].profile_picture);
+
+  if (data[0].profile_picture) {
     const img = document.createElement("img");
-    try {
-      const csrftoken = Cookies.get('csrftoken');
-      const response = await fetch(data[0]['profile_picture'], {
-        method: 'GET',
-        headers: {
-          'X-CSRFToken': csrftoken,
-        },
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const image_base64 = await response.text();
-        img.src = `data:image/jpeg;base64,${image_base64}`;
-      } else {
-        const error = await response.json();
-        console.error('API 요청 실패', error);
-      }
-    } catch (error) {
-      console.error('API 요청 실패', error);
+    const csrftoken = Cookies.get('csrftoken');
+    const response = await fetch(data[0].profile_picture, {
+      method: 'GET',
+      headers: {
+        'X-CSRFToken': csrftoken,
+      },
+      credentials: 'include',
+    });
+    if (response.ok) {
+      const imageBlob = await response.blob();
+      const imageUrl = URL.createObjectURL(imageBlob);
+      img.src = imageUrl;
+      img.alt = '프로필 이미지';
+    
+      imageContainer.appendChild(img);
+      // Append the image to the div with id "profile-image"
+      const profileImageDiv = document.getElementById("profile-image");
+      profileImageDiv.innerHTML = ''; // Clear any existing content
+      profileImageDiv.appendChild(img);
     }
-    img.alt = "프로필 이미지";
-    imageContainer.appendChild(img);
+
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.id = "new_image_input";
+    imageContainer.appendChild(fileInput);
   }
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = "image/*";
-  imageContainer.appendChild(fileInput);
+  // if (data[0]['profile_picture']) 
+  // {  
+  //   const img = document.createElement("img");
+  //   try {
+  //     const csrftoken = Cookies.get('csrftoken');
+  //     const response = await fetch(data[0]['profile_picture'], {
+  //       method: 'GET',
+  //       headers: {
+  //         'X-CSRFToken': csrftoken,
+  //       },
+  //       credentials: 'include',
+  //     });
+  //     if (response.ok) {
+  //       const image_base64 = await response.text();
+  //       img.src = `data:image/jpeg;base64,${image_base64}`;
+  //     } else {
+  //       const error = await response.json();
+  //       console.error('API 요청 실패', error);
+  //     }
+  //   } catch (error) {
+  //     console.error('API 요청 실패', error);
+  //   }
+  //   img.alt = "프로필 이미지";
+  //   imageContainer.appendChild(img);
+  // }
+  // const fileInput = document.createElement("input");
+  // fileInput.type = "file";
+  // fileInput.accept = "image/*";
+  // fileInput.id = "new_image_input";
+  // imageContainer.appendChild(fileInput);
 }
 
 function handleImageUpload(event) {
