@@ -2,6 +2,7 @@ export function login_view() {
     return `
     <div class="button-container">
         <button id="userProfileBtn">user_profile</button>
+        <button id="joinChatButton">Join Chatting Room</button>
         <button onclick="showUsersStatus()"id="userStatusBtn">user_status</button>
     </div>
 
@@ -20,9 +21,6 @@ export function login_view() {
         </div>
     </div>
 
-    <div style="display: flex; align-items: center;">
-        <a href="/#chat" id="joinChatButton" class="button">Join Chatting Room</a>
-    </div>
     <div id="liveChatLabel" class="ml-3">1:1 Live_Chat</div>
     <div id="chatContainer">
         <!-- Chat contents here -->
