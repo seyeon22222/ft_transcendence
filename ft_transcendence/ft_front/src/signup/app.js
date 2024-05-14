@@ -6,16 +6,24 @@ export function signup_js() {
         const username = document.getElementById("username_input").value;
         const password = document.getElementById("password_input").value;
         const email = document.getElementById("email_input").value;
+        const image = document.getElementById("image_input").files[0];
         const csrftoken = Cookies.get('csrftoken');
-
+        
         try {
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('password', password);
+            formData.append('email', email);
+            formData.append('profile_picture', image);
+
             const response = await fetch('user/sign_up', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    // 'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken,
                 },
-                body: JSON.stringify({username, password, email})
+                body: formData
+                // body: JSON.stringify({username, password, email})
             });
 
             if (response.ok) {

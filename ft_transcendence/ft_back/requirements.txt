@@ -8,3 +8,4 @@ Channels
 daphne
 channels-postgres
 websocket
+Pillow
