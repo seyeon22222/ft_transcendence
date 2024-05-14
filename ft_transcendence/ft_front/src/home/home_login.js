@@ -1,8 +1,7 @@
 export function login_view() {
     return `
     <div class="button-container">
-        <button id="userProfileBtn">user_profile</button>
-        <button onclick="showUsersStatus()"id="userStatusBtn">user_status</button>
+        <button id="userProfileBtn">user_profile</button
     </div>
 
     <div id="onlineUserLabel">Currently Logged In Users</div>

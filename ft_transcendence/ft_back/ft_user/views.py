@@ -1,8 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from .serializers import (
     UserSerializer,
@@ -13,11 +11,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from ft_user.models import MyUser, Friends
 from ft_user.forms import signForm
-from django.views.generic import View, TemplateView
+from django.views.generic import View
 from django.http import JsonResponse
 import base64
 import os
 from django.http import HttpResponse  # Import HttpResponse
+from django.core.files.storage import default_storage
 # Create your views here.
 
 class UserViewSet(APIView):
@@ -29,6 +28,7 @@ class UserViewSet(APIView):
     def get(self, request):
         queryset = self.get_queryset()
         serializer = UserSerializer(queryset, many=True)
+        print(serializer.data)
         # print(serializer.data)
         return Response(serializer.data)
 
@@ -211,21 +211,19 @@ class UserInfoChange(APIView):
 
     def post(self, request):
         user = request.user
-        username = request.data.get('username')
-        email = request.data.get('email')
-        profile_picture = request.FILES.get('profile_picture')
-
-        if username:
-            user.username = username
-        if email:
-            user.email = email
-        if profile_picture:
-            user.profile_picture = profile_picture
-            # filename = f"{request.user.id}_{profile_picture.name}"
-            # file_path = os.path.join('profile_pictures', filename)
-            # with open(file_path, 'wb+') as f:
-            #     for chunk in profile_picture.chunks():
-            #         f.write(chunk)
-
-        user.save()
-        return Response({'message': '데이터 변경 성공'}, status=status.HTTP_200_OK)
+        if user is not None:
+            username = request.data.get('username')
+            email = request.data.get('email')
+            profile_picture = request.FILES.get('profile_picture')
+            if username:
+                user.username = username
+            if email:
+                user.email = email
+            if profile_picture:
+                if user.profile_picture:
+                    default_storage.delete(user.profile_picture.name)
+                user.profile_picture = profile_picture
+            user.save()
+            return Response({'message': '유저 정보 변경 성공'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': '유저 정보가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
