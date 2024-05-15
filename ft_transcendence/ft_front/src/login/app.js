@@ -42,7 +42,13 @@ export function login_js() {
                 } catch (error) {
                     console.error('로그인 요청 중 오류 발생 : ', error);
                 }
+                
             })
+            const signup_button = document.getElementById("signup_button");
+            signup_button.addEventListener('click', async function() {
+                location.href = "/#signup";
+            });
+            
             }
         })
     } catch (error) {
