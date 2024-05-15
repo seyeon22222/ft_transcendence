@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine3.18
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    networks:
+      - transendance
+  backend:
+    build:
+      dockerfile: ./ft_back/dockerfile
+    volumes:
+      - ./ft_back:/code
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST = db
+    depends_on:
+      - db
+    networks:
+      - transendance
+  web:
+    build: ./nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ./ft_front:/nginx
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    networks:
+      - transendance
+  game:
+    build: 
+      dockerfile: ./game/dockerfile
+    volumes:
+      - ./game:/code
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST = db
+    networks:
+      - transendance
+
+volumes:
+  db_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/postgresql
+
+networks:
+  transendance:
+    driver: bridge
