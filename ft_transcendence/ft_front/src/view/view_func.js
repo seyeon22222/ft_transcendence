@@ -107,3 +107,61 @@ export function match_info_view(data) {
   match_info.appendChild(match_date);
   match_info.appendChild(match_result);
 }
+
+// export function renderFriendList(data) {
+//   console.log(data[0].friend)
+//   const friendList = document.getElementById('friend_list');
+//   friendList.innerHTML = ''; // 기존 목록 초기화
+
+//   data[0].friend.forEach(friend => {
+//     const listItem = document.createElement('li');
+//     listItem.textContent = friend.from_user.username; // 친구 이름 표시
+
+//     // 선택 이벤트 핸들러 추가
+//     listItem.addEventListener('click', () => {
+//       // 선택된 친구에 대한 처리 로직을 여기에 작성
+//       console.log(`선택된 친구: ${friend.from_user.username}`);
+//     });
+
+//     friendList.appendChild(listItem);
+//   });
+// }
+
+
+{/* <h1 class="text-3xl lg:text-6xl text-white">친구 목록</h1>
+
+<div class="frame">
+    <div class="image-container">
+    <div class="w-full flex flex-wrap item-center" id="friend_list"></div>
+    </div>
+        <form class="mb-5" id="friend_form">
+            <ul id="friend_list"></ul>
+            <button type="submit" class="px-5 py-3 rounded-xl text-white bg-teal-800 hover:bg-teal-700" id="create_button">삭제</button>
+        </form>
+<style>.frame {
+    border: 1px solid #000;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .image-container {
+    height: 200px;
+    background-color: #ccc;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .friend-button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }</style>
+</div> */}

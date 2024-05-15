@@ -117,20 +117,6 @@ class SignupView(APIView):
     def post(self, request):
         return Response(status=status.HTTP_200_OK)
 
-# class Sign_up(APIView):
-
-#     def post(self, request):
-#         form = signForm(request.data)
-#         if form.is_valid():
-#             username = form.cleaned_data['username']
-#             password = form.cleaned_data['password']
-#             email = form.cleaned_data['email']
-#             user = MyUser.objects.create_user(username, email=email, password=password)
-#             user.save()
-#             return Response({'message' : "유저 생성 완료"}, status = status.HTTP_200_OK)
-#         else:
-#             return Response({'message' : "유저 생성 실패"}, status = status.HTTP_400_BAD_REQUEST)
-
 class Sign_up(APIView):
 
     def post(self, request):
@@ -141,14 +127,10 @@ class Sign_up(APIView):
             password = form.cleaned_data['password']
             email = form.cleaned_data['email']
             profile_picture = request.FILES.get('profile_picture')
-
             user = MyUser.objects.create_user(username, email=email, password=password)
-
             if profile_picture:
                 user.profile_picture = profile_picture
-    
             user.save()
-
             return Response({'message': "유저 생성 완료"}, status=status.HTTP_200_OK)
         else:
             return Response({'message': "유저 생성 실패"}, status=status.HTTP_400_BAD_REQUEST)
