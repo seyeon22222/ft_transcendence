@@ -4,14 +4,20 @@ import { login_html } from "../src/login/html.js"
 import { login_js } from "../src/login/app.js"
 import { signup_html } from "../src/signup/html.js"
 import { signup_js } from "../src/signup/app.js"
-import { profile_view } from "../src/view/app.js"
 import { profile_html } from "../src/view/html.js"
+import { profile_view } from "../src/view/app.js"
+import { chatLobby_html } from "../src/chatLobby/html.js"
+import { chatLobby_js } from "../src/chatLobby/app.js"
+import { chat_html } from "../src/chat/html.js"
+import { chat_js } from "../src/chat/app.js"
 
 const routes = {
     "/": [home_html, home_js],
     "/login": [login_html, login_js],
     "/signup": [signup_html, signup_js],
     "/profile": [profile_html, profile_view],
+    "/chatlobby": [chatLobby_html, chatLobby_js],
+    "/chat": [chat_html, chat_js],
 };
 
 const getHash = () =>
@@ -35,6 +41,7 @@ function resolveRoutes(user_location) {
 const router = async() => {
 
   let render;
+  
 
   const content = document.getElementById("content");
 

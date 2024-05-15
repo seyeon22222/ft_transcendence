@@ -21,8 +21,13 @@ export function home_js() {
                 logout_button(logoutButton, csrftoken);
                 const profileButton = document.getElementById('userProfileBtn');
                 profileButton.addEventListener('click', async function() {
-                    location.href = "/#profile"
+                    location.href = "/#profile";
                 });
+
+                const joinChatButton = document.getElementById('joinChatButton');
+                joinChatButton.addEventListener('click', async function() {
+                    location.href = "/#chatLobby";
+                })
 
             } else {
                 const div_login = document.getElementById("login_div");
