@@ -4,47 +4,62 @@ import { login_html } from "../src/login/html.js"
 import { login_js } from "../src/login/app.js"
 import { signup_html } from "../src/signup/html.js"
 import { signup_js } from "../src/signup/app.js"
-import { profile_view } from "../src/view/app.js"
 import { profile_html } from "../src/view/html.js"
+import { profile_view } from "../src/view/app.js"
+import { chatLobby_html } from "../src/chatLobby/html.js"
+import { chatLobby_js } from "../src/chatLobby/app.js"
+import { chat_html } from "../src/chat/html.js"
+import { chat_js } from "../src/chat/app.js"
 
 const routes = {
     "/": [home_html, home_js],
     "/login": [login_html, login_js],
     "/signup": [signup_html, signup_js],
     "/profile": [profile_html, profile_view],
+    "/chatlobby": [chatLobby_html, chatLobby_js],
+    "/chat": [chat_html, chat_js],
 };
 
-const getHash = () =>
-  location.hash.slice(1).toLocaleLowerCase().split("/")[1] || "/";
+// function resolveRoutes(user_location) {
+//   let render;
+//   let main_path;
+//   let hash;
 
-function resolveRoutes(user_location) {
-  let render;
-  let catch_path;
+//   main_path = `/${user_location[0]}`;
 
-  catch_path = `/${user_location[0]}`;
+//   if (routes[main_path] && user_location.length >= 1 && user_location.length <= 2) {
+//       render = routes[`/${user_location[0]}`];
+//   } else {
+//       // 404 error handling
+//   }
 
-  if (routes[catch_path] && user_location.length >= 1 && user_location.length <= 2) {
-      render = routes[`/${user_location[0]}`];
-  } else {
-      // 404 error handling
-  }
-
-  return render;
-};
+//   return render;
+// };
 
 const router = async() => {
 
   let render;
+  let main_path;
+  let hash;
 
   const content = document.getElementById("content");
 
   let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
-  render = resolveRoutes(user_location);
+  // render = resolveRoutes(user_location);
+
+  main_path = `/${user_location[0]}`;
+  render = routes[`/${user_location[0]}`];
 
   content.innerHTML = await render[0]();
-  for (let index = 1; index < render.length; index++) {
-      await render[index]();
+  if (user_location.length >= 2) {
+    hash = `/${user_location[1]}`;
+    await render[1](hash);
   }
+  
+  // content.innerHTML = await render[0]();
+  // for (let index = 1; index < render.length; index++) {
+  //     await render[index]();
+  // }
 };
 
 export default router;
