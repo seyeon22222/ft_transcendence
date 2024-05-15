@@ -31,9 +31,12 @@ export async function profile_view() {
     image_view(data);
     game_stat_view(data);
     match_info_view(data);
-    // renderFriendList(data);
   }
 
   const changeData = document.getElementById("edit_button");
   dataChange(changeData);
+  console.log(data[0].game_stat);
+  console.log(data[0].match_info);
+  console.log(data[0].friend);
+  console.log(data[0].username);
 }
