@@ -3,12 +3,9 @@ export async function chat_js(hash) {
         document.getElementById("room_name").innerHTML = hash.slice(1);
         
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-
-        // wss://127.0.0.1:8000/ws/chat/asdf/ - 정확히 잘되는 url
-        const chatSocket = new WebSocket('wss://127.0.0.1:8000/ws/chat/asdf/');
-        //const chatSocket = new WebSocket(protocol + '//' + window.location.host + '/ws/chat' + hash + '/');
-        console.log("chatSocket created!");
-
+        const chatSocket = new WebSocket(protocol + '//' + window.location.host + '/ws/chat/' + hash.slice(1) + '/');
+        console.log(chatSocket);
+        
         chatSocket.onopen = function(e) {
             console.log("WebSocket connection opened:", e);
         };

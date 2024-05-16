@@ -36,10 +36,10 @@ export async function chatLobby_js() {
         createForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             const room_name = document.getElementById("room_name").value;
-            
+
             const formData = new FormData();
             formData.append('room_name', room_name);
-            
+
             const res = await fetch('chat/rooms/', {
                 method: 'POST',
                 headers: {

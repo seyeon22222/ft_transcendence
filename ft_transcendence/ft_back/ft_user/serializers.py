@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db.models import Q
 from .models import MyUser, GameStat, MatchInfo, Friends
 
 class GameStatSerializer(serializers.ModelSerializer):
@@ -13,15 +14,6 @@ class MatchInfoSerializer(serializers.ModelSerializer):
         model = MatchInfo
         fields = ['user', 'match_date', 'match_result']
 
-
-class UserSerializer(serializers.ModelSerializer):
-    game_stat = GameStatSerializer(many=True, read_only=True)
-    match_info = MatchInfoSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = MyUser
-        fields = ['username', 'password', 'email', 'profile_picture', 'game_stat', 'match_info']
-
 class FriendSerializer(serializers.ModelSerializer):
     from_user = serializers.SlugRelatedField(
         slug_field='username',
@@ -32,6 +24,11 @@ class FriendSerializer(serializers.ModelSerializer):
         queryset = MyUser.objects.all(),
     )
     status = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Friends
+        fields = ['from_user', 'to_user', 'status']
+
 
     def vaildate(self, data):
         from_user = data['from_user']
@@ -54,3 +51,21 @@ class FriendSerializer(serializers.ModelSerializer):
             status='pending'
         )
         return friend_request
+
+class UserSerializer(serializers.ModelSerializer):
+    game_stat = GameStatSerializer(many=True, read_only=True)
+    match_info = MatchInfoSerializer(many=True, read_only=True)
+    friend = friend = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MyUser
+        fields = ['username', 'password', 'email', 'profile_picture', 'game_stat', 'match_info', 'friend']
+
+    def get_friend(self, obj):
+        friend_requests = Friends.objects.filter(
+            Q(from_user=obj) | Q(to_user=obj),
+            status='accept'
+        )
+        friends = set([fr.from_user for fr in friend_requests] + [fr.to_user for fr in friend_requests])
+        serializer = FriendSerializer(instance=friends, many=True)
+        return serializer.data

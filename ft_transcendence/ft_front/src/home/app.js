@@ -19,7 +19,6 @@ export function home_js() {
 
                 const logoutButton = document.getElementById('logout_button');
                 logout_button(logoutButton, csrftoken);
-
                 const profileButton = document.getElementById('userProfileBtn');
                 profileButton.addEventListener('click', async function() {
                     location.href = "/#profile";
@@ -29,6 +28,7 @@ export function home_js() {
                 joinChatButton.addEventListener('click', async function() {
                     location.href = "/#chatLobby";
                 })
+
             } else {
                 const div_login = document.getElementById("login_div");
                 const loginLink = document.createElement("a");
