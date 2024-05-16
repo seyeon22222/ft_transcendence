@@ -16,7 +16,6 @@ export async function chatLobby_js() {
 
         if (response.ok) {
             data = await response.json();
-            console.log(data);
 
             container.innerHTML = '';
 

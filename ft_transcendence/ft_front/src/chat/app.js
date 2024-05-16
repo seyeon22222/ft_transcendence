@@ -1,10 +1,30 @@
 export async function chat_js(hash) {
     try {
-        document.getElementById("room_name").innerHTML = hash.slice(1);
+        const room_name = hash.slice(1);
+        document.getElementById("room_name").innerHTML = room_name;
         
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const chatSocket = new WebSocket(protocol + '//' + window.location.host + '/ws/chat/' + hash.slice(1) + '/');
-        console.log(chatSocket);
+
+        // get current user's name
+        let data;
+        const csrftoken = Cookies.get('csrftoken');
+        const response = await fetch('user/info', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            credentials: 'include',
+        });
+        if (response.ok) {
+            data = await response.json();
+        } else {
+            const error = await response.json();
+            console.error('API 요청 실패', error);
+        }
+
+        const user_name = data[0].username;
         
         chatSocket.onopen = function(e) {
             console.log("WebSocket connection opened:", e);
@@ -26,37 +46,27 @@ export async function chat_js(hash) {
                 const messages_div = document.getElementById("chat-messages");
                 messages_div.innerHTML += ('<b>' + data.username + '</b>: ' + data.message + '<br>');
                 messages_div.scrollTop = messages_div.scrollHeight;
+            } else {
+                alert('메시지를 입력하세요');
             }
         };  
-
-        // 
-        // const response = await fetch('', {
-        // });
 
         const chatForm = document.getElementById("chat-form");
         chatForm.addEventListener("submit", async (event) => {
             event.preventDefault();
-            const message = document.getElementById("chat-message-input").value;
-            const csrftoken = Cookies.get('csrftoken');
-            const formData = new FormData();
-            formData.append('message', message);
+            
+            const messageInputDOM = document.getElementById("chat-message-input");
+            const message = messageInputDOM.value;
 
-            const res = await fetch('/need_to/change', {
-                methdo: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                },
-                body: formData
-            });
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': user_name,
+                'room': room_name
+            }));
 
-            if (res.ok) {
-
-            } else {
-
-            }
+            messageInputDOM.value = '';
         })
-
     } catch (error) {
-
+        console.log(error);
     }
 }
