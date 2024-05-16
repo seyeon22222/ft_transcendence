@@ -15,7 +15,7 @@ from ft_user.models import MyUser, Friends
 from ft_user.forms import signForm
 from django.views.generic import View, TemplateView
 from django.http import JsonResponse
-
+import base64
 import os
 from django.http import HttpResponse  # Import HttpResponse
 # Create your views here.
@@ -29,7 +29,7 @@ class UserViewSet(APIView):
     def get(self, request):
         queryset = self.get_queryset()
         serializer = UserSerializer(queryset, many=True)
-        print(serializer.data)
+        # print(serializer.data)
         return Response(serializer.data)
 
     def post(self, request):
@@ -180,3 +180,52 @@ class UserImage(APIView):
         with open(image_path, 'rb') as f:
             image_data = f.read()
         return HttpResponse(image_data, content_type="image/jpeg")
+
+class UserImageView(APIView):
+    def get(self, request, filename):
+        image_path = os.path.join('profile_pictures/', filename)
+        with open(image_path, 'rb') as f:
+            image_data = f.read()
+        image_base64 = base64.b64encode(image_data).decode('utf-8')
+        return HttpResponse(image_data, content_type="image/jpeg")
+        # return HttpResponse(image_base64, content_type="text/plain")
+
+class ProfileImageUploadView(View):
+    def post(self, request):
+        profile_picture = request.FILES.get('profile_picture')
+        if profile_picture:
+            filename = f"{request.user.id}_{profile_picture.name}"
+            file_path = os.path.join('profile_pictures', filename)
+            with open(file_path, 'wb+') as f:
+                for chunk in profile_picture.chunks():
+                    f.write(chunk)
+            return JsonResponse({'filename': filename})
+        else:
+            return JsonResponse({'error': 'No image file provided'}, status=400)
+        
+class UserInfoChange(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return MyUser.objects.filter(user_id=self.request.user.user_id)
+
+    def post(self, request):
+        user = request.user
+        username = request.data.get('username')
+        email = request.data.get('email')
+        profile_picture = request.FILES.get('profile_picture')
+
+        if username:
+            user.username = username
+        if email:
+            user.email = email
+        if profile_picture:
+            user.profile_picture = profile_picture
+            # filename = f"{request.user.id}_{profile_picture.name}"
+            # file_path = os.path.join('profile_pictures', filename)
+            # with open(file_path, 'wb+') as f:
+            #     for chunk in profile_picture.chunks():
+            #         f.write(chunk)
+
+        user.save()
+        return Response({'message': '데이터 변경 성공'}, status=status.HTTP_200_OK)

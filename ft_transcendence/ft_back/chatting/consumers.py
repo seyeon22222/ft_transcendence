@@ -5,12 +5,11 @@ from asgiref.sync import sync_to_async
 
 from .models import Room, Message
 
-
 class ChatConsumer(AsyncWebsocketConsumer):
 
     # debug
     print("chatConsumer called") 
-
+    
     # 동기식 연결
     async def connect(self): 
         # debug
