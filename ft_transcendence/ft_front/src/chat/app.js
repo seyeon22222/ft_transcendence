@@ -4,7 +4,8 @@ export async function chat_js(hash) {
         
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const chatSocket = new WebSocket(protocol + '//' + window.location.host + '/ws/chat/' + hash.slice(1) + '/');
-
+        console.log(chatSocket);
+        
         chatSocket.onopen = function(e) {
             console.log("WebSocket connection opened:", e);
         };

@@ -23,7 +23,8 @@ const routes = {
 const router = async() => {
 
   let render;
-  
+  let main_path;
+  let hash;
 
   const content = document.getElementById("content");
 
