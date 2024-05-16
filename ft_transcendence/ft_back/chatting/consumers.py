@@ -7,8 +7,14 @@ from .models import Room, Message
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
+
+    # debug
+    print("chatConsumer called") 
+
     # 동기식 연결
-    async def connect(self):
+    async def connect(self): 
+        # debug
+        print("chatConsumer connect") 
         
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
@@ -21,6 +27,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code = None):
+
+        # debug
+        print("chatConsumer disconnect") 
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -28,6 +38,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
+
+        # debug
+        print("chatConsumer receive") 
+
         data = json.loads(text_data)
         message = data["message"]
         username = data["username"]
@@ -47,6 +61,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # Receive message from room group
     async def chat_message(self, event):
+
+        # debug
+        print("chatConsumer chat message") 
+
         message = event["message"]
         username = event["username"]
         # Send message to WebSocket
@@ -57,6 +75,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def save_message(self, username, room, message):
+
+        # debug
+        print("chatConsumer save message") 
+
         user = MyUser.objects.get(username=username)
         room = Room.objects.get(slug=room)
 

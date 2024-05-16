@@ -1,7 +1,7 @@
 export function chatLobby_html() {
     return `
+        <a href="/#" class="btn btn-primary">Home</a>
         <div class="p-10 lg:p-20 text-center">
-            <a href="/#" class="btn btn-primary">Home</a>
             <h1 class="text-3xl lg:text-6xl text-white">Room List</h1>
             <div class="w-full flex flex-wrap item-center" id="room_list">
                 <!-- 여기에 각 room 추가 -->
