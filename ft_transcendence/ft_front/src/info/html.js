@@ -26,7 +26,7 @@ export function select_profile_html() {
         <h2 class="w-full mt-2 px-4 py-2" id="match_info"></h1>
         
         <div>
-            <button type="submit" class="px-5 py-3 rounded-xl text-black bg-teal-800 hover:bg-teal-700" id="edit_button">매치 신청</button>
+            <button type="submit" class="px-5 py-3 rounded-xl text-black bg-teal-800 hover:bg-teal-700" id="match_button">매치 신청</button>
         </div>
     </form>
     `;

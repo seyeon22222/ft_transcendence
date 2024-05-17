@@ -1,6 +1,8 @@
 import { select_image_view, select_game_stat_view, select_match_info_view } from './info_func.js'
 
 export async function select_profile_view() {
+    let apply_user;
+    let accept_user;
     let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
     let user_name = user_location[1];
     let data;
@@ -33,6 +35,7 @@ export async function select_profile_view() {
             if (element.username === user_name) {
                 flag = true;
                 name.textContent = element.username;
+                accept_user = element.username;
                 if (!element.email)
                     email.textContent = null;
                 else
@@ -47,4 +50,38 @@ export async function select_profile_view() {
             location.href = '/#';
         }
     }
+
+    const applyMatch = document.getElementById("match_button");
+    
+    let temp_data;
+    applyMatch.addEventListener("click", async (event) => {
+        event.preventDefault();
+        try {
+            const csrftoken = Cookies.get('csrftoken');
+            const response = await fetch(`user/info`, {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+                },
+                credentials: 'include',
+            });
+            if (response.ok) {
+                temp_data = await response.json();
+            } else {
+                const error = await response.json();
+                console.error('API 요청 실패', error);
+            }
+        } catch (error) {
+            console.error('API 요청 실패', error);
+        }
+        if (temp_data[0].username === apply_user) {
+            alert("자기 자신에게는 매치 신청이 불가능합니다!!");
+        }
+        apply_user = temp_data[0].username;
+        console.log(temp_data[0].username);
+        console.log(apply_user);
+    });
+
+
 }
