@@ -36,6 +36,7 @@ INSTALLED_APPS = [
 	'corsheaders',
 	'channels',
 	'chatting',
+    'tournament',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
