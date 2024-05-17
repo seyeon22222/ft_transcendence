@@ -18,7 +18,6 @@ export async function chatLobby_js() {
             data = await response.json();
 
             container.innerHTML = '';
-
             // Append data to container
             data.forEach(room => {
                 const roomLink = document.createElement('a');
@@ -30,7 +29,6 @@ export async function chatLobby_js() {
                 container.appendChild(roomLink);
             });
         }
-
         const createForm = document.getElementById("room_form");
         createForm.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -58,26 +56,8 @@ export async function chatLobby_js() {
             }
         })
 
+
     } catch(error) {
         console.error('chatLobby.app Error occurs : ', error);
     }
 }
-
-// class UserViewSet(APIView):
-//     permission_classes = [IsAuthenticated]
-
-//     def get_queryset(self):
-//         return MyUser.objects.filter(user_id=self.request.user.user_id)
-
-//     def get(self, request):
-//         queryset = self.get_queryset()
-//         serializer = UserSerializer(queryset, many=True)
-//         print(serializer.data)
-//         return Response(serializer.data)
-
-//     def post(self, request):
-//         serializer = UserSerializer(data=request.data)
-//         if serializer.is_valid():
-//             serializer.save()
-//             return Response(serializer.data)
-//         return Response(serializer.errors)

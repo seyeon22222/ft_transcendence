@@ -3,10 +3,7 @@ export function login_js() {
     const style = document.getElementById("style");
     style.innerHTML = `
     body { font-family: 'Noto Sans KR', sans-serif; }
-    .custom-yellow-btn {
-        background-color: #ffc107;
-        color: white;
-    }
+    
     .narrow-card {
         max-width: 400px; /* Adjust this value to make the box narrower or wider */
     }

@@ -1,10 +1,20 @@
+import { recordMessage } from "./chat_func.js";
+
+let chatSocket; // 기존 WebSocket 연결을 추적할 변수
+
 export async function chat_js(hash) {
+    recordMessage(hash);
     try {
+        if (chatSocket) {
+            chatSocket.close();
+            chatSocket = null;
+        }
+
         const room_name = hash.slice(1);
         document.getElementById("room_name").innerHTML = room_name;
-        
+
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const chatSocket = new WebSocket(protocol + '//' + window.location.host + '/ws/chat/' + hash.slice(1) + '/');
+        chatSocket = new WebSocket(protocol + '//' + window.location.host + '/ws/chat/' + room_name + '/');
 
         // get current user's name
         let data;
@@ -23,11 +33,11 @@ export async function chat_js(hash) {
             const error = await response.json();
             console.error('API 요청 실패', error);
         }
-
         const user_name = data[0].username;
         
-        chatSocket.onopen = function(e) {
+        chatSocket.onopen = async function(e) {
             console.log("WebSocket connection opened:", e);
+            
         };
 
         chatSocket.onclose = function(e) {
@@ -39,20 +49,34 @@ export async function chat_js(hash) {
         };
 
         chatSocket.onmessage = function(e) {
-            console.log("Websocket message:", e);
-
             const data = JSON.parse(e.data);
             if (data.message) {
                 const messages_div = document.getElementById("chat-messages");
-                messages_div.innerHTML += ('<b>' + data.username + '</b>: ' + data.message + '<br>');
+                const messageWrapper = document.createElement('div');
+                messageWrapper.classList.add('message-wrapper', 'flex', 'items-center', 'mb-2');
+                messageWrapper.style.marginLeft = '10px';
+                messageWrapper.style.marginRight = '10px';
+
+                const userinfo = document.createElement('a');
+                userinfo.href = `/#info/${data.username}`;
+                userinfo.textContent = data.username;
+                userinfo.classList.add('room-link', 'p-2', 'bg-gray-700', 'text-black', 'rounded', 'hover:bg-gray-600');
+
+                const messageText = document.createElement('span');
+                messageText.textContent = ": " + data.message;
+                messageText.classList.add('message-content', 'p-2', 'bg-gray-300', 'text-black', 'rounded');
+
+                messageWrapper.appendChild(userinfo);
+                messageWrapper.appendChild(messageText);
+                messages_div.appendChild(messageWrapper);
                 messages_div.scrollTop = messages_div.scrollHeight;
             } else {
                 alert('메시지를 입력하세요');
             }
-        };  
+        };
 
         const chatForm = document.getElementById("chat-form");
-        chatForm.addEventListener("submit", async (event) => {
+        chatForm.onsubmit = async (event) => {
             event.preventDefault();
             
             const messageInputDOM = document.getElementById("chat-message-input");
@@ -65,7 +89,18 @@ export async function chat_js(hash) {
             }));
 
             messageInputDOM.value = '';
-        })
+        };
+
+        // 홈 버튼 클릭 시 WebSocket 연결 닫기
+        const home_button = document.getElementById("home");
+        home_button.onclick = (event) => {
+            event.preventDefault();
+            if (chatSocket) {
+                chatSocket.close();
+                chatSocket = null;
+            }
+            location.href = "/#";
+        };
     } catch (error) {
         console.log(error);
     }

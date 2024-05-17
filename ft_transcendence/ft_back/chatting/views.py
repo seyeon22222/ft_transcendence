@@ -57,8 +57,11 @@ class RoomListView(APIView):
     def get(self, request):
         print("get method")
         rooms = Room.objects.all()
-        serializer = RoomSerializer(rooms, many=True)
-        return Response(serializer.data)
+        if rooms.count() != 0:
+            serializer = RoomSerializer(rooms, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(status=301)
 
     def post(self, request):
         room_name = request.data.get('room_name')

@@ -28,8 +28,6 @@ class UserViewSet(APIView):
     def get(self, request):
         queryset = self.get_queryset()
         serializer = UserSerializer(queryset, many=True)
-        print(serializer.data)
-        # print(serializer.data)
         return Response(serializer.data)
 
     def post(self, request):
@@ -38,6 +36,18 @@ class UserViewSet(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+
+class SelcetUser(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        queryset = MyUser.objects.all()
+        serializer = UserSerializer(queryset, many=True)
+        return Response(serializer.data)
+      
+
+
+
 
 class FriendView(APIView):
     permission_classes = [IsAuthenticated]
