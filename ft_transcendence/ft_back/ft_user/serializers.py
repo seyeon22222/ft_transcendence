@@ -59,7 +59,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MyUser
-        fields = ['username', 'password', 'email', 'profile_picture', 'game_stat', 'match_info']
+        fields = ['user_id','username', 'password', 'email', 'profile_picture', 'game_stat', 'match_info']
 
     # def get_friend(self, obj):
     #     friend_requests = Friends.objects.filter(

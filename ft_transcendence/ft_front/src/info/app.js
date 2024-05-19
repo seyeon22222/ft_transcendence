@@ -77,6 +77,7 @@ export async function select_profile_view() {
         }
         if (temp_data[0].username === accept_user) {
             alert("자기 자신에게는 매치 신청이 불가능합니다!!");
+            return;
         }
         apply_user = temp_data[0].username;
         const match_name = apply_user + ' vs ' + accept_user;
@@ -85,15 +86,14 @@ export async function select_profile_view() {
         const startDate = formatDateTime(now);
         const endDate = formatDateTime(new Date(now.getTime() + 60 * 60 * 1000));
 
-        // 매치가 가능한지 확인하는 함수의 내용이 들어가야함
         try {
-            const formData = new FormData();
-            formData.append('name', match_name);
-            formData.append('start_date', startDate);
-            formData.append('end_date', endDate);
-            formData.append('is_active', true);
-            formData.append('apply_user', apply_user);
-            formData.append('accept_user', accept_user);
+            const formData = {
+                apply_user: apply_user,
+                accept_user: accept_user,
+                start_date: startDate,
+                end_date: endDate,
+                is_active: true
+            };
 
             const csrftoken = Cookies.get('csrftoken');
             const response = await fetch(`match/list`, {
@@ -102,19 +102,18 @@ export async function select_profile_view() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken,
                 },
-                body : formData,
+                body : JSON.stringify(formData),
             });
-            console.log(response);
-            console.log("asdasdasd");
             if (response.ok) {
                 const match_data = await response.json();
-                console.log(match_data);
+                alert("매치 생성 성공!");
+                location.href = "/#";
             } else {
                 const error = await response.json();
                 console.error('API 요청 실패', error);
             }
         } catch (error) {
-            console.error('API 요청 실패', error);
+            alert(error);
         }
     });
 }
