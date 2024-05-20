@@ -3,7 +3,7 @@ from ft_user.models import MyUser
 
 # Create your models here.
 class tournament(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     is_active = models.BooleanField(default=False)
@@ -11,7 +11,7 @@ class tournament(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class tournamentParticipant(models.Model):
     tournament = models.ForeignKey(tournament, on_delete=models.CASCADE, related_name='participants')
     player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player')
@@ -28,4 +28,3 @@ class tournamentMatch(models.Model):
 
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.tournament.name}"
-

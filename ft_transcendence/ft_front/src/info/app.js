@@ -1,4 +1,5 @@
-import { select_image_view, select_game_stat_view, select_match_info_view } from './info_func.js'
+import { matchLobby_html } from '../matchLobby/html.js';
+import { select_image_view, select_game_stat_view, select_match_info_view, formatDateTime } from './info_func.js'
 
 export async function select_profile_view() {
     let apply_user;
@@ -88,6 +89,7 @@ export async function select_profile_view() {
 
         try {
             const formData = {
+                name : match_name,
                 apply_user: apply_user,
                 accept_user: accept_user,
                 start_date: startDate,
@@ -96,7 +98,7 @@ export async function select_profile_view() {
             };
 
             const csrftoken = Cookies.get('csrftoken');
-            const response = await fetch(`match/list`, {
+            const response = await fetch(`match/apply`, {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
@@ -118,12 +120,3 @@ export async function select_profile_view() {
     });
 }
 
-function formatDateTime(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-}

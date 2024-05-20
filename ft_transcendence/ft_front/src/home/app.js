@@ -118,6 +118,7 @@ function home_login_html() {
     return `
         <a href="/#profile" class="btn btn-primary">My Profile</a>
         <a href="/#chatLobby" class="btn btn-primary">Chatting</a>
+        <a href="/#matchlobby" class="btn btn-primary">Tournament</a>
         <button class="btn" id="logout_button">Logout</button>
     `;
 }

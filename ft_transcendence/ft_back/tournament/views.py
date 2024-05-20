@@ -7,13 +7,59 @@ from ft_user.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
 from ft_user.models import MyUser
 
-class tournamnetCreateView(APIView):
-    
+class tournamentCreateView(APIView):
+
     def get(self, request):
         tournaments = tournament.objects.all()
         serializer = tournamentSerializer(tournaments, many=True)
         return Response(serializer.data)
-    
+
+    def post(self, request):
+        tournament_name = request.data.get('tournament_name')
+        start_date = request.data.get('start_date')
+        end_date = request.data.get('end_date')
+        username = request.data.get('username')
+
+        if not tournament_name or not start_date or not end_date or not username:
+            return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            apply_user = MyUser.objects.get(username=username)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+
+        tournament_M = tournament.objects.create(
+            name=tournament_name,
+            start_date=start_date,
+            end_date=end_date,
+            is_active=True,
+        )
+
+        tournament_M.participant.add(apply_user)
+        serializer = tournamentSerializer(tournament_M)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class addTournamentPlayer(APIView):
+
+    def post(self, request, tournament_id):
+        intournament = get_object_or_404(tournament, pk=tournament_id)
+        username = request.data.get('username')
+        user = get_object_or_404(MyUser, pk=username)
+        tournamentParticipant.objects.create(tournament=intournament, player=user)
+        return Response(status=status.HTTP_200_OK)
+
+class matchView(APIView):
+    print("asdasds")
+    def get(self, request, name):
+        try:
+            tournament = tournament.objects.get(name=name)
+        except tournament.DoesNotExist:
+            return Response({'error': '방을 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+        tournament_serializer = tournamentSerializer(tournament)
+        return Response({'tournament': tournament_serializer.data})
+
+
     def post(self, request):
         apply_user_id = request.data.get('apply_user')
         accept_user_id = request.data.get('accept_user')
@@ -39,6 +85,8 @@ class tournamnetCreateView(APIView):
             is_active = True,
         )
 
+        tournament_M.participant.add(accept_user, apply_user)
+
         match = tournamentMatch.objects.create(
             tournament = tournament_M,
             player1=apply_user,
@@ -49,28 +97,6 @@ class tournamnetCreateView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class addTournamentPlayer(APIView):
-
-    def post(self, request, tournament_id):
-        intournament = get_object_or_404(tournament, pk=tournament_id)
-        username = request.data.get('username')
-        user = get_object_or_404(MyUser, pk=username)
-        tournamentParticipant.objects.create(tournament=intournament, player=user)
-        return Response(status=status.HTTP_200_OK)
-
-class matchView(APIView):
-
-    def post(self, request, tournament_id):
-        intournament = get_object_or_404(tournament, pk=tournament_id)
-        player1_id = request.data.get('player1_id')
-        player2_id = request.data.get('player2_id')
-        player1 = get_object_or_404(MyUser, pk=player1_id)
-        player2 = get_object_or_404(MyUser, pk=player2_id)
-        match_date = request.data.get('match_date')
-        match = tournament.objects.create(tournament = intournament, player1 = player1, player2 = player2, match_date = match_date)
-        return Response(status=status.HTTP_200_OK)
-
-
 # class makeTournamentMatch(APIView):
 
 
@@ -78,3 +104,11 @@ class matchView(APIView):
 
 
 
+# 1:1 매칭
+# 4명 토너먼트
+#
+#
+#
+#
+#
+#
