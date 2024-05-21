@@ -15,6 +15,13 @@ export function matchLobby_html() {
                 </form>
             </div>
         </div>
-    
+
+
+        <div class="p-10 lg:p-20 text-center">
+            <h1 class="text-3xl lg:text-6xl text-white">1:1 Match List</h1>
+            <div class="w-full flex flex-wrap item-center" id="match_list">
+                <!-- 여기에 각 match 추가 -->
+            </div>
+        </div>
     `;
 }

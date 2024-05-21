@@ -1,11 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import tournament, MyUser, tournamentParticipant, tournamentMatch
-from .serializers import tournamentSerializer, tournamentParticipantSerializer, tournamentMatchSerializer
+from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match
+from .serializers import tournamentSerializer, tournamentParticipantSerializer, tournamentMatchSerializer, matchSerializer
 from ft_user.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
 from ft_user.models import MyUser
+
 
 class tournamentCreateView(APIView):
 
@@ -33,31 +34,37 @@ class tournamentCreateView(APIView):
             start_date=start_date,
             end_date=end_date,
             is_active=True,
+            operator = apply_user,
         )
 
-        tournament_M.participant.add(apply_user)
         serializer = tournamentSerializer(tournament_M)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class addTournamentPlayer(APIView):
-
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)
         username = request.data.get('username')
-        user = get_object_or_404(MyUser, pk=username)
-        tournamentParticipant.objects.create(tournament=intournament, player=user)
-        return Response(status=status.HTTP_200_OK)
+
+        # Assuming username is the field to search for the user
+        try:
+            user = MyUser.objects.get(username=username)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user in intournament.participant.all():
+            return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        intournament.participant.add(user)
+        return Response({'message' : '참가 신청 완료'},status=status.HTTP_200_OK)
+
 
 class matchView(APIView):
-    print("asdasds")
-    def get(self, request, name):
-        try:
-            tournament = tournament.objects.get(name=name)
-        except tournament.DoesNotExist:
-            return Response({'error': '방을 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
-        tournament_serializer = tournamentSerializer(tournament)
-        return Response({'tournament': tournament_serializer.data})
+    
+    def get(self, request):
+        matchs = Match.objects.all()
+        serializer = matchSerializer(matchs, many=True)
+        return Response(serializer.data)
 
 
     def post(self, request):
@@ -72,43 +79,18 @@ class matchView(APIView):
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if tournamentMatch.objects.filter(player1=apply_user.user_id, player2=accept_user.user_id).exists() or \
-           tournamentMatch.objects.filter(player1=accept_user.user_id, player2=apply_user.user_id).exists():
-            return Response({'error': '해당 매치는 이미 존재합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
         match_name = f"{apply_user.username} vs {accept_user.username}"
 
-        tournament_M = tournament.objects.create(
+        if Match.objects.filter(player1=apply_user.user_id, player2=accept_user.user_id, is_active=True).exists() or \
+           Match.objects.filter(player1=accept_user.user_id, player2=apply_user.user_id, is_active=True).exists():
+            return Response({'error': '해당 매치는 이미 존재합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        match = Match.objects.create(
             name = match_name,
-            start_date = start_date,
-            end_date = end_date,
-            is_active = True,
-        )
-
-        tournament_M.participant.add(accept_user, apply_user)
-
-        match = tournamentMatch.objects.create(
-            tournament = tournament_M,
             player1=apply_user,
-            player2=accept_user
+            player2=accept_user,
+            is_active = True
         )
 
-        serializer = tournamentMatchSerializer(match)
+        serializer = matchSerializer(match)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-# class makeTournamentMatch(APIView):
-
-
-
-
-
-
-# 1:1 매칭
-# 4명 토너먼트
-#
-#
-#
-#
-#
-#

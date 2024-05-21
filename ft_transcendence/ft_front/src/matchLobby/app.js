@@ -21,7 +21,7 @@ export async function matchLobby_view() {
             // Append data to container
             data.forEach(tournament => {
                 const tournamentLink = document.createElement('a');
-                tournamentLink.href = `/#match/${tournament.name}`;
+                tournamentLink.href = `/#tournament/${tournament.name}`;
                 tournamentLink.textContent = tournament.name;
                 tournamentLink.classList.add('tournament-link', 'block', 'p-2', 'bg-gray-700', 'text-white', 'rounded', 'mb-2', 'hover:bg-gray-600');
                 tournamentLink.style.marginLeft = '10px';
@@ -30,12 +30,38 @@ export async function matchLobby_view() {
             });
         }
 
+        const matchContainer = document.getElementById("match_list");
+        const matchcsrftoken = Cookies.get('csrftoken');
+        const matchresponse = await fetch('match/apply', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': matchcsrftoken,
+            },
+            credentials: 'include',
+        });
+
+        if (matchresponse.ok) {
+            const temp_data = await matchresponse.json();
+            matchContainer.innerHTML = '';
+            // Append data to container
+            temp_data.forEach(match => {
+                const matchLink = document.createElement('a');
+                matchLink.href = `/#match/${match.name}`;
+                matchLink.textContent = match.name;
+                matchLink.classList.add('match-link', 'block', 'p-2', 'bg-gray-700', 'text-white', 'rounded', 'mb-2', 'hover:bg-gray-600');
+                matchLink.style.marginLeft = '10px';
+                matchLink.style.marginRight = '10px';
+                matchContainer.appendChild(matchLink);
+            });
+        }
+
         const createForm = document.getElementById("tournament_form");
         createForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             let data;
             const csrftoken = Cookies.get('csrftoken');
-            const response = await fetch('user/info', {
+            const response_t = await fetch('user/info', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,10 +69,10 @@ export async function matchLobby_view() {
                 },
                 credentials: 'include',
             });
-            if (response.ok) {
-                data = await response.json();
+            if (response_t.ok) {
+                data = await response_t.json();
             } else {
-                const error = await response.json();
+                const error = await response_t.json();
                 console.error('API 요청 실패', error);
             }
             
@@ -82,6 +108,6 @@ export async function matchLobby_view() {
             }
         })
     } catch(error) {
-        console.error('chatLobby.app Error occurs : ', error);
+        console.error('matchLobby : ', error);
     }
 }

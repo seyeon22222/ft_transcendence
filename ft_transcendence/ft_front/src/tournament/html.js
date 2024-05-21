@@ -1,4 +1,4 @@
-export function match_html() {
+export function tournament_html() {
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -82,6 +82,26 @@ export function match_html() {
                 <div></div>
                 <div></div>
                 <div></div>
+            </div>
+            <div class="level">
+                <div class="node" id="quarter_final1"></div>
+                <div class="node" id="quarter_final2"></div>
+                <div class="node" id="quarter_final3"></div>
+                <div class="node" id="quarter_final4"></div>
+            </div>
+            <div class="level">
+                <div class="node" id="Round_16_1"></div>
+                <div class="node" id="Round_16_2"></div>
+                <div class="node" id="Round_16_3"></div>
+                <div class="node" id="Round_16_4"></div>
+                <div class="node" id="Round_16_5"></div>
+                <div class="node" id="Round_16_6"></div>
+                <div class="node" id="Round_16_7"></div>
+                <div class="node" id="Round_16_8"></div>
+            </div>
+
+            <div>
+                <button type="button" class="px-5 py-3 rounded-xl text-black bg-teal-800 hover:bg-teal-700" id="tournament_button">토너먼트 신청</button>
             </div>
         </div>
     </body>
