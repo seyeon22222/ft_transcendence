@@ -82,11 +82,17 @@ export async function chatPrivate_js(hash) {
             const messageInputDOM = document.getElementById("chat-message-input");
             const message = messageInputDOM.value;
 
-            chatSocket.send(JSON.stringify({
-                'message': message,
-                'username': user_name,
-                'room': room_name
-            }));
+            if (message === '') {
+                alert('메시지를 입력하세요');
+            }
+            else
+            {
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    'username': user_name,
+                    'room': room_name
+                }));
+            }
 
             messageInputDOM.value = '';
         };
