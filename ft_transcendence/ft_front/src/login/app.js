@@ -2,8 +2,15 @@ export function login_js() {
     // set style
     const style = document.getElementById("style");
     style.innerHTML = `
-    body { font-family: 'Noto Sans KR', sans-serif; }
-    
+    body {
+        background-color: #333; /* Dark gray background */
+        color: white;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+    .custom-yellow-btn {
+        background-color: #ffc107;
+        color: white;
+    }
     .narrow-card {
         max-width: 400px; /* Adjust this value to make the box narrower or wider */
     }
