@@ -16,6 +16,8 @@ import { matchLobby_html } from "../src/matchLobby/html.js"
 import { matchLobby_view } from "../src/matchLobby/app.js"
 import { tournament_html } from "../src/match/html.js"
 import { tournament_view } from "../src/match/app.js"
+import { chatPrivate_html } from "../src/chatPrivate/html.js"
+import { chatPrivate_js } from "../src/chatPrivate/app.js"
 
 const routes = {
     "/": [home_html, home_js],
@@ -27,6 +29,7 @@ const routes = {
     "/info": [select_profile_html, select_profile_view],
     "/matchlobby" : [matchLobby_html, matchLobby_view],
     "/match" : [tournament_html, tournament_view],
+    "/chatprivate": [chatPrivate_html, chatPrivate_js],
 };
 
 const router = async() => {

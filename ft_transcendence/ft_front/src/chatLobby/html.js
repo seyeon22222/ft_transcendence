@@ -14,6 +14,10 @@ export function chatLobby_html() {
                     <button type="submit" class="px-5 py-3 rounded-xl text-white bg-teal-800 hover:bg-teal-700" id="create_button">Create</button>
                 </form>
             </div>
+            <h1 class="text-3xl lg:text-6xl text-white">User List</h1>
+            <div class="w-full flex flex-wrap item-center" id="user_list">
+                <!-- 여기에 각 user link 추가 -->
+            </div>
         </div>
     `;
 }

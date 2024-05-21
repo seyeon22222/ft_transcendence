@@ -7,9 +7,12 @@ export async function select_profile_view() {
     let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
     let user_name = user_location[1];
     let data;
+    let response;
+    let csrftoken;
+
     try {
-    const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch(`info/${user_name}`, {
+    csrftoken = Cookies.get('csrftoken');
+    response = await fetch(`info/${user_name}`, {
         method: 'GET',
         headers: {
         'Content-Type': 'application/json',
@@ -58,8 +61,8 @@ export async function select_profile_view() {
     applyMatch.addEventListener("click", async (event) => {
         event.preventDefault();
         try {
-            const csrftoken = Cookies.get('csrftoken');
-            const response = await fetch(`user/info`, {
+            csrftoken = Cookies.get('csrftoken');
+            response = await fetch(`user/info`, {
                 method: 'GET',
                 headers: {
                 'Content-Type': 'application/json',
@@ -97,8 +100,8 @@ export async function select_profile_view() {
                 is_active: true
             };
 
-            const csrftoken = Cookies.get('csrftoken');
-            const response = await fetch(`match/apply`, {
+            csrftoken = Cookies.get('csrftoken');
+            response = await fetch(`match/apply`, {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
@@ -118,5 +121,83 @@ export async function select_profile_view() {
             alert(error);
         }
     });
+
+    const applyChat = document.getElementById("chat_button");
+    applyChat.addEventListener("click", async (event) => {
+        event.preventDefault();
+        try {
+            csrftoken = Cookies.get('csrftoken');
+            response = await fetch(`user/info`, {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+                },
+                credentials: 'include',
+            });
+            if (response.ok) {
+                temp_data = await response.json();
+            } else {
+                const error = await response.json();
+                console.error('API 요청 실패', error);
+            }
+        } catch (error) {
+            console.error('API 요청 실패', error);
+        }
+
+        if (temp_data[0].username === accept_user) {
+            alert("자기 자신에게는 채팅 신청이 불가능합니다!!");
+            return;
+        }
+
+        console.log(temp_data[0].username); // 자신
+        console.log(accept_user); // 상대방
+
+        // get private room and check duplicate
+        const sender = temp_data[0].username;
+        const receiver = accept_user;
+
+        try {
+            csrftoken = Cookies.get('csrftoken');
+            response = await fetch(`chat/privaterooms/${sender}/${receiver}`, {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+                },
+            });
+
+            if (response.status === 200)
+            {
+                console.log("already private chatting exists");
+                
+                data = await response.json();
+
+                const slug = data.slug;
+                location.href = '/#chatprivate/' + slug;
+            }
+            else // 404 - no private room
+            {
+                console.log("creating private chatting...");
+
+                // get slug by user with API
+                response = await fetch(`chat/privaterooms/${sender}/${receiver}/`, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                    },
+                });
+
+                data = await response.json();
+
+                const slug = data.slug;
+                location.href = '/#chatprivate/' + slug;
+            }
+
+        } catch (error) {
+            console.error("API failed : " , error);
+        }
+    })
 }
 

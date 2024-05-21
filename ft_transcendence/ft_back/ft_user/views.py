@@ -37,7 +37,7 @@ class UserViewSet(APIView):
             return Response(serializer.data)
         return Response(serializer.errors)
 
-class SelcetUser(APIView):
+class SelectUser(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
