@@ -14,8 +14,10 @@ import { select_profile_html } from "../src/info/html.js"
 import { select_profile_view } from "../src/info/app.js"
 import { matchLobby_html } from "../src/matchLobby/html.js"
 import { matchLobby_view } from "../src/matchLobby/app.js"
-import { tournament_html } from "../src/match/html.js"
-import { tournament_view } from "../src/match/app.js"
+import { match_html } from "../src/match/html.js"
+import { match_view } from "../src/match/app.js"
+import { tournament_html } from "../src/tournament/html.js"
+import { tournament_view } from "../src/tournament/app.js"
 import { chatPrivate_html } from "../src/chatPrivate/html.js"
 import { chatPrivate_js } from "../src/chatPrivate/app.js"
 
@@ -28,7 +30,8 @@ const routes = {
     "/chat": [chat_html, chat_js],
     "/info": [select_profile_html, select_profile_view],
     "/matchlobby" : [matchLobby_html, matchLobby_view],
-    "/match" : [tournament_html, tournament_view],
+    "/match" : [match_html, match_view],
+    "/tournament" : [tournament_html, tournament_view],
     "/chatprivate": [chatPrivate_html, chatPrivate_js],
 };
 
