@@ -43,38 +43,35 @@ export async function image_view(data) {
       const img = document.createElement("img");
       const csrftoken = Cookies.get('csrftoken');
       const response = await fetch(data[0].profile_picture, {
-      method: 'GET',
-      headers: {
-          'X-CSRFToken': csrftoken,
-      },
-      credentials: 'include',
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': csrftoken,
+        },
+        credentials: 'include',
       });
       if (response.ok) {
-      const imageBlob = await response.blob();
-      const imageUrl = URL.createObjectURL(imageBlob);
-      img.src = imageUrl;
-      img.alt = '프로필 이미지';
-      
-      imageContainer.appendChild(img);
-      const profileImageDiv = document.getElementById("profile-image");
-      profileImageDiv.innerHTML = '';
-      profileImageDiv.appendChild(img);
+        const imageBlob = await response.blob();
+        const imageUrl = URL.createObjectURL(imageBlob);
+        img.src = imageUrl;
+        img.alt = '프로필 이미지';
+        
+        imageContainer.appendChild(img);
       }
-
   }
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = "image/*";
-  fileInput.id = "new_image_input";
-  imageContainer.appendChild(fileInput);
+
+  // const fileInput = document.createElement("input");
+  // fileInput.type = "file";
+  // fileInput.accept = "image/*";
+  // fileInput.id = "new_image_input";
+  // imageContainer.appendChild(fileInput);
 }
 
 export function game_stat_view(data) {
     const gamestatus = document.getElementById("game_status");
-    const winCount = document.createElement("h1");
-    const defeatCount = document.createElement("h1");
-    const winRate = document.createElement("h1");
-    const reflectRate = document.createElement("h1");
+    const winCount = document.createElement("h4");
+    const defeatCount = document.createElement("h4");
+    const winRate = document.createElement("h4");
+    const reflectRate = document.createElement("h4");
     if (!data.game_stat) {       
         winCount.textContent = "승리 횟수: 0";
         defeatCount.textContent = "패배 횟수: 0";
@@ -95,8 +92,8 @@ export function game_stat_view(data) {
 
 export function match_info_view(data) {
   const match_info = document.getElementById("match_info");
-  const match_date = document.createElement("h1");
-  const match_result = document.createElement("h1");
+  const match_date = document.createElement("h4");
+  const match_result = document.createElement("h4");
       if (!data.match_info) {
       match_date.textContent = "최근 매치: 없음";
       match_result.textContent = "최근 매치 결과: 없음";

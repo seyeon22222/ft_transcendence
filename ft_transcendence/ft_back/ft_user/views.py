@@ -203,14 +203,20 @@ class UserInfoChange(APIView):
             username = request.data.get('username')
             email = request.data.get('email')
             profile_picture = request.FILES.get('profile_picture')
+
             if username:
+                if MyUser.objects.filter(username = username).exists():
+                    return Response({'message': '이미 해당 유저네임이 존재합니다'}, status=status.HTTP_400_BAD_REQUEST)
                 user.username = username
+
             if email:
                 user.email = email
+
             if profile_picture:
                 if user.profile_picture:
                     default_storage.delete(user.profile_picture.name)
                 user.profile_picture = profile_picture
+
             user.save()
             return Response({'message': '유저 정보 변경 성공'}, status=status.HTTP_200_OK)
         else:
