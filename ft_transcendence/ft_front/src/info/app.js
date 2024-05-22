@@ -316,3 +316,49 @@ export async function select_profile_view() {
     }
   });
 }
+
+//seycheon_online_status // 온라인 상태를 주기적으로 업데이트하는 함수
+async function updateOnlineStatus() {
+  let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
+  let user_name = user_location[1];
+
+  await fetch("/user/get_users_online_status")
+    .then((response) => response.json())
+    .then((data) => {
+      const onlineStatusDiv = document.getElementById("online_status_value");
+      if (onlineStatusDiv) {
+        // 요소가 있는 경우에만 작업을 수행합니다.
+        // API에서 반환된 사용자 목록에서 사용자 이름이 있는지 확인합니다.
+        console.log(data.online_users);
+        const isOnline = data.online_users.some((user) => {
+          const username = user;
+          console.log("11111", username);
+          if (username) {
+            console.log(username.trim(), user_name.trim());
+            return username.trim() === user_name.trim(); // 사용자 이름에서 공백 제거 후 비교
+          }
+          return false;
+        });
+        console.log(isOnline);
+        onlineStatusDiv.innerHTML = `현재 접속 상태: ${
+          isOnline ? "online" : "offline"
+        }`;
+      } else {
+        console.error("Element with ID 'online_status_value' not found.");
+      }
+    })
+    .catch((error) => console.error("Error fetching online users:", error));
+}
+
+//seycheon_online_status 페이지 로드 시 및 주기적으로 업데이트
+function checkProfileFormAndRun() {
+  const profileForm = document.getElementById("profile_form");
+  if (profileForm) {
+    updateOnlineStatus();
+    setInterval(updateOnlineStatus, 3000); // 1초마다 업데이트
+  } else {
+  }
+}
+
+// 매 초마다 profile_form의 존재를 확인하고 함수 실행
+setInterval(checkProfileFormAndRun, 5000); // 31초마다 확인

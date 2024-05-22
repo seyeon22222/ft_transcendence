@@ -17,6 +17,8 @@ import base64
 import os
 from django.http import HttpResponse
 from django.core.files.storage import default_storage
+from .utils import get_online_users #seycheon_online_status
+
 # Create your views here.
 
 class UserViewSet(APIView):
@@ -282,4 +284,11 @@ class UserBlockCheckRequest(APIView):
 
         return Response({'message': 'Users are not blocking each other'}, status=status.HTTP_200_OK)
 
+#seycheon_online_status
+class GetUsersOnlineStatus(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        current_users = get_online_users()
+        usernames = [user.username for user in current_users]
+        return Response({'online_users': usernames})

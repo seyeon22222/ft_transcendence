@@ -8,6 +8,9 @@ export function select_profile_html() {
         <h1> 유저 정보 </h1>
         <div id="profile-image">프로필 사진</div>
         <br>
+        <div id="online_status"> 
+            <span id="online_status_value"></span>
+        </div>
         <br>
         <h1>ID</h1>
         <br>
