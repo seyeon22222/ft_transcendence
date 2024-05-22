@@ -67,15 +67,18 @@ export async function chat_js(hash) {
     };
 
     chatSocket.onmessage = async function (e) {
+      //seycheon_block async 추가
       const data = JSON.parse(e.data);
 
       if (data.message) {
+        //seycheon_block
         const isBlocked = await checkBlockStatus(
           temp_data[0].username,
           data.username,
           csrftoken
         );
         if (!isBlocked) {
+          //-----------------------
           const messages_div = document.getElementById("chat-messages");
           const messageWrapper = document.createElement("div");
           messageWrapper.classList.add(
@@ -116,7 +119,7 @@ export async function chat_js(hash) {
           alert("메시지를 입력하세요");
         }
       }
-    };
+    }; //seycheon_block
 
     const chatForm = document.getElementById("chat-form");
     chatForm.onsubmit = async (event) => {
