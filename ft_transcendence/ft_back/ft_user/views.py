@@ -221,3 +221,65 @@ class UserInfoChange(APIView):
             return Response({'message': '유저 정보 변경 성공'}, status=status.HTTP_200_OK)
         else:
             return Response({'message': '유저 정보가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#seycheon_block
+class UserBlockRequest(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        apply_user_id = request.data.get('apply_user')
+        accept_user_id = request.data.get('accept_user')
+
+        try:
+            apply_user = MyUser.objects.get(username=apply_user_id)
+            accept_user = MyUser.objects.get(username=accept_user_id)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if apply_user.block_list.filter(username=accept_user_id).exists():
+            return Response({'message': 'User already in black list'}, status=status.HTTP_200_OK)
+        
+        apply_user.block_list.add(accept_user)
+        return Response({'message': 'User added to black list'}, status=status.HTTP_200_OK)
+    
+
+#seycheon_block
+class UserBlockReleaseRequest(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        apply_user_id = request.data.get('apply_user')
+        accept_user_id = request.data.get('accept_user')
+
+        try:
+            apply_user = MyUser.objects.get(username=apply_user_id)
+            accept_user = MyUser.objects.get(username=accept_user_id)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if apply_user.block_list.filter(username=accept_user_id).exists():
+            apply_user.block_list.remove(accept_user)
+            
+        return Response({'message': 'User added to black list'}, status=status.HTTP_200_OK)
+
+
+#seycheon_block
+class UserBlockCheckRequest(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        apply_user_id = request.data.get('apply_user')
+        accept_user_id = request.data.get('accept_user')
+
+        try:
+            apply_user = MyUser.objects.get(username=apply_user_id)
+            accept_user = MyUser.objects.get(username=accept_user_id)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if apply_user.block_list.filter(username=accept_user_id).exists() or accept_user.block_list.filter(username=apply_user_id).exists():
+            return Response({'error': 'One of the users has blocked the other'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'message': 'Users are not blocking each other'}, status=status.HTTP_200_OK)
+
+

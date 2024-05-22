@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from ft_user.views import (
     UserViewSet, User_login, Sign_up, SignupView,
     UserLoginView, Logout, CheckLogin,ProfileImageUploadView,
-    UserInfoChange, UserImageView, SelectUser,
+    UserInfoChange, UserImageView, SelectUser, UserBlockRequest, UserBlockCheckRequest, UserBlockReleaseRequest,
 )
 
 # FriendView, 
@@ -28,5 +28,8 @@ urlpatterns = [
     path('profile_pictures/<str:filename>/', UserImageView.as_view(), name="user_image_view"),
     path('profile/upload', ProfileImageUploadView.as_view(), name='profile_image_upload'),
     path('user/change_info', UserInfoChange.as_view(), name='user_info_change'),
+    path('user/block_request', UserBlockRequest.as_view(), name='user_block'), #seycheon_block
+    path('user/block_release_request', UserBlockReleaseRequest.as_view(), name='user_block_release'),  #seycheon_block
+    path('user/block_check_request', UserBlockCheckRequest.as_view(),name='user_block_check_request'), #seycheon_block
     re_path(r'info/', SelectUser.as_view(), name='select_user'),
 ]
