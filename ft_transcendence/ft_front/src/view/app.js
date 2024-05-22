@@ -1,4 +1,4 @@
-import { image_view, game_stat_view, match_info_view, dataChange } from './view_func.js';
+import { image_view, game_stat_view, match_info_view, dataChange, fetchMatchList } from './view_func.js';
 
 export async function profile_view() {
   // set style
@@ -82,9 +82,9 @@ export async function profile_view() {
     image_view(data);
     game_stat_view(data);
     match_info_view(data);
-    // renderFriendList(data);
+    fetchMatchList(data[0].username);
   }
-
+  
   const changeData = document.getElementById("edit_button");
   dataChange(changeData);
 }

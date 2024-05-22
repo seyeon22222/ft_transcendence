@@ -29,7 +29,7 @@ export function select_profile_html() {
             <button type="submit" class="px-5 py-3 rounded-xl text-black bg-teal-800 hover:bg-teal-700" id="match_button">매치 신청</button>
         </div>
         <div>
-            <button class="btn flex-grow-1 me-2" id="chat_button">1:1 채팅</button>
+            <button class="px-5 py-3 rounded-xl bg-teal-800 hover:bg-teal-700" id="chat_button">1:1 채팅</button>
         </div>
     </form>
     `;

@@ -32,12 +32,20 @@ class tournamentMatch(models.Model):
     
 
 class Match(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    ]
+
     name = models.CharField(max_length=100)
     match_date = models.DateTimeField(null=True)
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1')
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2')
     match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
-    is_active = models.BooleanField(default=True)
-    
+    is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requester')
+
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.name}"

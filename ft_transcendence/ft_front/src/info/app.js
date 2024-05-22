@@ -22,7 +22,6 @@ export async function select_profile_view() {
     });
     if (response.ok) {
         data = await response.json();
-        console.log(data);
     } else {
         const error = await response.json();
         console.error('API 요청 실패', error);
@@ -54,26 +53,24 @@ export async function select_profile_view() {
             location.href = '/#';
         }
     }
-
-    const applyMatch = document.getElementById("match_button");
-    
     let temp_data;
-    applyMatch.addEventListener("click", async (event) => {
+    const requestMatchButton = document.getElementById('match_button');
+    requestMatchButton.addEventListener('click', async (event) => {
         event.preventDefault();
         try {
-            csrftoken = Cookies.get('csrftoken');
-            response = await fetch(`user/info`, {
+            const req_csrftoken = Cookies.get('csrftoken');
+            const req_response = await fetch(`user/info`, {
                 method: 'GET',
                 headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken,
+                'X-CSRFToken': req_csrftoken,
                 },
                 credentials: 'include',
             });
-            if (response.ok) {
-                temp_data = await response.json();
+            if (req_response.ok) {
+                temp_data = await req_response.json();
             } else {
-                const error = await response.json();
+                const error = await req_response.json();
                 console.error('API 요청 실패', error);
             }
         } catch (error) {
@@ -90,35 +87,28 @@ export async function select_profile_view() {
         const startDate = formatDateTime(now);
         const endDate = formatDateTime(new Date(now.getTime() + 60 * 60 * 1000));
 
-        try {
-            const formData = {
-                name : match_name,
-                apply_user: apply_user,
-                accept_user: accept_user,
-                start_date: startDate,
-                end_date: endDate,
-                is_active: true
-            };
+        const mat_csrftoken = Cookies.get('csrftoken');
+        const formData = {
+            apply_user: apply_user,
+            accept_user: accept_user,
+            name: match_name,
+        };
 
-            csrftoken = Cookies.get('csrftoken');
-            response = await fetch(`match/apply`, {
-                method: 'POST',
-                headers: {
+        const mat_response = await fetch('/match/request', {
+            method: 'POST',
+            headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken,
-                },
-                body : JSON.stringify(formData),
-            });
-            if (response.ok) {
-                const match_data = await response.json();
-                alert("매치 생성 성공!");
-                location.href = "/#";
-            } else {
-                const error = await response.json();
-                console.error('API 요청 실패', error);
-            }
-        } catch (error) {
-            alert(error);
+                'X-CSRFToken': mat_csrftoken,
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (mat_response.ok) {
+            alert("매치 신청 성공!");
+            location.href = "/#";
+        } else {
+            const error = await mat_response.json();
+            console.log(error);
         }
     });
 
@@ -149,9 +139,6 @@ export async function select_profile_view() {
             alert("자기 자신에게는 채팅 신청이 불가능합니다!!");
             return;
         }
-
-        console.log(temp_data[0].username); // 자신
-        console.log(accept_user); // 상대방
 
         // get private room and check duplicate
         const sender = temp_data[0].username;

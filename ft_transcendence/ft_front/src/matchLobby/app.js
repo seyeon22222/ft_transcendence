@@ -32,7 +32,7 @@ export async function matchLobby_view() {
 
         const matchContainer = document.getElementById("match_list");
         const matchcsrftoken = Cookies.get('csrftoken');
-        const matchresponse = await fetch('match/apply', {
+        const matchresponse = await fetch('match/matchview', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

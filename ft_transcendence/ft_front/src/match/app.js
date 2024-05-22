@@ -12,7 +12,7 @@ export async function match_view(hash) {
     
     // 토너먼트에 대한 정보 출력
     const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch('match/apply', {
+    const response = await fetch('match/matchview', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

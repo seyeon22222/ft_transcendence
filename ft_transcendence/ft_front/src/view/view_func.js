@@ -1,3 +1,5 @@
+import { formatDateTime } from "../info/info_func.js";
+
 export async function dataChange(changeData) {
     changeData.addEventListener("click", async function (event) {
       event.preventDefault();
@@ -58,12 +60,6 @@ export async function image_view(data) {
         imageContainer.appendChild(img);
       }
   }
-
-  // const fileInput = document.createElement("input");
-  // fileInput.type = "file";
-  // fileInput.accept = "image/*";
-  // fileInput.id = "new_image_input";
-  // imageContainer.appendChild(fileInput);
 }
 
 export function game_stat_view(data) {
@@ -103,4 +99,85 @@ export function match_info_view(data) {
       }
   match_info.appendChild(match_date);
   match_info.appendChild(match_result);
+}
+
+async function respondToMatch(matchId, response, name) {
+  const now = new Date();
+  const startDate = formatDateTime(new Date(now.getTime() + 300));
+  const csrftoken = Cookies.get('csrftoken');
+  const username = name;
+  const formData = {
+      response: response,
+      username: username,
+      start_date : startDate,
+  };
+
+  const responseFetch = await fetch(`/match/response/${matchId}`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+      },
+      body: JSON.stringify(formData),
+  });
+
+  if (responseFetch.ok) {
+      const data = await responseFetch.json();
+      console.log(`Match ${response}ed:`, data);
+      fetchMatchList();  // 목록을 새로 고침
+  } else {
+      const error = await responseFetch.json();
+      console.log(error);
+  }
+}
+
+
+
+export function match_list_view(data, username) {
+  console.log("In match_list_view func ",data);
+  const matchListContainer = document.getElementById('1:1_Match_List');
+  matchListContainer.innerHTML = '';
+  const matchElement = document.createElement('div');
+  data.forEach(match => {
+      if (match.status === 'pending') {
+        matchElement.className = 'match-item';
+        matchElement.innerHTML = `
+            <p>${match.player1_username} vs ${match.player2_username}</p>
+            <button class="accept-button" data-match-id="${match.id}">Accept</button>
+            <button class="reject-button" data-match-id="${match.id}">Reject</button>
+        `;
+      }
+      if (matchElement !== null)
+        matchListContainer.appendChild(matchElement);
+  });
+
+  document.querySelectorAll('.accept-button').forEach(button => {
+      button.addEventListener('click', () => respondToMatch(button.dataset.matchId, 'accept', username));
+  });
+
+  document.querySelectorAll('.reject-button').forEach(button => {
+      button.addEventListener('click', () => respondToMatch(button.dataset.matchId, 'reject', username));
+  });
+}
+
+
+export async function fetchMatchList(username) {
+  const csrftoken = Cookies.get('csrftoken');
+
+  const response = await fetch('match/selfview', {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+      },
+      credentials: 'include',
+  });
+
+  if (response.ok) {
+      const data = await response.json();
+      match_list_view(data, username);
+  } else {
+      const error = await response.json();
+      console.log(error);
+  }
 }
