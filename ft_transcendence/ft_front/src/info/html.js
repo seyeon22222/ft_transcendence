@@ -1,5 +1,5 @@
 export function select_profile_html() {
-    return `
+  return `
     <div>
         <a h1 href='/#' class="text-white">Home</a>
     </div>
@@ -8,6 +8,9 @@ export function select_profile_html() {
         <h1> 유저 정보 </h1>
         <div id="profile-image">프로필 사진</div>
         <br>
+        <div id="online_status"> 
+            <span id="online_status_value"></span>
+        </div>
         <br>
         <h1>ID</h1>
         <br>
@@ -31,6 +34,12 @@ export function select_profile_html() {
         <div>
             <button class="px-5 py-3 rounded-xl bg-teal-800 hover:bg-teal-700" id="chat_button">1:1 채팅</button>
         </div>
+        <div>
+        <button class="px-5 py-3 rounded-xl bg-teal-800 hover:bg-teal-700" id="block_button">1:1 채팅 차단</button>
+    </div>
+    <div>
+    <button class="px-5 py-3 rounded-xl bg-teal-800 hover:bg-teal-700" id="block_release_button">1:1 채팅 차단 해제</button>
+</div>
     </form>
     `;
 }
