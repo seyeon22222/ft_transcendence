@@ -38,10 +38,29 @@ export async function tournament_view(hash) {
             }
         }
         console.log(player);
+        if (player.length > 4 && player.length <= 8) {
+
+        }
     } else {
         const error = await response.json();
         alert(error);
     }
+
+    const socket = new WebSocket(
+        `wss://${window.location.host}/ws/tournament/${tournament_id}/`
+    );
+
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log(data.message);
+
+        // 필요한 DOM 업데이트 로직
+        updateTournamentInfo();
+    };
+
+    socket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
 
     let t_data;
     try {
@@ -61,7 +80,7 @@ export async function tournament_view(hash) {
             console.error('API 요청 실패', error);
         }
     } catch(error) {
-        alert(error)
+        alert(error);
     }
 
     const apply_button = document.getElementById('tournament_button');
@@ -69,6 +88,10 @@ export async function tournament_view(hash) {
         event.preventDefault();
 
         try {
+            if (player.length >= 8) {
+                alert("최대 인원(8명)을 초과했습니다.");
+                return;
+            }
             const formData = {
                 username: t_data[0].username,
                 tournament_name: tournament_name,
@@ -105,6 +128,10 @@ function equal_arr(arr1, arr2) {
             return false;
     }
     return true;
+}
+
+function updateTournamentInfo() {
+    
 }
 
 /*

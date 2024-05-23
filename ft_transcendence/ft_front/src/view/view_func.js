@@ -137,18 +137,17 @@ export function match_list_view(data, username) {
   console.log("In match_list_view func ",data);
   const matchListContainer = document.getElementById('1:1_Match_List');
   matchListContainer.innerHTML = '';
-  const matchElement = document.createElement('div');
   data.forEach(match => {
-      if (match.status === 'pending') {
+    if (match.status === "pending") {
+        const matchElement = document.createElement('div');
         matchElement.className = 'match-item';
         matchElement.innerHTML = `
             <p>${match.player1_username} vs ${match.player2_username}</p>
             <button class="accept-button" data-match-id="${match.id}">Accept</button>
             <button class="reject-button" data-match-id="${match.id}">Reject</button>
-        `;
+            `;
+          matchListContainer.appendChild(matchElement);
       }
-      if (matchElement !== null)
-        matchListContainer.appendChild(matchElement);
   });
 
   document.querySelectorAll('.accept-button').forEach(button => {

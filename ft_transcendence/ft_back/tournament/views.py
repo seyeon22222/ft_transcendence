@@ -6,7 +6,8 @@ from .serializers import tournamentSerializer, tournamentParticipantSerializer, 
 from ft_user.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
 from ft_user.models import MyUser
-
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 class tournamentCreateView(APIView):
 
@@ -40,24 +41,34 @@ class tournamentCreateView(APIView):
         serializer = tournamentSerializer(tournament_M)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
 class addTournamentPlayer(APIView):
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)
         username = request.data.get('username')
 
-        # Assuming username is the field to search for the user
+        # 사용자 검증
         try:
             user = MyUser.objects.get(username=username)
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if user in intournament.participant.all():
+
+        # 중복 신청 방지
+        if intournament.participant.filter(username=username).exists():
             return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
         intournament.participant.add(user)
-        return Response({'message' : '참가 신청 완료'},status=status.HTTP_200_OK)
 
+        # 웹소켓을 통해 업데이트 정보 전송
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'tournament_{tournament_id}',
+            {
+                'type': 'tournament_message',
+                'message': f'User {username} has joined the tournament {intournament.name}.'
+            }
+        )
+
+        return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
 
 class matchListView(APIView):
 
@@ -65,7 +76,13 @@ class matchListView(APIView):
             matchs = Match.objects.all()
             serializer = matchSerializer(matchs, many=True)
             return Response(serializer.data)
+    
+class matchDetailView(APIView):
 
+    def get(self, request, match_id):
+        match = get_object_or_404(Match, id=match_id)
+        serializer = matchSerializer(match)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class matchView(APIView):
     

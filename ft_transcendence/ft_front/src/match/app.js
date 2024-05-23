@@ -1,18 +1,7 @@
 export async function match_view(hash) {
-    const tournament_name = hash.slice(1);
-    const arr = tournament_name.split(`%20`);
-    let cnt = 0;
-    arr.forEach(element => {
-        cnt++;
-        if (cnt == arr.length)
-            document.getElementById("tournament_name").innerHTML += element;    
-        else
-            document.getElementById("tournament_name").innerHTML += element + " "; 
-    });
-    
-    // 토너먼트에 대한 정보 출력
+    const matchId = hash.slice(1);
     const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch('match/matchview', {
+    const response = await fetch(`match/matchview/${matchId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -20,22 +9,25 @@ export async function match_view(hash) {
         },
         credentials: 'include',
     });
-
+    
     if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        const player1_name = data[0].player1_username;
-        const player2_name = data[0].player2_username;
+        document.getElementById("tournament_name").innerHTML = data.name;
+        const player1_name = data.player1_username;
+        const player2_name = data.player2_username;
+
         const player1 = document.getElementById('semi_final1');
         player1.innerHTML = '';
         player1.innerHTML += player1_name;
+
         const player2 = document.getElementById('semi_final2');
         player2.innerHTML = '';
         player2.innerHTML += player2_name;
-        if (data[0].match_result !== "") {
+
+        if (data.match_result !== "") {
             const winner = document.getElementById('final');
             winner.innerHTML = '';
-            winner.innerHTML += data[0].match_result;
+            winner.innerHTML += data.match_result;
         }
     } else {
         const error = await response.json();

@@ -40,19 +40,20 @@ export async function matchLobby_view() {
             },
             credentials: 'include',
         });
-
         if (matchresponse.ok) {
             const temp_data = await matchresponse.json();
             matchContainer.innerHTML = '';
             // Append data to container
             temp_data.forEach(match => {
-                const matchLink = document.createElement('a');
-                matchLink.href = `/#match/${match.name}`;
-                matchLink.textContent = match.name;
-                matchLink.classList.add('match-link', 'block', 'p-2', 'bg-gray-700', 'text-white', 'rounded', 'mb-2', 'hover:bg-gray-600');
-                matchLink.style.marginLeft = '10px';
-                matchLink.style.marginRight = '10px';
-                matchContainer.appendChild(matchLink);
+                if (match.status === "accepted") {
+                    const matchLink = document.createElement('a');
+                    matchLink.href = `/#match/${match.id}`;
+                    matchLink.textContent = match.name;
+                    matchLink.classList.add('match-link', 'block', 'p-2', 'bg-gray-700', 'text-white', 'rounded', 'mb-2', 'hover:bg-gray-600');
+                    matchLink.style.marginLeft = '10px';
+                    matchLink.style.marginRight = '10px';
+                    matchContainer.appendChild(matchLink);
+                }
             });
         }
 
