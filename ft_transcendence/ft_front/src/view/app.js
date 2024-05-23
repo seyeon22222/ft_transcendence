@@ -9,6 +9,10 @@ export async function profile_view() {
     color: white;
     font-family: 'Noto Sans KR', sans-serif;
   }
+  h1 {
+    font-size: 3rem; /* Larger font size for the title */
+    font-weight: 700; /* Thicker font weight for the title */
+  }
   .custom-yellow-btn {
     background-color: #ffc107;
     color: white;

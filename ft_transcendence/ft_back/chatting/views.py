@@ -58,6 +58,10 @@ class PrivateRoomListView(APIView):
             private_room = PrivateRoom.objects.get(user1=user1, user2=user2)
             serializer = PrivateRoomSerializer(private_room)
             return Response(serializer.data, status=200)    
+        elif PrivateRoom.objects.filter(user1 = user2, user2 = user1).exists():
+            private_room = PrivateRoom.objects.get(user1=user2, user2=user1)
+            serializer = PrivateRoomSerializer(private_room)
+            return Response(serializer.data, status=200)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)    
 
