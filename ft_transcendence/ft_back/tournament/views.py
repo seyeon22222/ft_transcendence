@@ -45,18 +45,23 @@ class addTournamentPlayer(APIView):
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)
         username = request.data.get('username')
-
+        nickname = request.data.get('nickname')  # 별칭 추가
         # 사용자 검증
         try:
             user = MyUser.objects.get(username=username)
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
 
+        print(intournament.participant)
+
         # 중복 신청 방지
         if intournament.participant.filter(username=username).exists():
+            print("qweqwe")
             return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        intournament.participant.add(user)
+        # 토너먼트 참가자 생성
+        tournament_participant = tournamentParticipant(tournament=intournament, player=user, nickname=nickname)
+        tournament_participant.save()
 
         # 웹소켓을 통해 업데이트 정보 전송
         channel_layer = get_channel_layer()
@@ -64,10 +69,9 @@ class addTournamentPlayer(APIView):
             f'tournament_{tournament_id}',
             {
                 'type': 'tournament_message',
-                'message': f'User {username} has joined the tournament {intournament.name}.'
+                'message': f'User {username} with nickname {nickname} has joined the tournament {intournament.name}.'
             }
         )
-
         return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
 
 class matchListView(APIView):

@@ -280,7 +280,7 @@ class UserBlockCheckRequest(APIView):
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
 
         if apply_user.block_list.filter(username=accept_user_id).exists() or accept_user.block_list.filter(username=apply_user_id).exists():
-            return Response({'error': 'One of the users has blocked the other'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'One of the users has blocked the other'}, status=301) # 400 or 404를 하면 콘솔창에 에러가 발생했다고 나와서 임시로 상태 바꿈
 
         return Response({'message': 'Users are not blocking each other'}, status=status.HTTP_200_OK)
 

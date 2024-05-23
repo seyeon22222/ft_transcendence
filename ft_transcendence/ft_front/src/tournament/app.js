@@ -1,65 +1,46 @@
 import { formatDateTime } from "../info/info_func.js";
+let socket;
 
 export async function tournament_view(hash) {
+    if (socket) {
+        socket.close();
+        socket = null;
+    }
     const tournament_name = hash.slice(1);
     const arr = tournament_name.split(`%20`);
     let cnt = 0;
-    let tournament_id;
+    let tournament_id; // tournament_id 초기화
     arr.forEach(element => {
         cnt++;
         if (cnt == arr.length)
-            document.getElementById("tournament_name").innerHTML += element;    
+            document.getElementById("tournament_name").innerHTML += element;
         else
-            document.getElementById("tournament_name").innerHTML += element + " "; 
+            document.getElementById("tournament_name").innerHTML += element + " ";
     });
-    
+
     // 토너먼트에 대한 정보 출력
-    const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch('match/list', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken,
-        },
-        credentials: 'include',
-    });
+    const result = await updateTournamentInfo(arr);
+    const { player, tournament_id: updatedTournamentId } = result;
+    tournament_id = updatedTournamentId;
 
-    const player = [];
-
-    if (response.ok) {
-        const data = await response.json();
-        for (let i = 0; i < data.length; ++i) {
-            if (equal_arr(arr, data[i].name.split(" "))) {
-                tournament_id = data[i].id;
-                for (let j = 0; j < data[i].participant.length; ++j) {
-                    player.push(data[i].participant[j]);
-                }
-                break;
-            }
-        }
-        console.log(player);
-        if (player.length > 4 && player.length <= 8) {
-
-        }
-    } else {
-        const error = await response.json();
-        alert(error);
-    }
-
-    const socket = new WebSocket(
+    socket = new WebSocket(
         `wss://${window.location.host}/ws/tournament/${tournament_id}/`
     );
-
-    socket.onmessage = function(e) {
+    socket.onopen = function(e) {
+        console.log("socket open");
+    }
+    socket.onmessage = async function(e) {
         const data = JSON.parse(e.data);
         console.log(data.message);
 
         // 필요한 DOM 업데이트 로직
-        updateTournamentInfo();
+        const result = await updateTournamentInfo(arr);
+        const { player, tournament_id } = result;
+        
     };
 
     socket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
+        console.log('Chat socket closed unexpectedly');
     };
 
     let t_data;
@@ -79,14 +60,14 @@ export async function tournament_view(hash) {
             const error = await response_t.json();
             console.error('API 요청 실패', error);
         }
-    } catch(error) {
+    } catch (error) {
         alert(error);
     }
 
     const apply_button = document.getElementById('tournament_button');
     apply_button.addEventListener("click", async (event) => {
         event.preventDefault();
-
+        const nickname = document.getElementById('nickname_input').value;
         try {
             if (player.length >= 8) {
                 alert("최대 인원(8명)을 초과했습니다.");
@@ -95,8 +76,9 @@ export async function tournament_view(hash) {
             const formData = {
                 username: t_data[0].username,
                 tournament_name: tournament_name,
+                nickname : nickname,
             };
-
+            const csrftoken = Cookies.get('csrftoken');
             const response = await fetch(`match/matchapply/${tournament_id}`, {
                 method: 'POST',
                 headers: {
@@ -107,18 +89,17 @@ export async function tournament_view(hash) {
             });
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
+                location.href = `/tournament/${tournament_name}`;
+                // console.log(data);
             } else {
                 const error = await response.json();
-                console.log(error);
+                // console.log(error);
             }
         } catch (error) {
             console.log(error);
         }
-    })
+    });
 }
-
-
 
 function equal_arr(arr1, arr2) {
     if (arr1.length != arr2.length)
@@ -130,14 +111,54 @@ function equal_arr(arr1, arr2) {
     return true;
 }
 
-function updateTournamentInfo() {
-    
+async function updateTournamentInfo(arr) {
+    const csrftoken = Cookies.get('csrftoken');
+    const response = await fetch('match/list', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        credentials: 'include',
+    });
+
+    const player = [];
+    let tournament_id; // tournament_id 선언
+
+    if (response.ok) {
+        const data = await response.json();
+        console.log(data)
+        for (let i = 0; i < data.length; ++i) {
+            if (equal_arr(arr, data[i].name.split(" "))) {
+                tournament_id = data[i].id;
+                for (let j = 0; j < data[i].participants.length; ++j) {
+                    player.push(data[i].participants[j]);
+                }
+                break;
+            }
+        }
+        console.log(player);
+        if (player.length > 4 && player.length <= 8) {
+            for (let i = 1; i <= player.length; ++i) {
+                const round_16 = document.getElementById(`Round_16_${i}`);
+                // 추가적인 로직 필요
+            }
+
+        } else if (player.length > 2 && player.length <= 4) {
+            for (let i = 1; i <= player.length; ++i) {
+                const quarter_final = document.getElementById(`quarter_final_${i}`);
+                // 추가적인 로직 필요
+            }
+        } else {
+            for (let i = 1; i <= player.length; ++i) {
+                const semi_final = document.getElementById(`semi_final${i}`);
+                semi_final.innerHTML = player[i - 1].nickname;
+            }
+        }
+    } else {
+        const error = await response.json();
+        alert(error);
+    }
+
+    return { player, tournament_id };
 }
-
-/*
-
-1. 토너먼트 모델에 토너먼트 방을 만든 사람에게 권한을 부여 -> order 부분 추가
-2. 방장 권한이 있으면 토너먼트 시작버튼으로 토너먼트를 시작할 수 있도록 추가하기
-3. 1:1 매칭의 경우, 이름을 생성하는 것이 아닌, 고유한 id를 통해서 해당 매치에 접근을 할 수 있도록 하기
-
-*/

@@ -133,12 +133,35 @@ async function respondToMatch(matchId, response, name) {
 
 
 
-export function match_list_view(data, username) {
+export async function match_list_view(data, username) {
+  
   console.log("In match_list_view func ",data);
+  // 개인 정보창 불러오기
+  let self_data;
+  try {
+    const csrftoken = Cookies.get('csrftoken');
+    const response = await fetch('user/info', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken,
+      },
+      credentials: 'include',
+    });
+    if (response.ok) {
+      self_data = await response.json();
+    } else {
+      const error = await response.json();
+      console.error('API 요청 실패', error);
+    }
+  } catch (error) {
+    console.error('API 요청 실패', error);
+  }
+  // 자기자신이 신청한 1:1 매치 제외하고 리스트 받아오기
   const matchListContainer = document.getElementById('1:1_Match_List');
   matchListContainer.innerHTML = '';
   data.forEach(match => {
-    if (match.status === "pending") {
+    if (match.status === "pending" && self_data[0].user_id !== match.requester) {
         const matchElement = document.createElement('div');
         matchElement.className = 'match-item';
         matchElement.innerHTML = `

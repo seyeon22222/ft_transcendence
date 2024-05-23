@@ -107,7 +107,7 @@ async function checkBlockStatus(apply_user, accept_user, temp_csrftoken) {
   if (blockResponse.ok) {
     return false; // 차단 여부 반환
   } else {
-    console.error("Block check API error");
+    // console.error("Block check API error");
     return true; // API 요청 실패 시 차단으로 간주
   }
 }

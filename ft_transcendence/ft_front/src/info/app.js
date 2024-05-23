@@ -361,4 +361,4 @@ function checkProfileFormAndRun() {
 }
 
 // 매 초마다 profile_form의 존재를 확인하고 함수 실행
-setInterval(checkProfileFormAndRun, 5000); // 31초마다 확인
+// setInterval(checkProfileFormAndRun, 5000); // 31초마다 확인

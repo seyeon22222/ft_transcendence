@@ -99,8 +99,8 @@ export function tournament_html() {
                 <div class="node" id="Round_16_7"></div>
                 <div class="node" id="Round_16_8"></div>
             </div>
-
             <div>
+                <input type="text" id="nickname_input" placeholder="별칭을 입력하세요">
                 <button type="button" class="px-5 py-3 rounded-xl text-black bg-teal-800 hover:bg-teal-700" id="tournament_button">토너먼트 신청</button>
             </div>
         </div>

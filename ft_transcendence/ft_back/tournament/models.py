@@ -16,9 +16,10 @@ class tournament(models.Model):
 class tournamentParticipant(models.Model):
     tournament = models.ForeignKey(tournament, on_delete=models.CASCADE, related_name='participants')
     player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player')
+    nickname = models.CharField(max_length=100)  # 별칭 필드 추가
 
     def __str__(self):
-        return f"{self.player.username} in {self.tournament.name}"
+        return f"{self.nickname} ({self.player.username}) in {self.tournament.name}"
 
 class tournamentMatch(models.Model):
     tournament = models.ForeignKey(tournament, on_delete=models.CASCADE, related_name='matches')
