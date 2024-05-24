@@ -49,7 +49,8 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_HOST = db
+      POSTGRES_HOST : ${POSTGRES_HOST}
+      DJANGO_SETTINGS_MODULE : ${DJANGO_SETTINGS_MODULE_game}
     networks:
       - transendance
 

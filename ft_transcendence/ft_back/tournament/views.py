@@ -41,6 +41,13 @@ class tournamentCreateView(APIView):
         serializer = tournamentSerializer(tournament_M)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+class tournamentGame(APIView):
+    def get(self, request, tournament_id):
+        specific_tournament = get_object_or_404(tournament, pk=tournament_id)
+        serializer = tournamentSerializer(specific_tournament)
+        return Response(serializer.data)
+
+
 class addTournamentPlayer(APIView):
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)

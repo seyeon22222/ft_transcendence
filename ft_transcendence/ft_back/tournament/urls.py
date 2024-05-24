@@ -3,13 +3,14 @@ from . import views
 from .views import (
     tournamentCreateView, addTournamentPlayer, matchView,
     MatchRequestView, MatchResponseView, matchListView,
-    matchDetailView,
+    matchDetailView, tournamentGame
 )
 
 app_name = "tournament"
 
 urlpatterns = [
     path('list', tournamentCreateView.as_view(), name='match_list'),
+    path('t_list/<int:tournament_id>', tournamentGame.as_view(), name='match_list_id'),
     path('matchapply/<int:tournament_id>', addTournamentPlayer.as_view(), name='match_add_player'),
     path('matchview', matchListView.as_view(), name='match_view'),
     path('matchview/<int:match_id>', matchDetailView.as_view(), name='match_view'),
