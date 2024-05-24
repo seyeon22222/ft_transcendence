@@ -20,6 +20,8 @@ import { tournament_html } from "../src/tournament/html.js";
 import { tournament_view } from "../src/tournament/app.js";
 import { chatPrivate_html } from "../src/chatPrivate/html.js";
 import { chatPrivate_js } from "../src/chatPrivate/app.js";
+import { game_html } from "../src/game/html.js";
+import { game_js } from "../src/game/app.js";
 
 const routes = {
   "/": [home_html, home_js],
@@ -33,6 +35,7 @@ const routes = {
   "/match": [match_html, match_view],
   "/tournament": [tournament_html, tournament_view],
   "/chatprivate": [chatPrivate_html, chatPrivate_js],
+  "/game" : [game_html],
 };
 
 const router = async () => {

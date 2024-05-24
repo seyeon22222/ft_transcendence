@@ -1,5 +1,5 @@
 """
-ASGI config for game project.
+ASGI config for backend project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,7 +11,19 @@ import os
 
 from django.core.asgi import get_asgi_application
 
+django_asgi_app = get_asgi_application()
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'game.settings')
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+import util.routing
 
-application = get_asgi_application()
+
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "game.settings")
+
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AuthMiddlewareStack(URLRouter(util.routing.websocket_urlpatterns)),
+    }
+)
