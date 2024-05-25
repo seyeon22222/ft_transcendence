@@ -120,11 +120,6 @@ class User_login(APIView):
             print("로그인 실패")
             return Response({'message': "로그인 실패"}, status=status.HTTP_400_BAD_REQUEST)
 
-class SignupView(APIView):
-
-    def post(self, request):
-        return Response(status=status.HTTP_200_OK)
-
 class Sign_up(APIView):
 
     def post(self, request):
@@ -153,10 +148,6 @@ class Logout(APIView):
         else:
             return Response({'message' : "로그인이 되어 있지 않음"}, status=status.HTTP_400_BAD_REQUEST)
 
-class UserLoginView(APIView):
-    def get(self, request):
-        return Response(status=status.HTTP_200_OK)
-
 class CheckLogin(APIView):
     def get(self, request):
         if request.user.is_authenticated:
@@ -164,12 +155,12 @@ class CheckLogin(APIView):
         else:
             return Response(status=301)
 
-class UserImage(APIView):
-    def get(self, request, filename):
-        image_path = os.path.join('profile_pictures/', filename)
-        with open(image_path, 'rb') as f:
-            image_data = f.read()
-        return HttpResponse(image_data, content_type="image/jpeg")
+# class UserImage(APIView):
+#     def get(self, request, filename):
+#         image_path = os.path.join('profile_pictures/', filename)
+#         with open(image_path, 'rb') as f:
+#             image_data = f.read()
+#         return HttpResponse(image_data, content_type="image/jpeg")
 
 class UserImageView(APIView):
     def get(self, request, filename):
@@ -179,25 +170,25 @@ class UserImageView(APIView):
         image_base64 = base64.b64encode(image_data).decode('utf-8')
         return HttpResponse(image_data, content_type="image/jpeg")
         # return HttpResponse(image_base64, content_type="text/plain")
-
-class ProfileImageUploadView(View):
-    def post(self, request):
-        profile_picture = request.FILES.get('profile_picture')
-        if profile_picture:
-            filename = f"{request.user.id}_{profile_picture.name}"
-            file_path = os.path.join('profile_pictures', filename)
-            with open(file_path, 'wb+') as f:
-                for chunk in profile_picture.chunks():
-                    f.write(chunk)
-            return JsonResponse({'filename': filename})
-        else:
-            return JsonResponse({'error': 'No image file provided'}, status=400)
+ 
+# class ProfileImageUploadView(View):
+#     def post(self, request):
+#         profile_picture = request.FILES.get('profile_picture')
+#         if profile_picture:
+#             filename = f"{request.user.id}_{profile_picture.name}"
+#             file_path = os.path.join('profile_pictures', filename)
+#             with open(file_path, 'wb+') as f:
+#                 for chunk in profile_picture.chunks():
+#                     f.write(chunk)
+#             return JsonResponse({'filename': filename})
+#         else:
+#             return JsonResponse({'error': 'No image file provided'}, status=400)
         
 class UserInfoChange(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return MyUser.objects.filter(user_id=self.request.user.user_id)
+    # def get_queryset(self):
+    #     return MyUser.objects.filter(user_id=self.request.user.user_id)
 
     def post(self, request):
         user = request.user
@@ -340,7 +331,6 @@ class UserBlockCheckRequest(APIView):
             return Response({'error': 'One of the users has blocked the other'}, status=301) # 400 or 404를 하면 콘솔창에 에러가 발생했다고 나와서 임시로 상태 바꿈
 
         return Response({'message': 'Users are not blocking each other'}, status=status.HTTP_200_OK)
-
 
 #seycheon_online_status
 class GetUsersOnlineStatus(APIView):
