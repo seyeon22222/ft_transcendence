@@ -1,4 +1,5 @@
 import { image_view, game_stat_view, match_info_view, dataChange, fetchMatchList } from './view_func.js';
+import router from "../../base/router.js"
 
 export async function profile_view() {
   // set style
@@ -54,9 +55,30 @@ export async function profile_view() {
 .match-container {
     margin-left: 2%;
 }
-  `;
+`;
 
-  const profile_view = document.getElementById("profile_form");
+  // check whether user is login status
+  try {
+    const csrftoken = Cookies.get('csrftoken');
+    const response = await fetch('user/check_login', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken,
+      },
+    });
+
+    console.log(response);
+
+    if (response.status === 301) {
+      console.log("redirected");
+      location.href = `/#`;
+      return;
+    }
+  } catch (error) {
+    console.error('로그인 여부 확인 중 오류 발생 : ', error);
+  }
+
   let data;
   try {
     const csrftoken = Cookies.get('csrftoken');
@@ -88,7 +110,7 @@ export async function profile_view() {
     match_info_view(data);
     fetchMatchList(data[0].username);
   }
-  
+
   const changeData = document.getElementById("edit_button");
   dataChange(changeData);
 }
