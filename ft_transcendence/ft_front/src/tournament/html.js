@@ -90,20 +90,22 @@ export function tournament_html() {
                 <div class="node" id="quarter_final4"></div>
             </div>
             <div class="level">
-                <div class="node" id="Round_16_1"></div>
-                <div class="node" id="Round_16_2"></div>
-                <div class="node" id="Round_16_3"></div>
-                <div class="node" id="Round_16_4"></div>
-                <div class="node" id="Round_16_5"></div>
-                <div class="node" id="Round_16_6"></div>
-                <div class="node" id="Round_16_7"></div>
-                <div class="node" id="Round_16_8"></div>
+                <div class="node" id="Round_8_1"></div>
+                <div class="node" id="Round_8_2"></div>
+                <div class="node" id="Round_8_3"></div>
+                <div class="node" id="Round_8_4"></div>
+                <div class="node" id="Round_8_5"></div>
+                <div class="node" id="Round_8_6"></div>
+                <div class="node" id="Round_8_7"></div>
+                <div class="node" id="Round_8_8"></div>
             </div>
             <div>
                 <input type="text" id="nickname_input" placeholder="별칭을 입력하세요">
                 <button type="button" class="px-5 py-3 rounded-xl text-black bg-teal-800 hover:bg-teal-700" id="tournament_button">토너먼트 신청</button>
             </div>
-            <div id="button_container"></div>
+            <div id="button_container">
+                <button type="button" class="px-5 py-3 rounded-xl text-black bg-teal-800 hover:bg-teal-700" id="tournament_start">토너먼트 시작</button>
+            </div>
         </div>
     </body>
     </html>
