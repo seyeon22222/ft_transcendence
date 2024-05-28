@@ -155,21 +155,12 @@ class CheckLogin(APIView):
         else:
             return Response(status=301)
 
-# class UserImage(APIView):
-#     def get(self, request, filename):
-#         image_path = os.path.join('profile_pictures/', filename)
-#         with open(image_path, 'rb') as f:
-#             image_data = f.read()
-#         return HttpResponse(image_data, content_type="image/jpeg")
-
-class UserImageView(APIView):
+class UserImage(APIView):
     def get(self, request, filename):
         image_path = os.path.join('profile_pictures/', filename)
         with open(image_path, 'rb') as f:
             image_data = f.read()
-        image_base64 = base64.b64encode(image_data).decode('utf-8')
         return HttpResponse(image_data, content_type="image/jpeg")
-        # return HttpResponse(image_base64, content_type="text/plain")
  
 # class ProfileImageUploadView(View):
 #     def post(self, request):

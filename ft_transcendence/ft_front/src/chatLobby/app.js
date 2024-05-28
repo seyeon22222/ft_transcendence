@@ -1,6 +1,14 @@
 import router from "../../base/router.js"
+import { check_login } from "../utilities.js"
 
 export async function chatLobby_js() {
+    // check login status
+    const check = await check_login();
+    if (check === false) {
+        location.href = `/#`;
+        return;
+    }
+
     let data;
     try {
         const room_list = document.getElementById("room_list");

@@ -1,5 +1,6 @@
 import { image_view, game_stat_view, match_info_view, dataChange, fetchMatchList } from './view_func.js';
 import router from "../../base/router.js"
+import { check_login } from "../utilities.js"
 
 export async function profile_view() {
   // set style
@@ -57,26 +58,11 @@ export async function profile_view() {
 }
 `;
 
-  // check whether user is login status
-  try {
-    const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch('user/check_login', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrftoken,
-      },
-    });
-
-    console.log(response);
-
-    if (response.status === 301) {
-      console.log("redirected");
-      location.href = `/#`;
-      return;
-    }
-  } catch (error) {
-    console.error('로그인 여부 확인 중 오류 발생 : ', error);
+  // check login status
+  const check = await check_login();
+  if (check === false) {
+    location.href = `/#`;
+    return;
   }
 
   let data;

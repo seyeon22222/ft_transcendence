@@ -5,6 +5,7 @@ import {
   select_match_info_view,
   formatDateTime,
 } from "./info_func.js";
+import { check_login } from "../utilities.js";
 
 export async function select_profile_view() {
   let apply_user;
@@ -14,6 +15,13 @@ export async function select_profile_view() {
   let data;
   let response;
   let csrftoken;
+
+    // check login status
+    const check = await check_login();
+    if (check === false) {
+        location.href = `/#`;
+        return;
+    }
 
   try {
     csrftoken = Cookies.get("csrftoken");

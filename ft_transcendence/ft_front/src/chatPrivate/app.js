@@ -1,14 +1,23 @@
 import { recordMessages } from "./chat_func.js";
+import { check_login } from "../utilities.js"
 
 let chatSocket; // 기존 WebSocket 연결을 추적할 변수
 
 export async function chatPrivate_js(hash) {
-  recordMessages(hash);
+  // check login status
+  const check = await check_login();
+  if (check === false) {
+      location.href = `/#`;
+      return;
+  }
+
   try {
     if (chatSocket) {
       chatSocket.close();
       chatSocket = null;
     }
+
+    recordMessages(hash);
 
     const room_name = hash.slice(1);
     document.getElementById("room_name").innerHTML = room_name;

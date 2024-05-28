@@ -1,4 +1,6 @@
 import { formatDateTime } from "../info/info_func.js";
+import { check_login } from "../utilities.js"
+
 let socket;
 
 export async function tournament_view(hash) {
@@ -6,6 +8,14 @@ export async function tournament_view(hash) {
         socket.close();
         socket = null;
     }
+
+    // check login status
+    const check = await check_login();
+    if (check === false) {
+        location.href = `/#`;
+        return;
+    }
+
     const tournament_name = hash.slice(1);
     const arr = tournament_name.split(`%20`);
     let cnt = 0;
