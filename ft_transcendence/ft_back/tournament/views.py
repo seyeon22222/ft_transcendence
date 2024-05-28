@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match
+from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking
 from .serializers import tournamentSerializer, tournamentParticipantSerializer, tournamentMatchSerializer, matchSerializer
 from ft_user.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
@@ -184,3 +184,37 @@ class MatchResponseView(APIView):
             return Response({'message': 'Match rejected and deleted'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid response'}, status=status.HTTP_400_BAD_REQUEST)
+
+class MatchmakingView(APIView):
+    def post(self, request):
+        current_username = request.data.get('username')
+        startDate = request.data.get('startDate')
+        user = get_object_or_404(MyUser, username=current_username)
+        pending_matchmaking = matchmaking.objects.first()
+
+        # 이미 matchmaking 중인 user가 존재
+        if pending_matchmaking:
+            opponent_user = pending_matchmaking.pending_player
+            opponent_username = opponent_user.username
+
+            pending_matchmaking.delete()
+
+            # matchmaking 중인 유저가 현재 유저와 동일할경우, matchmaking 취소
+            if opponent_username == current_username:
+                return Response({'message': "canceled matchmaking"}, status=status.HTTP_200_OK)
+            else: # 서로 다를경우, 새로운 매치 생성 (status = active, 나중에 is_active를 false로 바꿔줘야함)
+                match_name = f"{current_username} vs {opponent_username}"
+                match = Match.objects.create(
+                    name=match_name,
+                    player1=user,
+                    player2=opponent_user,
+                    requester=user,
+                    status='active',
+                    is_active=True,
+                    match_date=startDate, # 또는 다른 매칭 날짜 설정
+                )
+                return Response({'message': "new match created!"}, status=201)
+        else: # 현재 유저를 매치메이킹에 등록
+            new_matchmaking = matchmaking(pending_player = user)
+            new_matchmaking.save()
+            return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)

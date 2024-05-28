@@ -1,5 +1,6 @@
 import router from '../../base/router.js'
 import { check_login } from '../utilities.js'
+import { formatDateTime } from "../info/info_func.js";
 
 export async function home_js() {
     try {
@@ -15,6 +16,9 @@ export async function home_js() {
 
             const logoutButton = document.getElementById('logout_button');
             logout_button_eventhandler(logoutButton);
+
+            const matchmakingButton = document.getElementById('matchmaking_button');
+            matchmaking_button_eventhandler(matchmakingButton);
         }
         else {
             const container = document.getElementById("buttons-container");
@@ -23,6 +27,45 @@ export async function home_js() {
     } catch (error) {
         console.error('home 화면에서 오류 발생 : ', error);
     }
+}
+
+function matchmaking_button_eventhandler(button) {
+    button.addEventListener('click', async function() {
+        try {
+            const csrftoken = Cookies.get('csrftoken');
+            
+            // 현재 유저의 정보를 API를 통해 받아옴
+            const response = await fetch('user/info', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                credentials: 'include',
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const username = data[0].username;
+                const now = new Date();
+	            const startDate = formatDateTime(new Date(now.getTime() + 300));
+
+                const matchmaking_response = await fetch("/match/matchmaking", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrftoken,
+                    },
+                    body: JSON.stringify({username, startDate}),
+                });
+                if (matchmaking_response.ok) {
+                    const result = await matchmaking_response.json();
+                    console.log(result.message);
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    });
 }
 
 // logout 버튼 클릭시 이벤트 등록, 로그아웃 후 홈 화면 새롭게 렌더링
@@ -68,6 +111,7 @@ function home_login_html() {
         <a href="/#profile" class="btn btn-primary">My Profile</a>
         <a href="/#chatLobby" class="btn btn-primary">Chatting</a>
         <a href="/#matchlobby" class="btn btn-primary">Tournament</a>
+        <button class="btn" id="matchmaking_button">Matchmaking</button>
         <button class="btn" id="logout_button">Logout</button>
     `;
 }
