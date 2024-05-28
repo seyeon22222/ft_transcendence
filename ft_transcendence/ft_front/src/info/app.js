@@ -7,7 +7,7 @@ import {
 } from "./info_func.js";
 import { check_login } from "../utilities.js";
 
-export async function select_profile_view() {
+export async function info_js() {
   let apply_user;
   let accept_user;
   let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");

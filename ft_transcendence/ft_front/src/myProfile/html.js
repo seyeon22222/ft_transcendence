@@ -14,11 +14,11 @@ export function profile_html() {
                     <input type="file" accept="image/*" id="new_image_input" class="form-control">
                 </div>
                 <div class="mb-3">
-                    <label for="username_input" class="form-label">ID</label>
+                    <label for="username_input" class="form-label">ID 변경</label>
                     <input type="text" name="username" class="form-control" id="username_input">
                 </div>
                 <div class="mb-3">
-                    <label for="email_input" class="form-label">Email</label>
+                    <label for="email_input" class="form-label">Email 변경</label>
                     <input type="email" name="email" class="form-control" id="email_input">
                 </div>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-evenly spacing">
