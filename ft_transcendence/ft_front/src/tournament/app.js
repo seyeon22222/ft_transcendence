@@ -178,11 +178,11 @@ async function startTournament(tournament_id) {
      }
 
      // 2. 매칭될 인원에게 게임 접속 메시지 전송
-     for (let i = 0; i < players.length; i += 2) {
-         const player1 = players[i];
-         const player2 = players[i + 1];
-         await sendGameInvitation(player1, player2);
-     }
+    //  for (let i = 0; i < players.length; i += 2) {
+    //      const player1 = players[i];
+    //      const player2 = players[i + 1];
+    //      await sendGameInvitation(player1, player2);
+    //  }
  } else {
      alert('토너먼트 정보를 불러오는 데 실패했습니다.');
  }
@@ -247,6 +247,7 @@ async function startNextRound() {
 
 
 async function updateTournamentInfo(arr) {
+
     const csrftoken = Cookies.get('csrftoken');
     const response = await fetch('match/list', {
         method: 'GET',
@@ -288,9 +289,9 @@ async function updateTournamentInfo(arr) {
         })
         if (oper_response.ok) {
             const oper_data = await oper_response.json();
-            console.log("oper",oper_data);
-            // if (operator === oper_data[0].user_id && flag == true)
-            if (operator === oper_data[0].user_id) {
+            // console.log("oper",oper_data);
+            if (operator === oper_data[0].user_id && flag == true) {
+            // if (operator === oper_data[0].user_id) {
                 const tournament_start = document.getElementById("tournament_start");
                 tournament_start.addEventListener("click", (event) => {
                     event.preventDefault();
@@ -304,11 +305,12 @@ async function updateTournamentInfo(arr) {
             alert("API error");
             location.href = '/#';
         }
-        console.log("asd", player_check(player));
-        if (player_check(player))
+
+        if (player_check(player) === true) {
+            tour_view(player);
+        } else {
             tourstart_view(player);
-        else
-            tourstart_view(player);
+        }
     } else {
         const error = await response.json();
         alert(error);
@@ -317,7 +319,7 @@ async function updateTournamentInfo(arr) {
     return { player, tournament_id };
 }
 
-async function player_check(player) {
+function player_check(player) {
     for (let i = 0; i < player.length; ++i) {
         if (player[i].level !== 0)
             return false;
@@ -325,7 +327,9 @@ async function player_check(player) {
     return true;
 }
 
-async function tour_view(player) {
+function tour_view(player) {
+    console.log("tour_view ",player);
+    player = player.sort((a, b) => a.id - b.id);
     if (player.length > 4 && player.length <= 8) {
         for (let i = 1; i <= 4; ++i) {
             const quarter_final = document.getElementById(`quarter_final${i}`);
@@ -353,58 +357,132 @@ async function tour_view(player) {
     }
 }
 
-async function tourstart_view(player) {
-    // 0 -> defalut상태
-    // 2 -> semi_final 상태
-    // 4 -> quarter_final 상태
-    // 8 -> Round_8 상태
-    // 해당 상태에 맞게 위치를 조정해줘야함
+function tourstart_view(player) {
+    
     tour_view(player);
-    let alive_player = await level_check(player);
-    console.log("check ",alive_player);
-    if (alive_player > 4 && alive_player <= 8) {
-        for (let i = 1; i <= alive_player; ++i) {
-            if (player[i - 1].level === 4) {
-                let quarter_final;
-                if (player[i - 1].index < 2) {
-                    quarter_final = document.getElementById(`quarter_final1`);
-                } else if (player[i - 1].index < 4) {
-                    quarter_final = document.getElementById(`quarter_final2`);
-                } else if (player[i - 1].index < 6) {
-                    quarter_final = document.getElementById(`quarter_final3`);
-                } else if (player[i - 1].index < 8) {
-                    quarter_final = document.getElementById(`quarter_final4`);
-                }
-                quarter_final.innerHTML = player[i - 1].nickname;
-            }
+    
+    if (player.length <= 2) {
+        player_2(player);
+    } else if (player.length <= 4) {
+        player_4(player);
+    } else if (player.length <= 8) {
+        player_8(player);
+    }
+    
+}
+
+function player_2(player) {
+    for (let i = 1; i <= player.length; ++i) {
+        if (player[i - 1].level === 1) {
+            const winner = document.getElementById(`final`);
+            winner.innerHTML = player[i - 1].nickname;
         }
-    } else if (alive_player > 2 && alive_player <= 4) {
-        for (let i = 1; i <= alive_player; ++i) {
-            if (player[i - 1].level === 2) {
-                let semi_final;
-                if (player[i - 1].index < 2) {
-                    semi_final = document.getElementById(`semi_final1`);
-                } else if (player[i - 1].index < 4) {
-                    semi_final = document.getElementById(`semi_final2`);
-                }
-                semi_final.innerHTML = player[i - 1].nickname;
+    }
+}
+
+function player_4(player) {
+    for (let i = 1; i <= player.length; ++i) {
+        console.log(player.length, player[i - 1]);
+        if (player[i - 1].level === 2) {
+            let semi_final;
+            if (player[i - 1].index <= 2) {
+                semi_final = document.getElementById(`semi_final1`);
+            } else if (player[i - 1].index <= 4) {
+                semi_final = document.getElementById(`semi_final2`);
             }
+            semi_final.innerHTML = player[i - 1].nickname;
+        } else if (player[i - 1].level === 1) {
+            const winner = document.getElementById(`final`);
+            winner.innerHTML = player[i - 1].nickname;
         }
-    } else {
-        for (let i = 1; i <= alive_player; ++i) {
-            if (player[i - 1].level === 1) {
-                const winner = document.getElementById(`final`);
-                winner.innerHTML = player[i - 1].nickname;
+    }
+
+    for (let i = 1; i < 3; ++i) {
+        let semiFinalElement = document.getElementById(`semi_final${i}`);
+        if (semiFinalElement && semiFinalElement.innerHTML === '') {
+            let finalElement = document.getElementById('final');
+            if (finalElement && finalElement.innerHTML !== '') {
+                semiFinalElement.innerHTML = finalElement.innerHTML;
             }
         }
     }
 }
 
-async function level_check(player) {
-    let count = 0;
-    for (let i = 0; i < player.length; ++i) {
-        if (player[i].level !== 0)
-            count += 1;
+
+function player_8(player) {
+    for (let i = 1; i <= player.length; ++i) {
+        console.log(player.length, player[i - 1]);
+        if (player[i - 1].level === 4) {
+            let quarter_final;
+            if (player[i - 1].index <= 2) {
+                quarter_final = document.getElementById(`quarter_final1`);
+            } else if (player[i - 1].index <= 4) {
+                quarter_final = document.getElementById(`quarter_final2`);
+            } else if (player[i - 1].index <= 6) {
+                quarter_final = document.getElementById(`quarter_final3`);
+            } else if (player[i - 1].index <= 8) {
+                quarter_final = document.getElementById(`quarter_final4`);
+            }
+            quarter_final.innerHTML = player[i - 1].nickname;
+        } else if (player[i - 1].level === 2) {
+            let semi_final;
+            if (player[i - 1].index <= 4) {
+                semi_final = document.getElementById(`semi_final1`);
+            } else if (player[i - 1].index <= 8) {
+                semi_final = document.getElementById(`semi_final2`);
+            }
+            semi_final.innerHTML = player[i - 1].nickname;
+        } else if (player[i - 1].level === 1) {
+            const winner = document.getElementById(`final`);
+            winner.innerHTML = player[i - 1].nickname;
+        }
     }
-    return count;
+
+    // 홀수 일 때 어떻게 처리해야하는가 -> 부전승일 때, 옆의 칸을 비워둬야함
+    for (let i = 1; i < 3; ++i) {
+        let semiFinalElement = document.getElementById(`semi_final${i}`);
+        if (semiFinalElement && semiFinalElement.innerHTML === '') {
+            let finalElement = document.getElementById('final');
+            if (finalElement && finalElement.innerHTML !== '') {
+                semiFinalElement.innerHTML = finalElement.innerHTML;
+            }
+        }
+    }
+    if (player.length === 5) {
+        for (let i = 1; i < 3; ++i) {
+            let quarterFinalElement = document.getElementById(`quarter_final${i}`);
+            if (quarterFinalElement && quarterFinalElement.innerHTML === '') {
+                if (i === 1 || i === 2) {
+                    let semiFinalElement = document.getElementById(`semi_final1`);
+                    if (semiFinalElement && semiFinalElement.innerHTML !== '') {
+                        quarterFinalElement.innerHTML = semiFinalElement.innerHTML;
+                    }
+                }
+            }
+        }
+        let quarterFinalElement = document.getElementById(`quarter_final3`);
+        if (quarterFinalElement && quarterFinalElement.innerHTML === '') {
+            let semiFinalElement = document.getElementById(`semi_final2`);
+            if (semiFinalElement && semiFinalElement.innerHTML !== '') {
+                quarterFinalElement.innerHTML = semiFinalElement.innerHTML;
+            }
+        }
+    } else {
+        for (let i = 1; i < 5; ++i) {
+            let quarterFinalElement = document.getElementById(`quarter_final${i}`);
+            if (quarterFinalElement && quarterFinalElement.innerHTML === '') {
+                if (i === 1 || i === 2) {
+                    let semiFinalElement = document.getElementById(`semi_final1`);
+                    if (semiFinalElement && semiFinalElement.innerHTML !== '') {
+                        quarterFinalElement.innerHTML = semiFinalElement.innerHTML;
+                    }
+                } else if (i === 3 || i === 4) {
+                    let semiFinalElement = document.getElementById(`semi_final2`);
+                    if (semiFinalElement && semiFinalElement.innerHTML !== '') {
+                        quarterFinalElement.innerHTML = semiFinalElement.innerHTML;
+                    }
+                }
+            }
+        }
+    }
 }

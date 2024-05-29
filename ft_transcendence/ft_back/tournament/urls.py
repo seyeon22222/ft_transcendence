@@ -3,7 +3,7 @@ from . import views
 from .views import (
     tournamentCreateView, addTournamentPlayer, matchView,
     MatchRequestView, MatchResponseView, matchListView,
-    matchDetailView, MatchmakingView
+    matchDetailView, MatchmakingView, tournamentGame
 )
 
 app_name = "tournament"
