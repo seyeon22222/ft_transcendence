@@ -1,7 +1,15 @@
 import { recordMessage } from "./chat_func.js";
+import { check_login } from "../utilities.js"
 
 let chatSocket; // 기존 WebSocket 연결을 추적할 변수
 export async function chat_js(hash) {
+  // check login status
+  const check = await check_login();
+  if (check === false) {
+      location.href = `/#`;
+      return;
+  }
+
   //seycheon_block
   const temp_csrftoken = Cookies.get("csrftoken");
   let temp_data;

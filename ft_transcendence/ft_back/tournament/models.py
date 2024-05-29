@@ -59,3 +59,9 @@ class Match(models.Model):
 
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.name}"
+
+class matchmaking(models.Model):
+    pending_player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='pending_player')
+
+    def __str__(self):
+        return f"{self.pending_player.username} is waiting for matchmaking"

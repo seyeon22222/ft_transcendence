@@ -1,7 +1,16 @@
 import router from "../../base/router.js"
 import { formatDateTime } from "../info/info_func.js";
+import { check_login } from "../utilities.js"
 
 export async function matchLobby_view() {
+
+    // check login status
+    const check = await check_login();
+    if (check === false) {
+        location.href = `/#`;
+        return;
+    }
+
     let data;
     try {
         const container = document.getElementById("tournament_list");

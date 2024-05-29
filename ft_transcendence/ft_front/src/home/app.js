@@ -1,10 +1,124 @@
-import { login_view } from './home_login.js'
 import router from '../../base/router.js'
+import { check_login } from '../utilities.js'
+import { formatDateTime } from "../info/info_func.js";
 
-export function home_js() {
-    // set style
-    const style = document.getElementById("style");
-    style.innerHTML = `
+export async function home_js() {
+    try {
+        // set css style
+        const style = document.getElementById("style");
+        style.innerHTML = home_style_html();
+        home_style_html();
+
+        const check = await check_login();
+        if (check === true) { // login
+            const container = document.getElementById("buttons-container");
+            container.innerHTML = home_login_html();
+
+            const logoutButton = document.getElementById('logout_button');
+            logout_button_eventhandler(logoutButton);
+
+            const matchmakingButton = document.getElementById('matchmaking_button');
+            matchmaking_button_eventhandler(matchmakingButton);
+        }
+        else {
+            const container = document.getElementById("buttons-container");
+            container.innerHTML = home_logout_html();
+        }
+    } catch (error) {
+        console.error('home 화면에서 오류 발생 : ', error);
+    }
+}
+
+function matchmaking_button_eventhandler(button) {
+    button.addEventListener('click', async function() {
+        try {
+            const csrftoken = Cookies.get('csrftoken');
+            
+            // 현재 유저의 정보를 API를 통해 받아옴
+            const response = await fetch('user/info', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                credentials: 'include',
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const username = data[0].username;
+                const now = new Date();
+	            const startDate = formatDateTime(new Date(now.getTime() + 300));
+
+                const matchmaking_response = await fetch("/match/matchmaking", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrftoken,
+                    },
+                    body: JSON.stringify({username, startDate}),
+                });
+                if (matchmaking_response.ok) {
+                    const result = await matchmaking_response.json();
+                    console.log(result.message);
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    });
+}
+
+// logout 버튼 클릭시 이벤트 등록, 로그아웃 후 홈 화면 새롭게 렌더링
+function logout_button_eventhandler(button) {
+    button.addEventListener('click', async function() {
+        try {
+            const csrftoken = Cookies.get('csrftoken');
+            const response = await fetch('user/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({})
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(data.message);
+                router();
+            } else {
+                const error = await response.json();
+                alert(error.message);
+            }
+
+        } catch (error) {
+            console.error('로그아웃 중 오류 발생 : ', error);
+        }
+    })
+}
+
+// home 화면에 login, signup 버튼을 추가
+function home_logout_html() {
+    return `
+        <a href="/#login" class="btn btn-primary">Login</a>
+        <a href="/#signup" class="btn btn-primary">Signup</a>
+    `;
+}
+
+// home 화면에 profile, chatting, tournament, logout 버튼을 추가
+function home_login_html() {
+    return `
+        <a href="/#profile" class="btn btn-primary">My Profile</a>
+        <a href="/#chatLobby" class="btn btn-primary">Chatting</a>
+        <a href="/#matchlobby" class="btn btn-primary">Tournament</a>
+        <button class="btn" id="matchmaking_button">Matchmaking</button>
+        <button class="btn" id="logout_button">Logout</button>
+    `;
+}
+
+// home 화면의 css style을 추가
+function home_style_html() {
+    return `
     body {
         background-color: #333; /* Dark gray background */
         color: white;
@@ -51,74 +165,5 @@ export function home_js() {
     .buttons-container button:hover {
         background-color: #555;
     }
-    `;
-
-    try {
-        const csrftoken = Cookies.get('csrftoken');
-        fetch('user/check_login', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken,
-            },
-        })
-        .then(response => {
-            if (response.status === 200) {
-                const container = document.getElementById("buttons-container");
-                container.innerHTML = home_login_html();
-
-                const logoutButton = document.getElementById('logout_button');
-                logout_button(logoutButton, csrftoken);
-            } else {
-                const container = document.getElementById("buttons-container");
-                container.innerHTML = home_logout_html();
-            }
-        })
-    } catch (error) {
-        console.error('로그인 여부 확인 중 오류 발생 : ', error);
-    }
-
-    return null;
-}
-
-function logout_button(button, csrftoken) {
-    button.addEventListener('click', async function() {
-        try {
-            const response = await fetch('user/logout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken,
-                },
-                body: JSON.stringify({})
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                alert(data.message);
-                router();
-            } else {
-                const error = await response.json();
-                alert(error.message);
-            }
-
-        } catch (error) {
-            console.error('로그아웃 중 오류 발생 : ', error);
-    }})
-}
-
-function home_logout_html() {
-    return `
-        <a href="/#login" class="btn btn-primary">Login</a>
-        <a href="/#signup" class="btn btn-primary">Signup</a>
-    `;
-}
-
-function home_login_html() {
-    return `
-        <a href="/#profile" class="btn btn-primary">My Profile</a>
-        <a href="/#chatLobby" class="btn btn-primary">Chatting</a>
-        <a href="/#matchlobby" class="btn btn-primary">Tournament</a>
-        <button class="btn" id="logout_button">Logout</button>
     `;
 }

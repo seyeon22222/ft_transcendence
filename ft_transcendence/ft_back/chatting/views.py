@@ -15,7 +15,6 @@ class RoomListView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        print("get method")
         rooms = Room.objects.all()
         if rooms.count() != 0:
             serializer = RoomSerializer(rooms, many=True)

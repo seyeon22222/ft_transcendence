@@ -3,7 +3,7 @@ from . import views
 from .views import (
     tournamentCreateView, addTournamentPlayer, matchView,
     MatchRequestView, MatchResponseView, matchListView,
-    matchDetailView, tournamentGame
+    matchDetailView, MatchmakingView
 )
 
 app_name = "tournament"
@@ -17,4 +17,5 @@ urlpatterns = [
     path('selfview', matchView.as_view(), name='match_selfview'),
     path('request', MatchRequestView.as_view(), name='match_request'),
     path('response/<int:match_id>', MatchResponseView.as_view(), name='match_response'),
+    path('matchmaking', MatchmakingView.as_view(), name='matchmaking_view'),
 ]

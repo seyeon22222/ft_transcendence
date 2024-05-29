@@ -9,7 +9,7 @@ from .serializers import (
 from .models import MyUser
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from ft_user.models import MyUser
+from ft_user.models import MyUser, Block
 from ft_user.forms import signForm
 from django.views.generic import View
 from django.http import JsonResponse
@@ -120,11 +120,6 @@ class User_login(APIView):
             print("로그인 실패")
             return Response({'message': "로그인 실패"}, status=status.HTTP_400_BAD_REQUEST)
 
-class SignupView(APIView):
-
-    def post(self, request):
-        return Response(status=status.HTTP_200_OK)
-
 class Sign_up(APIView):
 
     def post(self, request):
@@ -153,10 +148,6 @@ class Logout(APIView):
         else:
             return Response({'message' : "로그인이 되어 있지 않음"}, status=status.HTTP_400_BAD_REQUEST)
 
-class UserLoginView(APIView):
-    def get(self, request):
-        return Response(status=status.HTTP_200_OK)
-
 class CheckLogin(APIView):
     def get(self, request):
         if request.user.is_authenticated:
@@ -170,25 +161,25 @@ class UserImage(APIView):
         with open(image_path, 'rb') as f:
             image_data = f.read()
         return HttpResponse(image_data, content_type="image/jpeg")
-
-class ProfileImageUploadView(View):
-    def post(self, request):
-        profile_picture = request.FILES.get('profile_picture')
-        if profile_picture:
-            filename = f"{request.user.id}_{profile_picture.name}"
-            file_path = os.path.join('profile_pictures', filename)
-            with open(file_path, 'wb+') as f:
-                for chunk in profile_picture.chunks():
-                    f.write(chunk)
-            return JsonResponse({'filename': filename})
-        else:
-            return JsonResponse({'error': 'No image file provided'}, status=400)
+ 
+# class ProfileImageUploadView(View):
+#     def post(self, request):
+#         profile_picture = request.FILES.get('profile_picture')
+#         if profile_picture:
+#             filename = f"{request.user.id}_{profile_picture.name}"
+#             file_path = os.path.join('profile_pictures', filename)
+#             with open(file_path, 'wb+') as f:
+#                 for chunk in profile_picture.chunks():
+#                     f.write(chunk)
+#             return JsonResponse({'filename': filename})
+#         else:
+#             return JsonResponse({'error': 'No image file provided'}, status=400)
         
 class UserInfoChange(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return MyUser.objects.filter(user_id=self.request.user.user_id)
+    # def get_queryset(self):
+    #     return MyUser.objects.filter(user_id=self.request.user.user_id)
 
     def post(self, request):
         user = request.user
@@ -215,7 +206,65 @@ class UserInfoChange(APIView):
         else:
             return Response({'message': '유저 정보가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-#seycheon_block
+# #seycheon_block
+# class UserBlockRequest(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request):
+#         apply_user_id = request.data.get('apply_user')
+#         accept_user_id = request.data.get('accept_user')
+
+#         try:
+#             apply_user = MyUser.objects.get(username=apply_user_id)
+#             accept_user = MyUser.objects.get(username=accept_user_id)
+#         except MyUser.DoesNotExist:
+#             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+#         if apply_user.block_list.filter(username=accept_user_id).exists():
+#             return Response({'message': 'User already in black list'}, status=status.HTTP_200_OK)
+        
+#         apply_user.block_list.add(accept_user)
+#         return Response({'message': 'User added to black list'}, status=status.HTTP_200_OK)
+    
+
+# #seycheon_block
+# class UserBlockReleaseRequest(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request):
+#         apply_user_id = request.data.get('apply_user')
+#         accept_user_id = request.data.get('accept_user')
+
+#         try:
+#             apply_user = MyUser.objects.get(username=apply_user_id)
+#             accept_user = MyUser.objects.get(username=accept_user_id)
+#         except MyUser.DoesNotExist:
+#             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+#         if apply_user.block_list.filter(username=accept_user_id).exists():
+#             apply_user.block_list.remove(accept_user)
+            
+#         return Response({'message': 'User added to black list'}, status=status.HTTP_200_OK)
+
+# #seycheon_block
+# class UserBlockCheckRequest(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request):
+#         apply_user_id = request.data.get('apply_user')
+#         accept_user_id = request.data.get('accept_user')
+
+#         try:
+#             apply_user = MyUser.objects.get(username=apply_user_id)
+#             accept_user = MyUser.objects.get(username=accept_user_id)
+#         except MyUser.DoesNotExist:
+#             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         if apply_user.block_list.filter(username=accept_user_id).exists() or accept_user.block_list.filter(username=apply_user_id).exists():
+#             return Response({'error': 'One of the users has blocked the other'}, status=301) # 400 or 404를 하면 콘솔창에 에러가 발생했다고 나와서 임시로 상태 바꿈
+
+#         return Response({'message': 'Users are not blocking each other'}, status=status.HTTP_200_OK)
+
 class UserBlockRequest(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -229,14 +278,12 @@ class UserBlockRequest(APIView):
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if apply_user.block_list.filter(username=accept_user_id).exists():
-            return Response({'message': 'User already in black list'}, status=status.HTTP_200_OK)
+        if Block.objects.filter(blocker=apply_user, blocked=accept_user).exists():
+            return Response({'message': 'User already in block list'}, status=status.HTTP_200_OK)
         
-        apply_user.block_list.add(accept_user)
-        return Response({'message': 'User added to black list'}, status=status.HTTP_200_OK)
-    
+        Block.objects.create(blocker=apply_user, blocked=accept_user)
+        return Response({'message': 'User added to block list'}, status=status.HTTP_200_OK)
 
-#seycheon_block
 class UserBlockReleaseRequest(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -249,14 +296,15 @@ class UserBlockReleaseRequest(APIView):
             accept_user = MyUser.objects.get(username=accept_user_id)
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+
+        block_relationship = Block.objects.filter(blocker=apply_user, blocked=accept_user).first()
         
-        if apply_user.block_list.filter(username=accept_user_id).exists():
-            apply_user.block_list.remove(accept_user)
-            
-        return Response({'message': 'User added to black list'}, status=status.HTTP_200_OK)
+        if block_relationship:
+            block_relationship.delete()
+            return Response({'message': 'User removed from block list'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'User not in block list'}, status=status.HTTP_400_BAD_REQUEST)
 
-
-#seycheon_block
 class UserBlockCheckRequest(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -270,7 +318,7 @@ class UserBlockCheckRequest(APIView):
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if apply_user.block_list.filter(username=accept_user_id).exists() or accept_user.block_list.filter(username=apply_user_id).exists():
+        if Block.objects.filter(blocker=apply_user, blocked=accept_user).exists() or Block.objects.filter(blocker=accept_user, blocked=apply_user).exists() :
             return Response({'error': 'One of the users has blocked the other'}, status=301) # 400 or 404를 하면 콘솔창에 에러가 발생했다고 나와서 임시로 상태 바꿈
 
         return Response({'message': 'Users are not blocking each other'}, status=status.HTTP_200_OK)

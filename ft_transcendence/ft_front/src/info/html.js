@@ -1,4 +1,4 @@
-export function select_profile_html() {
+export function info_html() {
   return `
     <div>
         <a h1 href='/#' class="text-white">Home</a>
