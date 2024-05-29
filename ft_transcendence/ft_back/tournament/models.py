@@ -25,6 +25,7 @@ class tournamentParticipant(models.Model):
     player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player')
     nickname = models.CharField(max_length=100)  # 별칭 필드 추가
     level = models.IntegerField(choices=level_choice, default=0)
+    index = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.nickname} ({self.player.username}) in {self.tournament.name}"

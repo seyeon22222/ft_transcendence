@@ -59,6 +59,7 @@ class addTournamentPlayer(APIView):
         intournament = get_object_or_404(tournament, pk=tournament_id)
         username = request.data.get('username')
         nickname = request.data.get('nickname')  # 별칭 추가
+        index = request.data.get('index') # 해당 플레이어의 토너먼트에서의 위치
         # 사용자 검증
         try:
             user = MyUser.objects.get(username=username)
@@ -73,7 +74,7 @@ class addTournamentPlayer(APIView):
             return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 토너먼트 참가자 생성
-        tournament_participant = tournamentParticipant(tournament=intournament, player=user, nickname=nickname)
+        tournament_participant = tournamentParticipant(tournament=intournament, player=user, nickname=nickname, index=index)
         tournament_participant.save()
 
         # 웹소켓을 통해 업데이트 정보 전송

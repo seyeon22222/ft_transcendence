@@ -93,6 +93,7 @@ export async function tournament_view(hash) {
                 username: t_data[0].username,
                 tournament_name: tournament_name,
                 nickname : nickname,
+                index : player.length + 1,
             };
             const csrftoken = Cookies.get('csrftoken');
             const response = await fetch(`match/matchapply/${tournament_id}`, {
@@ -293,8 +294,9 @@ async function updateTournamentInfo(arr) {
             alert("API error");
             location.href = '/#';
         }
+        console.log("asd", player_check(player));
         if (player_check(player))
-            tour_view(player);
+            tourstart_view(player);
         else
             tourstart_view(player);
     } else {
@@ -347,29 +349,52 @@ async function tourstart_view(player) {
     // 4 -> quarter_final 상태
     // 8 -> Round_8 상태
     // 해당 상태에 맞게 위치를 조정해줘야함
-    if (player.length > 4 && player.length <= 8) {
-        for (let i = 1; i <= 4; ++i) {
-            const quarter_final = document.getElementById(`quarter_final${i}`);
-            quarter_final.innerHTML = '';
+    tour_view(player);
+    let alive_player = await level_check(player);
+    console.log("check ",alive_player);
+    if (alive_player > 4 && alive_player <= 8) {
+        for (let i = 1; i <= alive_player; ++i) {
+            if (player[i - 1].level === 4) {
+                let quarter_final;
+                if (player[i - 1].index < 2) {
+                    quarter_final = document.getElementById(`quarter_final1`);
+                } else if (player[i - 1].index < 4) {
+                    quarter_final = document.getElementById(`quarter_final2`);
+                } else if (player[i - 1].index < 6) {
+                    quarter_final = document.getElementById(`quarter_final3`);
+                } else if (player[i - 1].index < 8) {
+                    quarter_final = document.getElementById(`quarter_final4`);
+                }
+                quarter_final.innerHTML = player[i - 1].nickname;
+            }
         }
-        for (let i = 1; i <= player.length; ++i) {
-            const round_16 = document.getElementById(`Round_8_${i}`);
-            round_16.innerHTML = player[i - 1].nickname;
-        }
-
-    } else if (player.length > 2 && player.length <= 4) {
-        for (let i = 1; i <= 2; ++i) {
-            const semi_final = document.getElementById(`semi_final${i}`);
-            semi_final.innerHTML = '';
-        }
-        for (let i = 1; i <= player.length; ++i) {
-            const quarter_final = document.getElementById(`quarter_final${i}`);
-            quarter_final.innerHTML = player[i - 1].nickname;
+    } else if (alive_player > 2 && alive_player <= 4) {
+        for (let i = 1; i <= alive_player; ++i) {
+            if (player[i - 1].level === 2) {
+                let semi_final;
+                if (player[i - 1].index < 2) {
+                    semi_final = document.getElementById(`semi_final1`);
+                } else if (player[i - 1].index < 4) {
+                    semi_final = document.getElementById(`semi_final2`);
+                }
+                semi_final.innerHTML = player[i - 1].nickname;
+            }
         }
     } else {
-        for (let i = 1; i <= player.length; ++i) {
-            const semi_final = document.getElementById(`semi_final${i}`);
-            semi_final.innerHTML = player[i - 1].nickname;
+        for (let i = 1; i <= alive_player; ++i) {
+            if (player[i - 1].level === 1) {
+                const winner = document.getElementById(`final`);
+                winner.innerHTML = player[i - 1].nickname;
+            }
         }
     }
+}
+
+async function level_check(player) {
+    let count = 0;
+    for (let i = 0; i < player.length; ++i) {
+        if (player[i].level !== 0)
+            count += 1;
+    }
+    return count;
 }
