@@ -190,8 +190,15 @@ async function startTournament(tournament_id) {
 
 // 부전승 처리 함수
 async function handleByePlayer(player) {
- // 부전승 처리에 대한 추가 로직 구현
- console.log(`${player.nickname}는 부전승 처리되었습니다.`);
+ // 플레이어의 인원에 따라서 부전승이 될 경우, 데이터베이스의 토너먼트 해당 참가자의 level을 변경해줘야함
+    if (player.length === 3) {
+
+    } else if (player.length === 5) {
+
+    } else if (player.length === 7) {
+
+    }
+    console.log(`${player.nickname}는 부전승 처리되었습니다.`);
 }
 
 // 게임 초대 전송 함수
@@ -258,7 +265,7 @@ async function updateTournamentInfo(arr) {
         credentials: 'include',
     });
 
-    const player = [];
+    let player = [];
     let tournament_id;
 
     if (response.ok) {
@@ -278,6 +285,7 @@ async function updateTournamentInfo(arr) {
             }
         }
         
+        player = player.sort((a, b) => a.index - b.index);
         const oper_csrftoken = Cookies.get('csrftoken');
         const oper_response = await fetch('user/info', {
             method: 'GET',
@@ -328,8 +336,7 @@ function player_check(player) {
 }
 
 function tour_view(player) {
-    console.log("tour_view ",player);
-    player = player.sort((a, b) => a.id - b.id);
+    console.log("tour_view", player);
     if (player.length > 4 && player.length <= 8) {
         for (let i = 1; i <= 4; ++i) {
             const quarter_final = document.getElementById(`quarter_final${i}`);
@@ -438,7 +445,6 @@ function player_8(player) {
         }
     }
 
-    // 홀수 일 때 어떻게 처리해야하는가 -> 부전승일 때, 옆의 칸을 비워둬야함
     for (let i = 1; i < 3; ++i) {
         let semiFinalElement = document.getElementById(`semi_final${i}`);
         if (semiFinalElement && semiFinalElement.innerHTML === '') {
@@ -460,6 +466,7 @@ function player_8(player) {
                 }
             }
         }
+
         let quarterFinalElement = document.getElementById(`quarter_final3`);
         if (quarterFinalElement && quarterFinalElement.innerHTML === '') {
             let semiFinalElement = document.getElementById(`semi_final2`);
