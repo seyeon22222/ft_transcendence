@@ -54,27 +54,68 @@ class tournamentGame(APIView):
         serializer = tournamentSerializer(specific_tournament)
         return Response(serializer.data)
 
+# class addTournamentPlayer(APIView):
+#     def post(self, request, tournament_id):
+#         intournament = get_object_or_404(tournament, pk=tournament_id)
+#         username = request.data.get('username')
+#         nickname = request.data.get('nickname')  # 별칭 추가
+#         index = request.data.get('index') # 해당 플레이어의 토너먼트에서의 위치
+#         # 사용자 검증
+#         try:
+#             user = MyUser.objects.get(username=username)
+#         except MyUser.DoesNotExist:
+#             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         print(intournament.participant)
+
+#         # 중복 신청 방지
+#         if intournament.participant.filter(username=username).exists():
+#             return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # 토너먼트 참가자 생성
+#         tournament_participant = tournamentParticipant(tournament=intournament, player=user, nickname=nickname, index=index)
+#         tournament_participant.save()
+
+#         # 웹소켓을 통해 업데이트 정보 전송
+#         channel_layer = get_channel_layer()
+#         async_to_sync(channel_layer.group_send)(
+#             f'tournament_{tournament_id}',
+#             {
+#                 'type': 'tournament_message',
+#                 'message': f'User {username} with nickname {nickname} has joined the tournament {intournament.name}.'
+#             }
+#         )
+#         return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
+
 class addTournamentPlayer(APIView):
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)
-        username = request.data.get('username')
-        nickname = request.data.get('nickname')  # 별칭 추가
-        index = request.data.get('index') # 해당 플레이어의 토너먼트에서의 위치
+        user_id = request.data.get('user_id')
+        nickname = request.data.get('nickname')
+        index = request.data.get('index')
+        level = request.data.get('level')  # 추가된 level 필드
+
         # 사용자 검증
         try:
-            user = MyUser.objects.get(username=username)
+            user = MyUser.objects.get(user_id=user_id)
         except MyUser.DoesNotExist:
-            return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
-
-        print(intournament.participant)
+            return Response({'error': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 중복 신청 방지
-        if intournament.participant.filter(username=username).exists():
-            print("qweqwe")
+        if tournamentParticipant.objects.filter(tournament=intournament, player=user).exists():
+            participant = tournamentParticipant.objects.get(tournament=intournament, player=user)
+            if level:
+                participant.level = level
+                participant.save()
+                print(participant)
+                print(participant.level)
+                return Response({'message': f'{nickname} is now at level {level} due to a bye.'}, status=status.HTTP_200_OK)
             return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 토너먼트 참가자 생성
         tournament_participant = tournamentParticipant(tournament=intournament, player=user, nickname=nickname, index=index)
+        if level:
+            tournament_participant.level = level
         tournament_participant.save()
 
         # 웹소켓을 통해 업데이트 정보 전송
@@ -83,11 +124,11 @@ class addTournamentPlayer(APIView):
             f'tournament_{tournament_id}',
             {
                 'type': 'tournament_message',
-                'message': f'User {username} with nickname {nickname} has joined the tournament {intournament.name}.'
+                'message': f'User {user_id} with nickname {nickname} has joined the tournament {intournament.name}.'
             }
         )
         return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
-
+    
 class matchListView(APIView):
 
     def get(self, request):
