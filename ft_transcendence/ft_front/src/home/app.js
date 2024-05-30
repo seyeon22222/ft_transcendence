@@ -157,13 +157,5 @@ function home_style_html() {
     .buttons-container button:hover {
         background-color: #555; /* Slightly lighter gray on hover */
     }
-    .buttons-container button {
-        border: 2px solid white;
-        color: white;
-        background-color: transparent;
-    }
-    .buttons-container button:hover {
-        background-color: #555;
-    }
     `;
 }
