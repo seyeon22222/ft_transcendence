@@ -1,8 +1,5 @@
 export function profile_html() {
     return `
-    <div>
-        <a h1 href='/#' class="text-white">Home</a>
-    </div>
     <h1 class="my-4 text-center">USER INFORMATION</h1>
     <div class="userinfo-container">
         <div id="profile-image">

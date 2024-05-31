@@ -63,7 +63,6 @@ export function match_html() {
         </style>
     </head>
     <body>
-        <a href="/#" class="btn">Home</a>
         <div class="p-10 lg:p-20 text-center">
             <h1 class="text-3xl lg:text-6xl" id="tournament_name"></h1>
         </div>

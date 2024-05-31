@@ -12,15 +12,6 @@ export function tournament_html() {
                 color: #fff;
                 font-family: Arial, sans-serif;
             }
-            .btn {
-                background-color: #007bff;
-                color: white;
-                padding: 10px 20px;
-                text-decoration: none;
-                border-radius: 5px;
-                margin: 20px;
-                display: inline-block;
-            }
             .tree {
                 display: flex;
                 justify-content: center;
@@ -63,7 +54,6 @@ export function tournament_html() {
         </style>
     </head>
     <body>
-        <a href="/#" class="btn">Home</a>
         <div class="p-10 lg:p-20 text-center">
             <h1 class="text-3xl lg:text-6xl" id="tournament_name"></h1>
         </div>

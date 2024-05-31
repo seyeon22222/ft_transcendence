@@ -1,6 +1,5 @@
 export function chat_html() {
   return `
-        <div class="btn btn-primary" id="home">Home</div>
         <div class="p-10 lg:p-20 text-center">
             <h1 class="text-3xl lg:text-6xl" id="room_name"></h1>
         </div>
