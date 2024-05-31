@@ -7,7 +7,6 @@ export async function home_js() {
         // set css style
         const style = document.getElementById("style");
         style.innerHTML = home_style_html();
-        home_style_html();
 
         const check = await check_login();
         if (check === true) { // login
