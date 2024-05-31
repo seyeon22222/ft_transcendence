@@ -152,15 +152,15 @@ export async function chat_js(hash) {
     };
 
     // 홈 버튼 클릭 시 WebSocket 연결 닫기
-    const home_button = document.getElementById("home");
-    home_button.onclick = (event) => {
-      event.preventDefault();
-      if (chatSocket) {
-        chatSocket.close();
-        chatSocket = null;
-      }
-      location.href = "/#";
-    };
+    // const home_button = document.getElementById("home");
+    // home_button.onclick = (event) => {
+    //   event.preventDefault();
+    //   if (chatSocket) {
+    //     chatSocket.close();
+    //     chatSocket = null;
+    //   }
+    //   location.href = "/#";
+    // };
   } catch (error) {
     console.log(error);
   }

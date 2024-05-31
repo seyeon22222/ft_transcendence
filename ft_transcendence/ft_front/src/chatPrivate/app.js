@@ -11,6 +11,49 @@ export async function chatPrivate_js(hash) {
       return;
   }
 
+  // get current private room's two username
+  const slug = hash.slice(1);
+  const csrftoken = Cookies.get("csrftoken");
+  let data;
+  const response = await fetch(`chat/privaterooms/getusers/${slug}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrftoken,
+    },
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    data = await response.json();
+    const user1 = data.user1;
+    const user2 = data.user2;
+
+    // check user is not blocked
+    const formData = {
+      apply_user: user1,
+      accept_user: user2,
+    };
+
+    const block_response = await fetch(`/user/block_check_request`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (block_response.status !== 200) {
+      alert("상대방이 차단한 사용자입니다.");
+      location.href = `/#`;
+      return;
+    }
+
+  } else {
+    console.error("ERROR : cannot get user info from slug");
+  }
+
   try {
     if (chatSocket) {
       chatSocket.close();
@@ -131,15 +174,15 @@ export async function chatPrivate_js(hash) {
     };
 
     // 홈 버튼 클릭 시 WebSocket 연결 닫기
-    const home_button = document.getElementById("home");
-    home_button.onclick = (event) => {
-      event.preventDefault();
-      if (chatSocket) {
-        chatSocket.close();
-        chatSocket = null;
-      }
-      location.href = "/#";
-    };
+    // const home_button = document.getElementById("home");
+    // home_button.onclick = (event) => {
+    //   event.preventDefault();
+    //   if (chatSocket) {
+    //     chatSocket.close();
+    //     chatSocket = null;
+    //   }
+    //   location.href = "/#";
+    // };
   } catch (error) {
     console.log(error);
   }
