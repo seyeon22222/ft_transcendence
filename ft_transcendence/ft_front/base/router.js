@@ -35,8 +35,29 @@ const routes = {
   "/match": [match_html, match_view],
   "/tournament": [tournament_html, tournament_view],
   "/chatprivate": [chatPrivate_html, chatPrivate_js],
-  "/game" : [game_html],
+  "/game" : [game_html, game_js],
 };
+
+
+// 의미: 현재 URL 해시(location.hash)를 분석하여 적절한 페이지를 렌더링하는 함수입니다.
+// 동작 과정:
+// const content = document.getElementById("content");: DOM에서 콘텐츠를 삽입할 요소를 선택합니다.
+// let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");:
+// 현재 URL 해시를 가져옵니다 (location.hash).
+// 첫 번째 문자(#)를 제거합니다 (slice(1)).
+// 소문자로 변환합니다 (toLocaleLowerCase).
+// 슬래시(/)를 기준으로 분할하여 배열로 만듭니다 (split("/")).
+// render = routes[/${user_location[0]}];:
+// URL 경로에 해당하는 렌더링 모듈을 routes 객체에서 가져옵니다.
+// 예: user_location[0]이 login이면 routes["/login"]을 render에 할당합니다.
+// content.innerHTML = await render[0]();:
+// HTML 모듈 (render[0])을 실행하고 반환된 HTML을 content 요소에 삽입합니다.
+// if (user_location.length >= 2) {:
+// URL에 추가 경로가 있는지 확인합니다.
+// 예: #login/somePath의 경우 somePath가 추가 경로입니다.
+// 추가 경로가 있으면 render[1](hash)을 호출하여 해당 경로에 대한 추가 작업을 수행합니다.
+// else { await render[1](); }:
+// 추가 경로가 없으면 기본 동작을 수행합니다 (render[1]() 호출).
 
 const router = async () => {
   const content = document.getElementById("content");

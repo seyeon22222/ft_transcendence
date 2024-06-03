@@ -180,7 +180,7 @@ async function startTournament(tournament_id) {
     //  for (let i = 0; i < players.length; i += 2) {
     //      const player1 = players[i];
     //      const player2 = players[i + 1];
-    //      await sendGameInvitation(player1, player2);
+    //      await sendGameInvitation(tournament_id, player1, player2);
     //  }
  } else {
      alert('토너먼트 정보를 불러오는 데 실패했습니다.');
@@ -241,16 +241,16 @@ async function handleByePlayer(player, players) {
 }
 
 // 게임 초대 전송 함수
-async function sendGameInvitation(player1, player2) {
+async function sendGameInvitation(player1, player2, tournament_id) {
  const csrftoken = Cookies.get('csrftoken');
- const response = await fetch(`match/invite`, {
+ const response = await fetch(`match/invite/${tournament_id}`, {
      method: 'POST',
      headers: {
          'Content-Type': 'application/json',
          'X-CSRFToken': csrftoken,
      },
      credentials: 'include',
-     body: JSON.stringify({ player1: player1.id, player2: player2.id }),
+     body: JSON.stringify({ tournament_id: tournament_id, player1: player1.id, player2: player2.id }),
  });
 
  if (response.ok) {

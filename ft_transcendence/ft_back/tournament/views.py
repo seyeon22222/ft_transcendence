@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from ft_user.models import MyUser
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+import requests
 
 class tournamentCreateView(APIView):
 
@@ -273,3 +274,21 @@ class MatchmakingView(APIView):
             new_matchmaking = matchmaking(pending_player = user)
             new_matchmaking.save()
             return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
+
+
+class tournamentInviteView(APIView):
+
+    def post(self, request, tournament_id):
+        intournament = get_object_or_404(tournament, pk=tournament_id)
+        player1 = request.data.get("player1")
+        player2 = request.data.get("player2")
+
+        # 게임서버 URL로 지정해서 post를 보내줘야함
+        gameserverURL = "http://gameserver.example.com/api/invite"
+
+        data = {
+            "player1" : player1,
+            "player2" : player2,
+        }
+        return Response(status=status.HTTP_200_OK)
+    
