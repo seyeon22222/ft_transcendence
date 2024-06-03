@@ -28,10 +28,10 @@ export async function select_image_view(data) {
 
 export function select_game_stat_view(data) {
     const gamestatus = document.getElementById("game_status");
-    const winCount = document.createElement("h2");
-    const defeatCount = document.createElement("h2");
-    const winRate = document.createElement("h2");
-    const reflectRate = document.createElement("h2");
+    const winCount = document.createElement("h4");
+    const defeatCount = document.createElement("h4");
+    const winRate = document.createElement("h4");
+    const reflectRate = document.createElement("h4");
     if (data.game_stat.length === 0) {
         winCount.textContent = "승리 횟수: 0";
         defeatCount.textContent = "패배 횟수: 0";
@@ -52,8 +52,8 @@ export function select_game_stat_view(data) {
 
 export function select_match_info_view(data) {
   const match_info = document.getElementById("match_info");
-  const match_date = document.createElement("h2");
-  const match_result = document.createElement("h2");
+  const match_date = document.createElement("h4");
+  const match_result = document.createElement("h4");
       if (data.match_info.length === 0) {
       match_date.textContent = "최근 매치: 없음";
       match_result.textContent = "최근 매치 결과: 없음";

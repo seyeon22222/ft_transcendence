@@ -105,3 +105,17 @@ class PrivateRoomDetailView(APIView):
             return Response(status=200)
         else:
             return Response(status=HTTP_400_BAD_REQUEST)
+
+class PrivateRoomUserListView(APIView):
+
+    def get(self, request, slug):
+        print(slug)
+        private_room = PrivateRoom.objects.get(slug=slug)
+        print(private_room)
+
+        if private_room:
+            user1 = private_room.user1
+            user2 = private_room.user2
+            return Response({'user1': user1.username, 'user2': user2.username}, status=200)
+        else:
+            return Response(status=404)

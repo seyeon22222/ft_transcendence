@@ -1,4 +1,3 @@
-import { matchLobby_html } from "../matchLobby/html.js";
 import {
   select_image_view,
   select_game_stat_view,
@@ -15,6 +14,74 @@ export async function info_js() {
   let data;
   let response;
   let csrftoken;
+
+  // set style
+  const style = document.getElementById("style");
+  style.innerHTML = `
+  body {
+		background-color: #333; /* Dark gray background */
+		color: white;
+		font-family: 'Noto Sans KR', sans-serif;
+	}
+	h1 {
+		font-size: 3rem; /* Larger font size for the title */
+		font-weight: 700; /* Thicker font weight for the title */
+    text-align: center;
+    padding: 40px 0; /* Add padding above and below the title */
+	}
+  .button-container {
+    display: flex; /* Use flexbox for centering */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    gap: 10px; /* Space between buttons */
+  }
+	.custom-yellow-btn {
+		background-color: #ffc107;
+		color: black;
+    padding: 10px 20px;
+    border-radius: 5px;
+    width: 300px; /* Fixed width for buttons */
+    height: 50px; /* Fixed height for buttons */
+    text-align: center;
+	}
+	.userinfo-container {
+		display: flex;
+		align-items: flex-start;
+	}
+	#profile-image {
+	display: flex; /* Use flexbox for centering */
+	align-items: center; /* Center vertically */
+	justify-content: center; /* Center horizontally */
+	width: 650px; /* Fixed width */
+	height: 250px; /* Fixed height */
+	overflow: hidden; /* Hide any overflow */
+	margin-right: 20px;
+	}
+	#profile-image img {
+	max-width: 100%; /* Scale the image to fit the container */
+	max-height: 100%; /* Scale the image to fit the container */
+	object-fit: cover; /* Ensure image fits within the specified size */
+	}
+	.input-container {
+		flex-grow: 1;
+	}
+	.gamestat-container,
+	.match-container {
+		display: inline-block;
+		vertical-align: top;
+		width: 48%;
+		padding: 20px; /* Add padding inside the card */
+		border: 1px solid #ddd; /* Border color */
+		border-radius: 5px; /* Rounded corners */
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow for a card effect */
+		background-color: #fff; /* White background for card effect */
+		color: #000; /* Set text color to black */
+		margin-bottom: 20px; /* Space between cards */
+	}
+	.match-container {
+		margin-left: 2%;
+	}
+  `;
 
     // check login status
     const check = await check_login();
@@ -359,14 +426,14 @@ async function updateOnlineStatus() {
 }
 
 //seycheon_online_status 페이지 로드 시 및 주기적으로 업데이트
-function checkProfileFormAndRun() {
-  const profileForm = document.getElementById("profile_form");
-  if (profileForm) {
-    updateOnlineStatus();
-    setInterval(updateOnlineStatus, 3000); // 1초마다 업데이트
-  } else {
-  }
-}
+// function checkProfileFormAndRun() {
+//   const profileForm = document.getElementById("profile_form");
+//   if (profileForm) {
+//     updateOnlineStatus();
+//     setInterval(updateOnlineStatus, 3000); // 1초마다 업데이트
+//   } else {
+//   }
+// }
 
 // 매 초마다 profile_form의 존재를 확인하고 함수 실행
 // setInterval(checkProfileFormAndRun, 5000); // 31초마다 확인

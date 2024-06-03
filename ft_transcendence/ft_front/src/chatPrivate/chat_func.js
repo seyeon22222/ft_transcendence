@@ -46,7 +46,7 @@ export async function recordMessages(hash) {
   }
 
   // get previous messages
-  const messageResponse = await fetch(`chat/privaterooms/${slug}`, {
+  const messageResponse = await fetch(`chat/privaterooms/${slug}/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

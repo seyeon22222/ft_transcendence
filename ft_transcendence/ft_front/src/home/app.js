@@ -7,7 +7,6 @@ export async function home_js() {
         // set css style
         const style = document.getElementById("style");
         style.innerHTML = home_style_html();
-        home_style_html();
 
         const check = await check_login();
         if (check === true) { // login
@@ -156,14 +155,6 @@ function home_style_html() {
     .buttons-container a:hover,
     .buttons-container button:hover {
         background-color: #555; /* Slightly lighter gray on hover */
-    }
-    .buttons-container button {
-        border: 2px solid white;
-        color: white;
-        background-color: transparent;
-    }
-    .buttons-container button:hover {
-        background-color: #555;
     }
     `;
 }

@@ -1,6 +1,5 @@
 export function matchLobby_html() {
     return `
-    <a href="/#" class="btn btn-primary">Home</a>
         <div class="p-10 lg:p-20 text-center">
             <h1 class="text-3xl lg:text-6xl text-white">Tournament List</h1>
             <div class="w-full flex flex-wrap item-center" id="tournament_list">
