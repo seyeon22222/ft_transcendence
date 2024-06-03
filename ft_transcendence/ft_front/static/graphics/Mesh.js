@@ -1,4 +1,7 @@
-class Mesh{
+import { VertexArray } from "./VertexArray.js";
+import { Buffer } from "./Buffer.js";
+import { Program } from "./Program.js";
+export class Mesh{
     constructor(gl, indices) {
         // const vertex_count = Math.max(...indices) + 1;
         const vertex_count = 3 + (Math.floor(indices.length / 6) - 1) * 4 + 1;

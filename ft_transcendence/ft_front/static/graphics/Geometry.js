@@ -1,4 +1,6 @@
-class Geometry {
+import { Mat4x4, crossProduct, normalizeVec } from "./Mat4x4.js";
+
+export class Geometry {
     constructor () {
         this.indices = [];
         this.vertices = [];

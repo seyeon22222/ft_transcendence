@@ -70,6 +70,7 @@ class Main {
             let score1 = data['score1'];
             let score2 = data['score2'];
             let players = data['players'];
+            console.log("asdasd",paddle1_pos, paddle2_pos);
             document.getElementById("game-score").innerHTML=score1 + " : " + score2;  
             for (let i = 0; i < 3; i++) {
                 Main.stick1.pos[i] = paddle1_pos[i];

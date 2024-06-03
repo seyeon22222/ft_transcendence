@@ -1,5 +1,5 @@
 
-class Program {
+export class Program {
 	static attribute_location = {
 		"position": 0,
 		"color": 1,

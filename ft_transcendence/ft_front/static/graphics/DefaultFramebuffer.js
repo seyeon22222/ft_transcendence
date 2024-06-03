@@ -1,5 +1,5 @@
 
-class DefaultFramebuffer {
+export class DefaultFramebuffer {
 	static	r = 0;
 	static	g = 0;
 	static	b = 0;

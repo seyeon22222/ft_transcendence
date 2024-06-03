@@ -1,4 +1,4 @@
-class Mat4x4 {
+export class Mat4x4 {
 	static identityMat() {
         let mat = [
             1, 0, 0, 0,
@@ -126,14 +126,6 @@ class Mat4x4 {
 		return res;
 	}
 
-	/**
-	 * 
-	 * @param {*} radian ->fov 
-	 * @param {*} near 
-	 * @param {*} far 
-	 * @param {*} aspect 
-	 * @returns 
-	 */
 	static projectionMatrix(radian, near, far, aspect) {
 		let cot = Math.tan(Math.PI * 0.5 - 0.5 * radian);
 		let res = [
@@ -193,7 +185,7 @@ class Mat4x4 {
 }
 
 
-function crossProduct(vec1, vec2) {
+export function crossProduct(vec1, vec2) {
 	let res = new Array(4);
 	res[0] = vec1[1] * vec2[2] - vec1[2] * vec2[1];
 	res[1] = vec1[2] * vec2[0] - vec1[0] * vec2[2];
@@ -202,17 +194,7 @@ function crossProduct(vec1, vec2) {
 	return res;
 }
 
-
-function displayMat4(mat, name) {
-	console.log(name);
-	for (let i = 0; i < 4; i++) {
-		console.log("%f %f %f %f", mat[4 * i + 0], mat[4 * i + 1], mat[4 * i + 2], mat[4 * i + 3]);
-	}
-	console.log('\n');
-}
-
-
-function normalizeVec(vec) {
+export function normalizeVec(vec) {
 	let length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 	let res = new Array(3);
 	res[0] = vec[0] / length;

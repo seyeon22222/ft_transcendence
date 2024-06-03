@@ -1,4 +1,4 @@
-class Shader {
+export class Shader {
     constructor(gl, type) {
         const shader = gl.createShader(type);
 

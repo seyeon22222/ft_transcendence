@@ -1,4 +1,4 @@
-class Buffer {
+export class Buffer {
     constructor(gl, type, size, usage) {
         const buffer = gl.createBuffer();
         gl.bindBuffer(type, buffer);

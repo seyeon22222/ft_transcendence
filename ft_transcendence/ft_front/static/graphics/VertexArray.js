@@ -1,4 +1,4 @@
-class VertexArray {
+export class VertexArray {
     constructor(gl) {
         const vertex_array = gl.createVertexArray();
 

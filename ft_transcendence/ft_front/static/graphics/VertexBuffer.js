@@ -1,4 +1,4 @@
-class VertexBuffer{
+export class VertexBuffer{
     constructor(gl, buffer, size, type, normalize, stride = 0, offset = 0) {
         this.gl = gl;
         this.buffer = buffer;
