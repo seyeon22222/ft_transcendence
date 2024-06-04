@@ -17,7 +17,7 @@ import base64
 import os
 from django.http import HttpResponse
 from django.core.files.storage import default_storage
-from .utils import get_online_users #seycheon_online_status
+from .utils import get_online_users, validate_input, validate_password #seycheon_online_status
 
 # Create your views here.
 
@@ -111,7 +111,10 @@ class User_login(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+
+        # authenticate user
         user = authenticate(request, username=username, password=password)
+        
         if user is not None:
             print("로그인 성공")
             login(request, user)
@@ -130,6 +133,17 @@ class Sign_up(APIView):
             password = form.cleaned_data['password']
             email = form.cleaned_data['email']
             profile_picture = request.FILES.get('profile_picture')
+
+            # validate user input
+            valid, message = validate_input(username)
+            if not valid:
+                return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+            
+            valid, message = validate_password(username, password)
+            if not valid:
+                return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+
+            # create user
             user = MyUser.objects.create_user(username, email=email, password=password)
             if profile_picture:
                 user.profile_picture = profile_picture
