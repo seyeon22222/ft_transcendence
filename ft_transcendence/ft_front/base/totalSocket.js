@@ -61,7 +61,7 @@ async function initializeWebsocket() {
         socket.onmessage = function (e) {
             const data = JSON.parse(e.data);
             console.log("message", data);
-            const message = `${data.player1}와 ${data.player2}에게 게임 초대가 전송되었습니다.`;
+            const message = data.message;
             openInvitePopup(message);
         }
     } else {
