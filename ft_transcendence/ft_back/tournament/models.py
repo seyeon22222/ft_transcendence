@@ -1,8 +1,8 @@
 from django.db import models
 from ft_user.models import MyUser
 
-# Create your models here.
 class tournament(models.Model):
+
     name = models.CharField(max_length=100)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
@@ -14,6 +14,7 @@ class tournament(models.Model):
         return self.name
 
 class tournamentParticipant(models.Model):
+
     level_choice = [
         (1, 'winner'),
         (2, 'semi_final'),
@@ -31,6 +32,7 @@ class tournamentParticipant(models.Model):
         return f"{self.nickname} ({self.player.username}) in {self.tournament.name}"
 
 class tournamentMatch(models.Model):
+
     tournament = models.ForeignKey(tournament, on_delete=models.CASCADE, related_name='matches')
     match_date = models.DateTimeField(null=True)
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1_a')
@@ -39,9 +41,9 @@ class tournamentMatch(models.Model):
 
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.tournament.name}"
-    
 
 class Match(models.Model):
+
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('accepted', 'Accepted'),
@@ -61,6 +63,7 @@ class Match(models.Model):
         return f"{self.player1.username} vs {self.player2.username} in {self.name}"
 
 class matchmaking(models.Model):
+
     pending_player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='pending_player')
 
     def __str__(self):

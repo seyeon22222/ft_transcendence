@@ -48,7 +48,7 @@ export async function tournament_view(hash) {
         const { player, tournament_id } = result;
         
     };
-    console.log(player);
+    // console.log(player);
     socket.onclose = function(e) {
         console.log('Chat socket closed unexpectedly');
     };
@@ -99,7 +99,7 @@ export async function tournament_view(hash) {
                 alert("최대 인원(8명)을 초과했습니다.");
                 return;
             }
-            console.log("asd",t_data[0]);
+
             const formData = {
                 user_id: t_data[0].user_id,
                 tournament_name: tournament_name,
@@ -149,47 +149,53 @@ async function startTournament(tournament_id) {
 */
 
  // 1. 매칭 인원 확인 및 부전승 처리
- const csrftoken = Cookies.get('csrftoken');
- const response = await fetch(`match/t_list/${tournament_id}`, {
-     method: 'GET',
-     headers: {
-         'Content-Type': 'application/json',
-         'X-CSRFToken': csrftoken,
-     },
-     credentials: 'include',
- });
- await fetch(`match/t_list/${tournament_id}`, {
+    const csrftoken = Cookies.get('csrftoken');
+    const response = await fetch(`match/t_list/${tournament_id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        credentials: 'include',
+    });
+    await fetch(`match/t_list/${tournament_id}`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
         'X-CSRFToken': csrftoken,
     },
-    body : JSON.stringify({is_active : false})
-});
- if (response.ok) {
-     const data = await response.json();
-     const players = data.participants;
-     
-     // 만약 참가자가 홀수인 경우, 마지막 참가자를 부전승 처리
-     if (players.length % 2 !== 0) {
-        const byePlayer = players[players.length - 1];
-         await handleByePlayer(byePlayer, players);
-     }
+    body : JSON.stringify({is_active : true})
+    });
+    if (response.ok) {
 
-     // 2. 매칭될 인원에게 게임 접속 메시지 전송
-    //  for (let i = 0; i < players.length; i += 2) {
-    //      const player1 = players[i];
-    //      const player2 = players[i + 1];
-    //      await sendGameInvitation(tournament_id, player1, player2);
-    //  }
- } else {
-     alert('토너먼트 정보를 불러오는 데 실패했습니다.');
- }
+        const data = await response.json();
+        const players = data.participants;
+        
+        // 만약 참가자가 홀수인 경우, 마지막 참가자를 부전승 처리
+        if (players.length % 2 !== 0) {
+            const byePlayer = players[players.length - 1];
+            await handleByePlayer(byePlayer, players);
+            for (let i = 0; i < players.length - 1; i += 2) {
+                const player1 = players[i];
+                const player2 = players[i + 1];
+                await sendGameInvitation(tournament_id, player1, player2);
+            }
+        }
+        else {
+            // 2. 매칭될 인원에게 게임 접속 메시지 전송
+            for (let i = 0; i < players.length; i += 2) {
+                const player1 = players[i];
+                const player2 = players[i + 1];
+                await sendGameInvitation(tournament_id, player1, player2);
+            }
+        }
+    } else {
+        alert('토너먼트 정보를 불러오는 데 실패했습니다.');
+    }
 }
 
 // 부전승 처리 함수
 async function handleByePlayer(player, players) {
-    console.log(player);
     let level;
     let nickname;
     let index;
@@ -241,23 +247,24 @@ async function handleByePlayer(player, players) {
 }
 
 // 게임 초대 전송 함수
-async function sendGameInvitation(player1, player2, tournament_id) {
- const csrftoken = Cookies.get('csrftoken');
- const response = await fetch(`match/invite/${tournament_id}`, {
-     method: 'POST',
-     headers: {
-         'Content-Type': 'application/json',
-         'X-CSRFToken': csrftoken,
-     },
-     credentials: 'include',
-     body: JSON.stringify({ tournament_id: tournament_id, player1: player1.id, player2: player2.id }),
- });
-
- if (response.ok) {
-     alert(`${player1.nickname}와 ${player2.nickname}에게 게임 초대가 전송되었습니다.`);
- } else {
-     alert('게임 초대 전송에 실패했습니다.');
- }
+// 전체 초대 메세지를 받는 웹소켓이 필요함 -> 게임 초대 메세지를 웹소켓을 통해서 전달
+async function sendGameInvitation(tournament_id, player1, player2) {
+    console.log("invite ",player1, player2);
+    const csrftoken = Cookies.get('csrftoken');
+    const response = await fetch(`match/invite/${tournament_id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ player1: player1.player, player2: player2.player }),
+    });
+    if (response.ok) {
+        // alert(`${player1.nickname}와 ${player2.nickname}에게 게임 초대가 전송되었습니다.`);
+    } else {
+        alert('게임 초대 전송에 실패했습니다.');
+    }
 }
 
 // 게임 결과 처리 함수
@@ -372,7 +379,7 @@ function player_check(player) {
 }
 
 function tour_view(player) {
-    console.log("tour_view", player);
+    // console.log("tour_view", player);
     if (player.length > 4 && player.length <= 8) {
         for (let i = 1; i <= 4; ++i) {
             const quarter_final = document.getElementById(`quarter_final${i}`);
@@ -425,7 +432,6 @@ function player_2(player) {
 
 function player_4(player) {
     for (let i = 1; i <= player.length; ++i) {
-        console.log(player.length, player[i - 1]);
         if (player[i - 1].level === 2) {
             let semi_final;
             if (player[i - 1].index <= 2) {
@@ -454,7 +460,6 @@ function player_4(player) {
 
 function player_8(player) {
     for (let i = 1; i <= player.length; ++i) {
-        console.log(player.length, player[i - 1]);
         if (player[i - 1].level === 4) {
             let quarter_final;
             if (player[i - 1].index <= 2) {

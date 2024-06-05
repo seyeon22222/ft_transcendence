@@ -2,7 +2,13 @@ import router from '../../base/router.js'
 import { check_login } from '../utilities.js'
 import { formatDateTime } from "../info/info_func.js";
 
+let i_socket;
+
 export async function home_js() {
+    if (i_socket) {
+        i_socket.close();
+        i_socket = null;
+    }
     try {
         // set css style
         const style = document.getElementById("style");
