@@ -10,6 +10,11 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import requests
 from ft_user.utils import validate_input
+from datetime import datetime
+import hashlib
+
+
+
 
 class tournamentCreateView(APIView):
 
@@ -113,8 +118,6 @@ class addTournamentPlayer(APIView):
             if level:
                 participant.level = level
                 participant.save()
-                print(participant)
-                print(participant.level)
                 return Response({'message': f'{nickname} is now at level {level} due to a bye.'}, status=status.HTTP_200_OK)
             return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -133,6 +136,7 @@ class addTournamentPlayer(APIView):
                 'message': f'User {user_id} with nickname {nickname} has joined the tournament {intournament.name}.'
             }
         )
+
         return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
     
 class matchListView(APIView):
@@ -221,7 +225,6 @@ class MatchResponseView(APIView):
         user_username = request.data.get('username')
         start_date = request.data.get('start_date')
         
-        print(user_username)
         try:
             user = MyUser.objects.get(username=user_username)
         except MyUser.DoesNotExist:
@@ -281,19 +284,63 @@ class MatchmakingView(APIView):
             return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
 
 
-class tournamentInviteView(APIView):
 
+# 초대 메세지를 받는 API
+# 웹 소켓을 통해서 해당 매칭되는 플레이어들에게 전송해야함
+class tournamentInviteView(APIView):
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)
         player1 = request.data.get("player1")
         player2 = request.data.get("player2")
 
         # 게임서버 URL로 지정해서 post를 보내줘야함
-        gameserverURL = "http://gameserver.example.com/api/invite"
+        # gameserverURL = "http://gameserver.example.com/api/invite"
+        # data = {
+        #     "player1": player1,
+        #     "player2": player2,
+        #     "tournament_id": tournament_id,
+        # }
+        # response = requests.post(gameserverURL, data=data)
 
-        data = {
-            "player1" : player1,
-            "player2" : player2,
-        }
-        return Response(status=status.HTTP_200_OK)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{player1}',
+            {
+                'type': 'message',
+                'message': f'Invite to tournament {intournament.name}.',
+            }
+        )
+
+        async_to_sync(channel_layer.group_send)(
+            f'user_{player2}',
+            {
+                'type': 'message',
+                'message': f'Invite to tournament {intournament.name}.',
+            }
+        )
+
+        return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
     
+
+class matchGetHash(APIView):
+    def get(self, request, match_id):
+        try :
+            match = get_object_or_404(Match, id=match_id)
+            if (len(match.slug) == 0):
+                player1 = match.player1
+                player2 = match.player2
+            
+                timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
+                combined_string = f"{match.player1.user_id}_{match.player2.user_id}_{timestamp}"
+                slug = hashlib.sha256(combined_string.encode()).hexdigest()[:10]  # Use the first 10 characters of the hash
+                match.slug = slug
+                match.save()
+
+            else:
+                slug = match.slug
+            return Response({'hash': slug}, status=status.HTTP_200_OK)
+        except Match.DoesNotExist:
+            return Response({'error':'Match not found'}, status=404)
+        except Exception as e:
+            print(f"Error in matchGetHash: {e}")
+            return Response({'error':'Internal Server Error'}, status=500)

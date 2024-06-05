@@ -1,5 +1,6 @@
 import router from "./router.js"
 
+
 // window.addEventListener('load', async () => {
 //     try {
 //       router();
