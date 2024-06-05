@@ -10,6 +10,11 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import requests
 from ft_user.utils import validate_input
+from datetime import datetime
+import hashlib
+
+
+
 
 class tournamentCreateView(APIView):
 
@@ -315,3 +320,27 @@ class tournamentInviteView(APIView):
         )
 
         return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
+    
+
+class matchGetHash(APIView):
+    def get(self, request, match_id):
+        try :
+            match = get_object_or_404(Match, id=match_id)
+            if (len(match.slug) == 0):
+                player1 = match.player1
+                player2 = match.player2
+            
+                timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
+                combined_string = f"{match.player1.user_id}_{match.player2.user_id}_{timestamp}"
+                slug = hashlib.sha256(combined_string.encode()).hexdigest()[:10]  # Use the first 10 characters of the hash
+                match.slug = slug
+                match.save()
+
+            else:
+                slug = match.slug
+            return Response({'hash': slug}, status=status.HTTP_200_OK)
+        except Match.DoesNotExist:
+            return Response({'error':'Match not found'}, status=404)
+        except Exception as e:
+            print(f"Error in matchGetHash: {e}")
+            return Response({'error':'Internal Server Error'}, status=500)

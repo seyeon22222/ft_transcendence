@@ -379,7 +379,7 @@ function player_check(player) {
 }
 
 function tour_view(player) {
-    // console.log("tour_view", player);
+    console.log("tour_view", player);
     if (player.length > 4 && player.length <= 8) {
         for (let i = 1; i <= 4; ++i) {
             const quarter_final = document.getElementById(`quarter_final${i}`);
