@@ -8,7 +8,6 @@ export async function tournament_view(hash) {
         socket.close();
         socket = null;
     }
-
     // check login status
     const check = await check_login();
     if (check === false) {

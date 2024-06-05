@@ -301,13 +301,16 @@ class tournamentInviteView(APIView):
         #     "tournament_id": tournament_id,
         # }
         # response = requests.post(gameserverURL, data=data)
-
+        
+        
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f'user_{player1}',
             {
                 'type': 'message',
                 'message': f'Invite to tournament {intournament.name}.',
+                'player1' : player1,
+                'player2' : player2,
             }
         )
 
@@ -316,6 +319,8 @@ class tournamentInviteView(APIView):
             {
                 'type': 'message',
                 'message': f'Invite to tournament {intournament.name}.',
+                'player1' : player1,
+                'player2' : player2,
             }
         )
 
@@ -329,7 +334,6 @@ class matchGetHash(APIView):
             if (len(match.slug) == 0):
                 player1 = match.player1
                 player2 = match.player2
-            
                 timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
                 combined_string = f"{match.player1.user_id}_{match.player2.user_id}_{timestamp}"
                 slug = hashlib.sha256(combined_string.encode()).hexdigest()[:10]  # Use the first 10 characters of the hash
@@ -341,6 +345,23 @@ class matchGetHash(APIView):
             return Response({'hash': slug}, status=status.HTTP_200_OK)
         except Match.DoesNotExist:
             return Response({'error':'Match not found'}, status=404)
+        except Exception as e:
+            print(f"Error in matchGetHash: {e}")
+            return Response({'error':'Internal Server Error'}, status=500)
+        
+
+class tournamentHash(APIView):
+    def get(self, request, player1, player2):
+        hash_url=''
+        try :
+            player1_id = player1
+            player2_id = player2
+            
+            # timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
+            combined_string = f"{player1_id}_{player2_id}"
+            hash_url = hashlib.sha256(combined_string.encode()).hexdigest()[:10]  # Use the first 10 characters of the hash
+            # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
+            return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error in matchGetHash: {e}")
             return Response({'error':'Internal Server Error'}, status=500)

@@ -4,7 +4,7 @@ from .views import (
     tournamentCreateView, addTournamentPlayer, matchView,
     MatchRequestView, MatchResponseView, matchListView,
     matchDetailView, MatchmakingView, tournamentGame,
-    tournamentInviteView, matchGetHash,
+    tournamentInviteView, matchGetHash, tournamentHash
 )
 
 app_name = "tournament"
@@ -21,4 +21,5 @@ urlpatterns = [
     path('matchmaking', MatchmakingView.as_view(), name='matchmaking_view'),
     path('invite/<int:tournament_id>', tournamentInviteView.as_view(), name='gamestart_view'),
     path('matchgethash/<int:match_id>', matchGetHash.as_view(), name='get_hash'),
+    path('tournamenthash/<uuid:player1><uuid:player2>', tournamentHash.as_view(), name='t_get_hash'),
 ]
