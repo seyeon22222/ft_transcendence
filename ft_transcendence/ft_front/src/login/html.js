@@ -7,11 +7,11 @@ export function login_html() {
                 <form id="login_form">
                     <div class="mb-3">
                         <label for="username_input" class="form-label">ID</label>
-                        <input type="text" class="form-control" name="username" id="username_input" placeholder="아이디">
+                        <input type="text" class="form-control" name="username" id="username_input" placeholder="아이디" required>
                     </div>
                     <div class="mb-3">
                         <label for="password_input" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password_input" placeholder="비밀번호">
+                        <input type="password" class="form-control" id="password_input" placeholder="비밀번호" required>
                     </div>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-evenly spacing">
                         <button class="btn custom-yellow-btn flex-grow-1 me-2" id="login_button">로그인</button>

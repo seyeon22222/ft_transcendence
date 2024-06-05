@@ -19,7 +19,7 @@ export function chatLobby_html() {
             <br>
             <h2 class="text-3xl lg:text-6xl text-white">Create a new room</h2>
             <form class="mb-5" id="room_form">
-                <input type="text" name="room_name" placeholder="Room Name" class="w-full mt-2 px-4 py-2 rounded-xl" id="room_name">
+                <input type="text" name="room_name" placeholder="Room Name" class="w-full mt-2 px-4 py-2 rounded-xl" id="room_name" required>
                 <button type="submit" class="px-5 py-3 rounded-xl text-white bg-teal-800 hover:bg-teal-700" id="create_button">Create</button>
             </form>
         </div>

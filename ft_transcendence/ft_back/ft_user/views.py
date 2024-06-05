@@ -17,7 +17,7 @@ import base64
 import os
 from django.http import HttpResponse
 from django.core.files.storage import default_storage
-from .utils import get_online_users #seycheon_online_status
+from .utils import get_online_users, validate_input, validate_password, validate_email
 
 # Create your views here.
 
@@ -111,7 +111,19 @@ class User_login(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+
+        # need to check
+        check, message = validate_input(username)
+        if not check:
+            return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+        
+        check, message = validate_password(username, password)
+        if not check:
+            return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+
+        # authenticate user
         user = authenticate(request, username=username, password=password)
+        
         if user is not None:
             print("로그인 성공")
             login(request, user)
@@ -130,6 +142,21 @@ class Sign_up(APIView):
             password = form.cleaned_data['password']
             email = form.cleaned_data['email']
             profile_picture = request.FILES.get('profile_picture')
+
+            # validate user input
+            valid, message = validate_input(username)
+            if not valid:
+                return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+            
+            valid, message = validate_password(username, password)
+            if not valid:
+                return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+
+            valid, message = validate_email(email)
+            if not valid:
+                return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+
+            # create user
             user = MyUser.objects.create_user(username, email=email, password=password)
             if profile_picture:
                 user.profile_picture = profile_picture
@@ -189,11 +216,19 @@ class UserInfoChange(APIView):
             profile_picture = request.FILES.get('profile_picture')
 
             if username:
+                check, message = validate_input(username)
+                if not check:
+                    return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+                
                 if MyUser.objects.filter(username = username).exists():
                     return Response({'message': '이미 해당 유저네임이 존재합니다'}, status=status.HTTP_400_BAD_REQUEST)
                 user.username = username
 
             if email:
+                # 들어온 정보가 이메일 형식인지 확인
+                check, message = validate_email(email)
+                if not check:
+                    return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
                 user.email = email
 
             if profile_picture:

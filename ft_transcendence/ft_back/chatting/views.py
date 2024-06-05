@@ -7,6 +7,7 @@ from rest_framework import status
 from .models import Room, Message, PrivateRoom, PrivateMessage
 from .serializers import RoomSerializer, MessageSerializer, PrivateRoomSerializer, PrivateMessageSerializer
 from rest_framework.permissions import IsAuthenticated
+from ft_user.utils import validate_input
 
 import hashlib
 from datetime import datetime
@@ -24,6 +25,11 @@ class RoomListView(APIView):
 
     def post(self, request):
         room_name = request.data.get('room_name')
+
+        valid, message = validate_input(room_name)
+        if not valid:
+            return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
+
         if room_name:
             room_slug = slugify(room_name)
             if Room.objects.filter(slug=room_slug).exists():

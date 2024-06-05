@@ -9,7 +9,7 @@ export function matchLobby_html() {
                 <br>
                 <h2 class="text-3xl lg:text-6xl text-white">Create a tournament</h2>
                 <form class="mb-5" id="tournament_form">
-                    <input type="text" name="tournament_name" placeholder="tournament Name" class="w-full mt-2 px-4 py-2 rounded-xl" id="tournament_name">
+                    <input type="text" name="tournament_name" placeholder="tournament Name" class="w-full mt-2 px-4 py-2 rounded-xl" id="tournament_name" required>
                     <button type="submit" class="px-5 py-3 rounded-xl text-white bg-teal-800 hover:bg-teal-700" id="create_button">Create</button>
                 </form>
             </div>

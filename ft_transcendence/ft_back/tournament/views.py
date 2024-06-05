@@ -9,6 +9,7 @@ from ft_user.models import MyUser
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import requests
+from ft_user.utils import validate_input
 
 class tournamentCreateView(APIView):
 
@@ -22,6 +23,10 @@ class tournamentCreateView(APIView):
         start_date = request.data.get('start_date')
         end_date = request.data.get('end_date')
         username = request.data.get('username')
+
+        valid, message = validate_input(tournament_name)
+        if not valid:
+            return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
 
         if not tournament_name or not start_date or not end_date or not username:
             return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)

@@ -7,15 +7,15 @@ export function signup_html() {
                 <form id="signup_form">
                     <div class="mb-3">
                         <label for="username_input" class="form-label">ID</label>
-                        <input type="text" class="form-control" name="username" id="username_input" placeholder="아이디">
+                        <input type="text" class="form-control" name="username" id="username_input" placeholder="아이디" required>
                     </div>
                     <div class="mb-3">
                         <label for="emain_input" class="form-label">Email</label>
-                        <input type="text" class="form-control" name="email" id="email_input" placeholder="이메일">
+                        <input type="email" class="form-control" name="email" id="email_input" placeholder="이메일" required>
                     </div>
                     <div class="mb-3">
                         <label for="password_input" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password_input" placeholder="비밀번호">
+                        <input type="password" class="form-control" id="password_input" placeholder="비밀번호" required>
                     </div>
                     <div class="mb-3">
                         <label for="image_input" class="form-label">Profile Image</label>
