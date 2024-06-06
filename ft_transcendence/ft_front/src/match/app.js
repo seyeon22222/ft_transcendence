@@ -14,10 +14,11 @@ export async function match_view(hash) {
     const data = await response.json();
     const player_data = await get_name();
     match_render(data);
-    console.log(data.requester === player_data[0].user_id);
-    console.log(data.requester, player_data);
     if (data.requester === player_data[0].user_id) {
-      const startButton = document.getElementById("match_start");
+      const Button = document.getElementById("button_container");
+      const startButton = document.createElement("button");
+      startButton.innerHTML = "매치 시작";
+      Button.appendChild(startButton);
       startButton.addEventListener("click", async (event) => {
         event.preventDefault();
         const csrftoken = Cookies.get('csrftoken');
@@ -36,9 +37,6 @@ export async function match_view(hash) {
             alert('게임 초대 전송에 실패했습니다.');
         }
       });
-    } else {
-      const startButton = document.getElementById("match_start");
-      startButton.innerHTML = '';
     }
     //-------------------------------------------
   } else {

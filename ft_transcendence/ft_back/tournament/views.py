@@ -13,9 +13,6 @@ from ft_user.utils import validate_input
 from datetime import datetime
 import hashlib
 
-
-
-
 class tournamentCreateView(APIView):
 
     def get(self, request):

@@ -84,13 +84,14 @@ function openInvitePopup(message, player1, player2, g_type, g_id) {
 
     let remaintimer = 5;
     const intervalId = setInterval(() => {
+        const button_text = document.getElementById('acceptBtn');
         if (remaintimer > 0) {
-            const button_text = document.getElementById('acceptBtn');
             button_text.textContent = `수락(${remaintimer})`;
             remaintimer--;
         } else {
-            g_type === 'm' ? m_accept(invitePopup, player1, player2, g_id) : t_accept(invitePopup, player1, player2, g_id);
             clearInterval(intervalId); // 타이머 중지
+            button_text.textContent = ``;
+            g_type === 'm' ? m_accept(invitePopup, player1, player2, g_id) : t_accept(invitePopup, player1, player2, g_id);
         }
     }, 1000); // 1초 간격으로 실행
 
@@ -99,8 +100,9 @@ function openInvitePopup(message, player1, player2, g_type, g_id) {
         event.preventDefault();
         // 수락 로직 구현
         console.log("게임 초대 수락");
-        g_type === 'm' ? m_accept(invitePopup, player1, player2, g_id) : t_accept(invitePopup, player1, player2, g_id);
+        acceptBtn.textContent = ``;
         clearInterval(intervalId); // 수락 시 타이머 중지
+        g_type === 'm' ? m_accept(invitePopup, player1, player2, g_id) : t_accept(invitePopup, player1, player2, g_id);
     }
 }
 

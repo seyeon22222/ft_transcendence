@@ -64,7 +64,6 @@ export function match_html() {
               </style>
           </head>
           <body>
-              <a href="/#" class="btn">Home</a>
               <div class="p-10 lg:p-20 text-center">
                   <h1 class="text-3xl lg:text-6xl" id="tournament_name"></h1>
               </div>
@@ -85,7 +84,7 @@ export function match_html() {
                       <div></div>
                   </div>
                   <div id="button_container">
-                    <button type="button" class="px-5 py-3 rounded-xl text-black bg-teal-800 hover:bg-teal-700" id="match_start">매치 시작</button>
+                    
                 </div>
               </div>
           </body>
