@@ -58,7 +58,9 @@ export async function initializeWebsocket() {
             const message = data.message;
             const player1 = data.player1;
             const player2 = data.player2;
-            openInvitePopup(message, player1, player2);
+            const g_type = data.g_type;
+            const g_id = data.g_id;
+            openInvitePopup(message, player1, player2, g_type, g_id);
         }
     } else {
         const error = await response.json();
@@ -73,7 +75,7 @@ async function check_socket() {
     }
 }
 
-function openInvitePopup(message, player1, player2) {
+function openInvitePopup(message, player1, player2, g_type, g_id) {
     const popupMessage = document.getElementById('popupMessage');
     popupMessage.textContent = message;
 
@@ -87,7 +89,7 @@ function openInvitePopup(message, player1, player2) {
             button_text.textContent = `수락(${remaintimer})`;
             remaintimer--;
         } else {
-            accept(invitePopup, player1, player2);
+            g_type === 'm' ? m_accept(invitePopup, player1, player2, g_id) : t_accept(invitePopup, player1, player2, g_id);
             clearInterval(intervalId); // 타이머 중지
         }
     }, 1000); // 1초 간격으로 실행
@@ -97,15 +99,38 @@ function openInvitePopup(message, player1, player2) {
         event.preventDefault();
         // 수락 로직 구현
         console.log("게임 초대 수락");
-        accept(invitePopup, player1, player2);
+        g_type === 'm' ? m_accept(invitePopup, player1, player2, g_id) : t_accept(invitePopup, player1, player2, g_id);
         clearInterval(intervalId); // 수락 시 타이머 중지
     }
 }
 
-async function accept(invitePopup, player1, player2) {
+async function m_accept(invitePopup, player1, player2, g_id) {
     let url;
     const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch(`match/tournamenthash/${player1}${player2}`,  {
+    const response = await fetch(`match/matchgethash/${g_id}`,  {
+        method : 'GET',
+        headers : {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        credentials : "include",
+    })
+    if (response.ok) {
+        const data = await response.json();
+        url = data.hash;
+        console.log(url);
+        window.location.href = `/#game/${url}`; // 게임 페이지로 이동
+        invitePopup.style.display = 'none';
+    } else {
+        const error = await response.error();
+        console.log(error);
+    }
+}
+
+async function t_accept(invitePopup, player1, player2, g_id) {
+    let url;
+    const csrftoken = Cookies.get('csrftoken');
+    const response = await fetch(`match/tournamenthash/${player1}${player2}${g_id}`,  {
         method : 'GET',
         headers : {
             'Content-Type': 'application/json',

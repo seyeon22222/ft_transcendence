@@ -60,13 +60,7 @@ export function match_html() {
                       left: 50%;
                       transform: translateX(-50%);
                   }
-                  /* Start 버튼 스타일 */
-                  #start_button {
-                      position: absolute;
-                      top: 50%;
-                      left: 50%;
-                      transform: translate(-50%, -50%);
-                  }
+                  
               </style>
           </head>
           <body>
@@ -74,7 +68,6 @@ export function match_html() {
               <div class="p-10 lg:p-20 text-center">
                   <h1 class="text-3xl lg:text-6xl" id="tournament_name"></h1>
               </div>
-              <button class="btn" id="start_button">Start</button>
               <div class="tree">
                   <div class="node" id="final"></div>
                   <div class="connector">
@@ -91,6 +84,9 @@ export function match_html() {
                       <div></div>
                       <div></div>
                   </div>
+                  <div id="button_container">
+                    <button type="button" class="px-5 py-3 rounded-xl text-black bg-teal-800 hover:bg-teal-700" id="match_start">매치 시작</button>
+                </div>
               </div>
           </body>
           </html>

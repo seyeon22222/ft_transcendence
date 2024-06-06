@@ -58,7 +58,6 @@ class Match(models.Model):
     is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requester')
-    slug = models.CharField(default='', max_length=10)
 
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.name}"

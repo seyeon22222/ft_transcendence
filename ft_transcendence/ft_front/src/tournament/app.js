@@ -257,7 +257,7 @@ async function sendGameInvitation(tournament_id, player1, player2) {
             'X-CSRFToken': csrftoken,
         },
         credentials: 'include',
-        body: JSON.stringify({ player1: player1.player, player2: player2.player }),
+        body: JSON.stringify({ player1: player1.player, player2: player2.player, id: tournament_id }),
     });
     if (response.ok) {
         // alert(`${player1.nickname}와 ${player2.nickname}에게 게임 초대가 전송되었습니다.`);

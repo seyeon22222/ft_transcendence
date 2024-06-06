@@ -284,25 +284,12 @@ class MatchmakingView(APIView):
             return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
 
 
-
-# 초대 메세지를 받는 API
-# 웹 소켓을 통해서 해당 매칭되는 플레이어들에게 전송해야함
 class tournamentInviteView(APIView):
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)
         player1 = request.data.get("player1")
         player2 = request.data.get("player2")
 
-        # 게임서버 URL로 지정해서 post를 보내줘야함
-        # gameserverURL = "http://gameserver.example.com/api/invite"
-        # data = {
-        #     "player1": player1,
-        #     "player2": player2,
-        #     "tournament_id": tournament_id,
-        # }
-        # response = requests.post(gameserverURL, data=data)
-        
-        
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f'user_{player1}',
@@ -311,6 +298,8 @@ class tournamentInviteView(APIView):
                 'message': f'Invite to tournament {intournament.name}.',
                 'player1' : player1,
                 'player2' : player2,
+                'g_type' : 't',
+                'g_id' : tournament_id,
             }
         )
 
@@ -321,28 +310,57 @@ class tournamentInviteView(APIView):
                 'message': f'Invite to tournament {intournament.name}.',
                 'player1' : player1,
                 'player2' : player2,
+                'g_type' : 't',
+                'g_id' : tournament_id,
             }
         )
 
         return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
     
 
+class MatchInviteView(APIView):
+    def post(self, request, match_id):
+        match = get_object_or_404(Match, pk=match_id)
+        player1 = request.data.get("player1")
+        player2 = request.data.get("player2")
+        print(match_id)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{player1}',
+            {
+                'type': 'message',
+                'message': f'Invite to match {match.name}.',
+                'player1' : player1,
+                'player2' : player2,
+                'g_type' : 'm',
+                'g_id' : match_id,
+            }
+        )
+
+        async_to_sync(channel_layer.group_send)(
+            f'user_{player2}',
+            {
+                'type': 'message',
+                'message': f'Invite to match {match.name}.',
+                'player1' : player1,
+                'player2' : player2,
+                'g_type' : 'm',
+                'g_id' : match_id,
+            }
+        )
+
+        return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
+
+
 class matchGetHash(APIView):
     def get(self, request, match_id):
         try :
             match = get_object_or_404(Match, id=match_id)
-            if (len(match.slug) == 0):
-                player1 = match.player1
-                player2 = match.player2
-                timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
-                combined_string = f"{match.player1.user_id}_{match.player2.user_id}_{timestamp}"
-                slug = hashlib.sha256(combined_string.encode()).hexdigest()[:10]  # Use the first 10 characters of the hash
-                match.slug = slug
-                match.save()
+            player1 = match.player1
+            player2 = match.player2
+            combined_string = f"m_{match.player1.user_id}_{match.player2.user_id}_{match_id}"
 
-            else:
-                slug = match.slug
-            return Response({'hash': slug}, status=status.HTTP_200_OK)
+            return Response({'hash': combined_string}, status=status.HTTP_200_OK)
         except Match.DoesNotExist:
             return Response({'error':'Match not found'}, status=404)
         except Exception as e:
@@ -351,15 +369,13 @@ class matchGetHash(APIView):
         
 
 class tournamentHash(APIView):
-    def get(self, request, player1, player2):
+    def get(self, request, player1, player2, tournament_id):
         hash_url=''
         try :
             player1_id = player1
             player2_id = player2
             
-            # timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
-            combined_string = f"{player1_id}_{player2_id}"
-            hash_url = hashlib.sha256(combined_string.encode()).hexdigest()[:10]  # Use the first 10 characters of the hash
+            hash_url = f"t_{player1_id}_{player2_id}_{tournament_id}"
             # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
             return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:
