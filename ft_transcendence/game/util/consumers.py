@@ -1,14 +1,14 @@
 import json
 import asyncio
 import time
+import psycopg2
 
 from channels.generic.websocket import AsyncWebsocketConsumer
-import threading
 from . import ball
+from . import models
 
 class GameConsumer(AsyncWebsocketConsumer):
     consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
-    lock = threading.Lock()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,20 +24,19 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f'game_{self.room_name}'
         self.loop = asyncio.get_event_loop()
 
-        with self.lock:
-            if self.room_group_name in self.consumers:
-                self.consumer = self.consumers[self.room_group_name]
-                self.b = self.consumers[self.room_group_name].b
-                self.p1 = self.consumers[self.room_group_name].p1
-                self.p2 = self.consumers[self.room_group_name].p2
-                self.players = 2
-                self.task = self.loop.create_task(self.send_message())
-            else:
-                self.consumer = self
-                self.consumers[self.room_group_name] = self
-                self.players = 1
-                self.task = self.loop.create_task(self.game_update())
-        
+        if self.room_group_name in self.consumers:
+            self.consumer = self.consumers[self.room_group_name]
+            self.b = self.consumers[self.room_group_name].b
+            self.p1 = self.consumers[self.room_group_name].p1
+            self.p2 = self.consumers[self.room_group_name].p2
+            self.players = 2
+            self.task = self.loop.create_task(self.send_message())
+        else:
+            self.consumer = self
+            self.consumers[self.room_group_name] = self
+            self.players = 1
+            self.task = self.loop.create_task(self.game_update())
+    
         await self.accept()
         
         await self.send(text_data=json.dumps({
@@ -51,6 +50,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         self.task.cancel()
+        if self.players == 1:
+            del self.consumers[self.room_group_name]
 
     async def send_message(self):
         while True:
@@ -107,3 +108,20 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.p2.dir[1] = 0
         if (message == '2pdownstop' and self.p2.dir[1] == -1 and player % 2 == 0):
             self.p2.dir[1] = 0
+        #데이터베이스 조회
+        
+        # conn = psycopg2.connect(
+        #     host="db",
+        #     database="ft_db",
+        #     user="admin",
+        #     password="qwer1234!"
+        # )
+        # cur = conn.cursor()
+        # cur.execute("SELECT * FROM ft_user_myuser")
+        # rows = cur.fetchall()
+
+        # for row in rows:
+        #     print(list(row)[9])
+        #     print(" : row\n")
+
+        # conn.close()

@@ -62,39 +62,6 @@ class tournamentGame(APIView):
         serializer = tournamentSerializer(specific_tournament)
         return Response(serializer.data)
 
-# class addTournamentPlayer(APIView):
-#     def post(self, request, tournament_id):
-#         intournament = get_object_or_404(tournament, pk=tournament_id)
-#         username = request.data.get('username')
-#         nickname = request.data.get('nickname')  # 별칭 추가
-#         index = request.data.get('index') # 해당 플레이어의 토너먼트에서의 위치
-#         # 사용자 검증
-#         try:
-#             user = MyUser.objects.get(username=username)
-#         except MyUser.DoesNotExist:
-#             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         print(intournament.participant)
-
-#         # 중복 신청 방지
-#         if intournament.participant.filter(username=username).exists():
-#             return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # 토너먼트 참가자 생성
-#         tournament_participant = tournamentParticipant(tournament=intournament, player=user, nickname=nickname, index=index)
-#         tournament_participant.save()
-
-#         # 웹소켓을 통해 업데이트 정보 전송
-#         channel_layer = get_channel_layer()
-#         async_to_sync(channel_layer.group_send)(
-#             f'tournament_{tournament_id}',
-#             {
-#                 'type': 'tournament_message',
-#                 'message': f'User {username} with nickname {nickname} has joined the tournament {intournament.name}.'
-#             }
-#         )
-#         return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
-
 class addTournamentPlayer(APIView):
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)
@@ -378,3 +345,18 @@ class tournamentHash(APIView):
         except Exception as e:
             print(f"Error in matchGetHash: {e}")
             return Response({'error':'Internal Server Error'}, status=500)
+        
+
+class matchResultView(APIView):
+
+    def post(self, request, match_id):
+        match = get_object_or_404(Match, id=match_id)
+        match_date = request.data.get('match_date')
+        match_result = request.data.get('match_result')
+
+
+        match.match_date = match_date
+        match.match_result = match_result
+        match.save()
+        return Response(status=status.HTTP_200_OK)
+    

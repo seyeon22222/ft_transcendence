@@ -12,8 +12,6 @@ import { Shader } from "../../static/graphics/Shader.js";
 import { VertexBuffer } from "../../static/graphics/VertexBuffer.js";
 import { Ball, Stick } from "../../static/phong/ball.js";
 
-let socket;
-
 class Main {
   static gl = null;
   static program = null;
@@ -27,7 +25,7 @@ class Main {
   static keyA = 0;
   static keyQ = 0;
   static lastTime = 0;
-  // static ws = null;
+  static ws = null;
   static players = 0;
   static camDegree = 0;
   static camMat4;
@@ -44,38 +42,20 @@ class Main {
     Main.ball = new Ball();
     Main.stick1 = new Stick([-15, 0, 0]);
     Main.stick2 = new Stick([15, 0, 0]);
+    Main.ws = new WebSocket("wss://" + window.location.host + "/ws/game/" + get_hash + "/");
     console.log(Main.players);
-    if (socket) {
-      socket.close();
-      socket=null;
-    }
-    function connect() {
-      
-      socket = new WebSocket(
-        "wss://" + window.location.host + "/ws/game/" + get_hash + "/"
-      );
-
-      socket.onopen = function () {
-        console.log("웹소켓 연결 성공");
-        //requestAnimationFrame(Main.update);
-      };
-
-      socket.onclose = function (e) {
-        console.log("웹소켓 연결 끊김. 재연결 시도 중...");
-        setTimeout(function () {
-          connect();
-        }, 10000);
-      };
-
-      socket.onerror = function (err) {
-        console.error("웹소켓 오류 발생:", err);
-        socket.close(); // 오류 발생 시 명시적으로 닫기
-      };
-    }
-
-    connect();
     let flag = 1;
-    socket.onmessage = async function (e) {
+
+    window.addEventListener('popstate', function() {
+      // WebSocket 연결 닫기
+      if (Main.ws && Main.ws.readyState !== WebSocket.CLOSED) {
+        Main.ws.close();
+        Main.ws = null;
+        console.log("연결종료");
+      }
+    });
+
+    Main.ws.onmessage = async function (e) {
       let data = JSON.parse(e.data);
       let ball_pos = data["ball_pos"];
       let paddle1_pos = data["paddle1_pos"];
@@ -300,7 +280,7 @@ class Main {
         Main.camDegree = Math.min(45, Main.camDegree + 1);
       if (event.code === "ArrowLeft")
         Main.camDegree = Math.max(-45, Main.camDegree - 1);
-      if (flag) socket.send(JSON.stringify(message));
+      if (flag) Main.ws.send(JSON.stringify(message));
     });
 
     window.addEventListener("keyup", async function (event) {
@@ -324,7 +304,7 @@ class Main {
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
         Main.camDegree = 0;
-      if (flag) socket.send(JSON.stringify(message));
+      if (flag) Main.ws.send(JSON.stringify(message));
     });
     requestAnimationFrame(Main.update);
   }
