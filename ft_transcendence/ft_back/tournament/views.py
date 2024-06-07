@@ -353,10 +353,11 @@ class matchResultView(APIView):
         match = get_object_or_404(Match, id=match_id)
         match_date = request.data.get('match_date')
         match_result = request.data.get('match_result')
-
+        is_active = request.data.get('is_active')
 
         match.match_date = match_date
         match.match_result = match_result
+        match.is_active = is_active
         match.save()
         return Response(status=status.HTTP_200_OK)
     

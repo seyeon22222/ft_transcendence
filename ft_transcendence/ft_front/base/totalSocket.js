@@ -1,4 +1,3 @@
-let i_socket;
 
 function createInvitePopup() {
     const popupContainer = document.getElementById('popupContainer');
@@ -39,20 +38,20 @@ export async function initializeWebsocket() {
         const data = await response.json();
         const user_id = data[0].user_id;
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        i_socket = new WebSocket(
+        window.i_socket = new WebSocket(
             protocol + "//" + window.location.host + "/ws/message/" + user_id + "/"
         );
 
-        console.log(i_socket);
-        i_socket.onopen = function() {
-            console.log("i_socket opened");
+        console.log(window.i_socket);
+        window.i_socket.onopen = function() {
+            console.log("window.i_socket opened");
         };
 
-        i_socket.onclose = function(event) {
-            console.log("i_socket closed:", event);
+        window.i_socket.onclose = function(event) {
+            console.log("window.i_socket closed:", event);
         };
 
-        i_socket.onmessage = function (e) {
+        window.i_socket.onmessage = function (e) {
             const data = JSON.parse(e.data);
             console.log("message", data);
             const message = data.message;
@@ -68,10 +67,13 @@ export async function initializeWebsocket() {
     }
 }
 
-async function check_socket() {
-    if (i_socket) {
-        i_socket.close();
-        i_socket = null;
+export async function check_socket() {
+    console.log("check_socket");
+    console.log(window.i_socket);
+    if (window.i_socket) {
+        console.log("close");
+        window.i_socket.close();
+        window.i_socket = null;
     }
 }
 
@@ -152,6 +154,6 @@ async function t_accept(invitePopup, player1, player2, g_id) {
     }
 }
 
-const invitePopup = createInvitePopup();
+createInvitePopup();
 check_socket();
 initializeWebsocket();

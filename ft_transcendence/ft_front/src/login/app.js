@@ -1,4 +1,4 @@
-import { initializeWebsocket } from "../../base/totalSocket.js";
+import { initializeWebsocket, check_socket } from "../../base/totalSocket.js";
 
 export function login_js() {
   // set style
@@ -53,7 +53,8 @@ export function login_js() {
             if (response.ok) {
               const data = await response.json();
               alert(data.message);
-              console.log("asdasd");
+              console.log("qweqwe");
+              check_socket();
               initializeWebsocket();
               location.href = "/#";
             } else {

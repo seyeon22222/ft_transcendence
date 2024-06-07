@@ -1,12 +1,10 @@
 import { formatDateTime } from "../info/info_func.js";
 import { check_login } from "../utilities.js"
 
-let socket;
-
 export async function tournament_view(hash) {
-    if (socket) {
-        socket.close();
-        socket = null;
+    if (window.t_socket) {
+        window.t_socket.close();
+        window.t_socket = null;
     }
     // check login status
     const check = await check_login();
@@ -32,13 +30,13 @@ export async function tournament_view(hash) {
     const { player, tournament_id: updatedTournamentId } = result;
     tournament_id = updatedTournamentId;
 
-    socket = new WebSocket(
+    window.t_socket = new WebSocket(
         `wss://${window.location.host}/ws/tournament/${tournament_id}/`
     );
-    socket.onopen = function(e) {
-        // console.log("socket open");
+    window.t_socket.onopen = function(e) {
+        console.log("window.t_socket open");
     }
-    socket.onmessage = async function(e) {
+    window.t_socket.onmessage = async function(e) {
         const data = JSON.parse(e.data);
         // console.log(data.message);
 
@@ -48,8 +46,8 @@ export async function tournament_view(hash) {
         
     };
     // console.log(player);
-    socket.onclose = function(e) {
-        console.log('Chat socket closed unexpectedly');
+    window.t_socket.onclose = function(e) {
+        console.log('window.t_socket closed');
     };
 
     let t_data;

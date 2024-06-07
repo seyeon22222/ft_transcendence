@@ -9,12 +9,13 @@ export async function match_view(hash) {
     },
     credentials: "include",
   });
-
+  
   if (response.ok) {
     const data = await response.json();
     const player_data = await get_name();
     match_render(data);
-    if (data.requester === player_data[0].user_id) {
+    console.log("asd",data);
+    if (data.requester === player_data[0].user_id && data.is_active === true) {
       const Button = document.getElementById("button_container");
       const startButton = document.createElement("button");
       startButton.innerHTML = "매치 시작";
@@ -63,7 +64,9 @@ function match_render(data) {
   if (data.match_result !== "") {
     const winner = document.getElementById("final");
     if (winner) {
-      winner.innerHTML = data.match_result;
+      let winner_name;
+      data.match_result === 1 ? winner_name = player1_name : winner_name = player2_name;
+      winner.innerHTML = winner_name;
     }
   }
 }
