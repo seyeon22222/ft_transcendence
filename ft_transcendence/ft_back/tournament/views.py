@@ -350,13 +350,18 @@ class tournamentHash(APIView):
 class matchResultView(APIView):
 
     def post(self, request, match_id):
-        match = get_object_or_404(Match, id=match_id)
-        match_date = request.data.get('match_date')
-        match_result = request.data.get('match_result')
+        try:
+            match = get_object_or_404(Match, id=match_id)
+            match_date = request.data.get('match_date')
+            match_result = request.data.get('match_result')
 
-
-        match.match_date = match_date
-        match.match_result = match_result
-        match.save()
-        return Response(status=status.HTTP_200_OK)
-    
+            match.match_date = match_date
+            match.match_result = match_result
+            match.save()
+            print("======================="+ str(match_result))
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error in matchresult: {e}")
+            return Response({'error':'Internal Server Error'}, status=500)
+        
+        
