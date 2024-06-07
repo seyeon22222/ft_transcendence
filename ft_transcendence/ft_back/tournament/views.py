@@ -1,11 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking
-from .serializers import tournamentSerializer, tournamentParticipantSerializer, tournamentMatchSerializer, matchSerializer
+from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch
+from .serializers import tournamentSerializer, tournamentParticipantSerializer, tournamentMatchSerializer, matchSerializer, MultiSerializer
 from ft_user.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
-from ft_user.models import MyUser
+from ft_user.models import MyUser, GameStat, MatchInfo
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import requests
@@ -359,5 +359,73 @@ class matchResultView(APIView):
         match.match_result = match_result
         match.is_active = is_active
         match.save()
+
+        player1_stat = GameStat.objects.get(user=match.player1)
+        player2_stat = GameStat.objects.get(user=match.player2)
+
+        player1_matchInfo = MatchInfo.objects.get(user=match.player1)
+        player2_matchInfo = MatchInfo.objects.get(user=match.player2)
+
+        player1_matchInfo.match_date = match_date
+        player2_matchInfo.match_date = match_date
+
+
+        if match_result == 1:
+            player1_stat.win_count += 1
+            player2_stat.defeat_count += 1
+            player1_matchInfo.match_result = "Win"
+            player2_matchInfo.match_result = "Lose"
+        elif match_result == 2:
+            player2_stat.win_count += 1
+            player1_stat.defeat_count += 1
+            player2_matchInfo.match_result = "Win"
+            player1_matchInfo.match_result = "Lose"
+
+        player1_stat.win_rate = (player1_stat.win_count / (player1_stat.win_count + player1_stat.defeat_count)) * 100
+        player2_stat.win_rate = (player2_stat.win_count / (player2_stat.win_count + player2_stat.defeat_count)) * 100
+
+
+        # 반영된 정보 저장
+        player1_stat.save()
+        player2_stat.save()
+        player1_matchInfo.save()
+        player2_matchInfo.save()
+
         return Response(status=status.HTTP_200_OK)
     
+
+class MultiMatchApplyView(APIView):
+
+    def post(self, request, multimatch_id):
+        match = get_object_or_404(MultiMatch, pk=multimatch_id)
+        user_id = request.data.get('user_id')
+        nickname = request.data.get('nickname')
+
+        # 사용자 검증
+        try:
+            user = MyUser.objects.get(user_id=user_id)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 중복 신청 확인
+        if match.player1 == user or match.player2 == user or match.player3 == user or match.player4 == user:
+            return Response({'message': '중복 신청이 불가능합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 인원 꽉 찼는지 확인
+        if all([match.player1, match.player2, match.player3, match.player4]):
+            return Response({'message': '인원이 꽉 찼습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 첫 번째 빈 슬롯에 사용자 추가
+        if match.player1 is None:
+            match.player1 = user
+        elif match.player2 is None:
+            match.player2 = user
+        elif match.player3 is None:
+            match.player3 = user
+        elif match.player4 is None:
+            match.player4 = user
+
+        # 변경사항 저장
+        match.save()
+
+        return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)

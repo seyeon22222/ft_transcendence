@@ -16,7 +16,7 @@ export async function profile_js() {
 
 		let data;
 		const csrftoken = Cookies.get('csrftoken');
-
+		
 		// retrieve current user data
 		const response = await fetch('user/info', {
 			method: 'GET',
@@ -28,6 +28,7 @@ export async function profile_js() {
 		});
 		if (response.ok) {
 			data = await response.json();
+			console.log("In profile", data);
 			if (data) {
 				// set current user's info as placeholder
 				const name = document.getElementById("username_input");

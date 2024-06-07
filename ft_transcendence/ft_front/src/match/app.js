@@ -9,40 +9,58 @@ export async function match_view(hash) {
     },
     credentials: "include",
   });
-  
+
   if (response.ok) {
     const data = await response.json();
     const player_data = await get_name();
+    const Button = document.getElementById("button_container");
     match_render(data);
-    console.log("asd",data);
-    if (data.requester === player_data[0].user_id && data.is_active === true) {
-      const Button = document.getElementById("button_container");
-      const startButton = document.createElement("button");
-      startButton.innerHTML = "매치 시작";
-      Button.appendChild(startButton);
-      startButton.addEventListener("click", async (event) => {
-        event.preventDefault();
-        const csrftoken = Cookies.get('csrftoken');
-        const response = await fetch(`match/invite_m/${matchId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken,
-            },
-            credentials: 'include',
-            body: JSON.stringify({ player1: data.player1, player2: data.player2, id : matchId}),
-        });
-        if (response.ok) {
-            // alert(`${player1.nickname}와 ${player2.nickname}에게 게임 초대가 전송되었습니다.`);
-        } else {
-            alert('게임 초대 전송에 실패했습니다.');
-        }
-      });
-    }
-    //-------------------------------------------
+    makeButton(Button, matchId, data, player_data);
   } else {
     const error = await response.json();
     alert(error);
+  }
+}
+
+function makeButton(Button, matchId, data, player_data) {
+  if (data.requester === player_data[0].user_id && data.is_active === true) {
+    const existingButton = document.getElementById("match_start_button");
+    if (existingButton) {
+        existingButton.removeEventListener("click", (event) => start_match(event, matchId, data));
+        Button.removeChild(existingButton);
+    }
+    const startButton = document.createElement("button");
+    startButton.innerHTML = "매치 시작";
+    startButton.id = "match_start_button";
+    Button.appendChild(startButton);
+    
+    startButton.addEventListener("click", (event) => start_match(event, matchId, data));
+  } else {
+    const existingButton = document.getElementById("match_start_button");
+      if (existingButton) {
+          existingButton.removeEventListener("click", start_match);
+          Button.removeChild(existingButton);
+      }
+  }
+}
+
+async function start_match(event, matchId, data) {
+  event.preventDefault();
+  console.log("qqq",data);
+  const csrftoken = Cookies.get('csrftoken');
+  const response = await fetch(`match/invite_m/${matchId}`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+      },
+      credentials: 'include',
+      body: JSON.stringify({ player1: data.player1, player2: data.player2, id : matchId}),
+  });
+  if (response.ok) {
+      console.log(`${data.player1_username}와 ${data.player2_username}에게 게임 초대가 전송되었습니다.`);
+  } else {
+      alert('게임 초대 전송에 실패했습니다.');
   }
 }
 
