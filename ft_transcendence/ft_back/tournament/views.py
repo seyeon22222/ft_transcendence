@@ -429,3 +429,36 @@ class MultiMatchApplyView(APIView):
         match.save()
 
         return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
+    
+
+class MultiMatchListView(APIView):
+
+    def get(self, request):
+        multiMatch = MultiMatch.objects.all()
+        serializer = MultiSerializer(multiMatch)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        multiMatch = request.data.get('multiMatch')
+        username = request.data.get('username')
+        apply_user = request.data.get('apply_user')
+
+        valid, message = validate_input(multiMatch)
+        if not valid:
+            return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not multiMatch or not username:
+            return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            apply_user = MyUser.objects.get(username=username)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+
+        match = MultiMatch.objects.create(
+            name=multiMatch,
+            requester = apply_user,
+        )
+
+        serializer = MultiSerializer(multiMatch)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

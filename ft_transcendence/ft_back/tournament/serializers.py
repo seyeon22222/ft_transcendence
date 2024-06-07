@@ -52,7 +52,6 @@ class MultiSerializer(serializers.ModelSerializer):
     player4_username = serializers.SerializerMethodField()
     requester_username = serializers.SerializerMethodField()
 
-
     class Meta:
             model = MultiMatch
             fields = '__all__'
