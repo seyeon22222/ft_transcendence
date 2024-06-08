@@ -31,11 +31,12 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
 	'ft_user',
 	'corsheaders',
 	'channels',
 	'chatting',
-    'daphne',
+    'tournament',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -74,6 +75,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'backend.asgi.application'
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
@@ -139,8 +141,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'ft_user.MyUser'
 
-ASGI_APPLICATION = 'backend.asgi.application'
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
@@ -150,3 +150,4 @@ CHANNEL_LAYERS = {
 CSRF_TRUSTED_ORIGINS = ['https://127.0.0.1:8000']
 CORS_ALLOWED_ORIGINS = ['https://127.0.0.1:8000']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
