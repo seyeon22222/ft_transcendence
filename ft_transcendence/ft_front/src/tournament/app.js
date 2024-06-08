@@ -5,11 +5,13 @@ export async function tournament_view(hash) {
     // set style
     const style = document.getElementById("style");
     style.innerHTML = tournament_style();
-    
+
+    // socket 초기화
     if (window.t_socket) {
         window.t_socket.close();
         window.t_socket = null;
     }
+
     // check login status
     const check = await check_login();
     if (check === false) {
