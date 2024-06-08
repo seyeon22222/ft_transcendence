@@ -42,7 +42,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.task = self.loop.create_task(self.game_update())
 
         await self.send(text_data=json.dumps({
-            "players": self.players,
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
             'paddle2_pos': self.p2.pos,
