@@ -22,6 +22,8 @@ import { chatPrivate_html } from "../src/chatPrivate/html.js";
 import { chatPrivate_js } from "../src/chatPrivate/app.js";
 import { game_html } from "../src/game/html.js";
 import { game_js } from "../src/game/app.js";
+import { multiMatch_js } from "../src/multimatch/app.js";
+import { multiMatch_html } from "../src/multimatch/html.js";
 
 const routes = {
   "/": [home_html, home_js],
@@ -36,6 +38,7 @@ const routes = {
   "/tournament": [tournament_html, tournament_view],
   "/chatprivate": [chatPrivate_html, chatPrivate_js],
   "/game" : [game_html, game_js],
+  "/multi" : [multiMatch_html, multiMatch_js],
 };
 
 

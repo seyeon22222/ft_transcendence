@@ -1,20 +1,17 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking
-from .serializers import tournamentSerializer, tournamentParticipantSerializer, tournamentMatchSerializer, matchSerializer
+from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch
+from .serializers import tournamentSerializer, tournamentParticipantSerializer, tournamentMatchSerializer, matchSerializer, MultiSerializer
 from ft_user.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
-from ft_user.models import MyUser
+from ft_user.models import MyUser, GameStat, MatchInfo
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import requests
 from ft_user.utils import validate_input
 from datetime import datetime
 import hashlib
-
-
-
 
 class tournamentCreateView(APIView):
 
@@ -64,39 +61,6 @@ class tournamentGame(APIView):
         specific_tournament.save()
         serializer = tournamentSerializer(specific_tournament)
         return Response(serializer.data)
-
-# class addTournamentPlayer(APIView):
-#     def post(self, request, tournament_id):
-#         intournament = get_object_or_404(tournament, pk=tournament_id)
-#         username = request.data.get('username')
-#         nickname = request.data.get('nickname')  # 별칭 추가
-#         index = request.data.get('index') # 해당 플레이어의 토너먼트에서의 위치
-#         # 사용자 검증
-#         try:
-#             user = MyUser.objects.get(username=username)
-#         except MyUser.DoesNotExist:
-#             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         print(intournament.participant)
-
-#         # 중복 신청 방지
-#         if intournament.participant.filter(username=username).exists():
-#             return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # 토너먼트 참가자 생성
-#         tournament_participant = tournamentParticipant(tournament=intournament, player=user, nickname=nickname, index=index)
-#         tournament_participant.save()
-
-#         # 웹소켓을 통해 업데이트 정보 전송
-#         channel_layer = get_channel_layer()
-#         async_to_sync(channel_layer.group_send)(
-#             f'tournament_{tournament_id}',
-#             {
-#                 'type': 'tournament_message',
-#                 'message': f'User {username} with nickname {nickname} has joined the tournament {intournament.name}.'
-#             }
-#         )
-#         return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
 
 class addTournamentPlayer(APIView):
     def post(self, request, tournament_id):
@@ -284,23 +248,11 @@ class MatchmakingView(APIView):
             return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
 
 
-
-# 초대 메세지를 받는 API
-# 웹 소켓을 통해서 해당 매칭되는 플레이어들에게 전송해야함
 class tournamentInviteView(APIView):
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)
         player1 = request.data.get("player1")
         player2 = request.data.get("player2")
-
-        # 게임서버 URL로 지정해서 post를 보내줘야함
-        # gameserverURL = "http://gameserver.example.com/api/invite"
-        # data = {
-        #     "player1": player1,
-        #     "player2": player2,
-        #     "tournament_id": tournament_id,
-        # }
-        # response = requests.post(gameserverURL, data=data)
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
@@ -308,6 +260,10 @@ class tournamentInviteView(APIView):
             {
                 'type': 'message',
                 'message': f'Invite to tournament {intournament.name}.',
+                'player1' : player1,
+                'player2' : player2,
+                'g_type' : 't',
+                'g_id' : tournament_id,
             }
         )
 
@@ -316,31 +272,193 @@ class tournamentInviteView(APIView):
             {
                 'type': 'message',
                 'message': f'Invite to tournament {intournament.name}.',
+                'player1' : player1,
+                'player2' : player2,
+                'g_type' : 't',
+                'g_id' : tournament_id,
             }
         )
 
         return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
     
 
+class MatchInviteView(APIView):
+    def post(self, request, match_id):
+        match = get_object_or_404(Match, pk=match_id)
+        player1 = request.data.get("player1")
+        player2 = request.data.get("player2")
+        print(match_id)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{player1}',
+            {
+                'type': 'message',
+                'message': f'Invite to match {match.name}.',
+                'player1' : player1,
+                'player2' : player2,
+                'g_type' : 'm',
+                'g_id' : match_id,
+            }
+        )
+
+        async_to_sync(channel_layer.group_send)(
+            f'user_{player2}',
+            {
+                'type': 'message',
+                'message': f'Invite to match {match.name}.',
+                'player1' : player1,
+                'player2' : player2,
+                'g_type' : 'm',
+                'g_id' : match_id,
+            }
+        )
+
+        return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
+
+
 class matchGetHash(APIView):
     def get(self, request, match_id):
         try :
             match = get_object_or_404(Match, id=match_id)
-            if (len(match.slug) == 0):
-                player1 = match.player1
-                player2 = match.player2
-            
-                timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
-                combined_string = f"{match.player1.user_id}_{match.player2.user_id}_{timestamp}"
-                slug = hashlib.sha256(combined_string.encode()).hexdigest()[:10]  # Use the first 10 characters of the hash
-                match.slug = slug
-                match.save()
+            player1 = match.player1
+            player2 = match.player2
+            combined_string = f"m_{match.player1.user_id}_{match.player2.user_id}_{match_id}"
 
-            else:
-                slug = match.slug
-            return Response({'hash': slug}, status=status.HTTP_200_OK)
+            return Response({'hash': combined_string}, status=status.HTTP_200_OK)
         except Match.DoesNotExist:
             return Response({'error':'Match not found'}, status=404)
         except Exception as e:
             print(f"Error in matchGetHash: {e}")
             return Response({'error':'Internal Server Error'}, status=500)
+        
+
+class tournamentHash(APIView):
+    def get(self, request, player1, player2, tournament_id):
+        hash_url=''
+        try :
+            player1_id = player1
+            player2_id = player2
+            
+            hash_url = f"t_{player1_id}_{player2_id}_{tournament_id}"
+            # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
+            return Response({'hash': hash_url}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error in matchGetHash: {e}")
+            return Response({'error':'Internal Server Error'}, status=500)
+        
+
+class matchResultView(APIView):
+
+    def post(self, request, match_id):
+        match = get_object_or_404(Match, id=match_id)
+        match_date = request.data.get('match_date')
+        match_result = request.data.get('match_result')
+        is_active = request.data.get('is_active')
+
+        match.match_date = match_date
+        match.match_result = match_result
+        match.is_active = is_active
+        match.save()
+
+        player1_stat = GameStat.objects.get(user=match.player1)
+        player2_stat = GameStat.objects.get(user=match.player2)
+
+        player1_matchInfo = MatchInfo.objects.get(user=match.player1)
+        player2_matchInfo = MatchInfo.objects.get(user=match.player2)
+
+        player1_matchInfo.match_date = match_date
+        player2_matchInfo.match_date = match_date
+
+
+        if match_result == 1:
+            player1_stat.win_count += 1
+            player2_stat.defeat_count += 1
+            player1_matchInfo.match_result = "Win"
+            player2_matchInfo.match_result = "Lose"
+        elif match_result == 2:
+            player2_stat.win_count += 1
+            player1_stat.defeat_count += 1
+            player2_matchInfo.match_result = "Win"
+            player1_matchInfo.match_result = "Lose"
+
+        player1_stat.win_rate = (player1_stat.win_count / (player1_stat.win_count + player1_stat.defeat_count)) * 100
+        player2_stat.win_rate = (player2_stat.win_count / (player2_stat.win_count + player2_stat.defeat_count)) * 100
+
+
+        # 반영된 정보 저장
+        player1_stat.save()
+        player2_stat.save()
+        player1_matchInfo.save()
+        player2_matchInfo.save()
+
+        return Response(status=status.HTTP_200_OK)
+    
+
+class MultiMatchApplyView(APIView):
+
+    def post(self, request, multimatch_id):
+        match = get_object_or_404(MultiMatch, pk=multimatch_id)
+        user_id = request.data.get('user_id')
+        nickname = request.data.get('nickname')
+
+        # 사용자 검증
+        try:
+            user = MyUser.objects.get(user_id=user_id)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 중복 신청 확인
+        if match.player1 == user or match.player2 == user or match.player3 == user or match.player4 == user:
+            return Response({'message': '중복 신청이 불가능합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 인원 꽉 찼는지 확인
+        if all([match.player1, match.player2, match.player3, match.player4]):
+            return Response({'message': '인원이 꽉 찼습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 첫 번째 빈 슬롯에 사용자 추가
+        if match.player1 is None:
+            match.player1 = user
+        elif match.player2 is None:
+            match.player2 = user
+        elif match.player3 is None:
+            match.player3 = user
+        elif match.player4 is None:
+            match.player4 = user
+
+        # 변경사항 저장
+        match.save()
+
+        return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
+    
+
+class MultiMatchListView(APIView):
+
+    def get(self, request):
+        multiMatch = MultiMatch.objects.all()
+        serializer = MultiSerializer(multiMatch)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        multiMatch = request.data.get('multiMatch')
+        username = request.data.get('username')
+        apply_user = request.data.get('apply_user')
+
+        valid, message = validate_input(multiMatch)
+        if not valid:
+            return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not multiMatch or not username:
+            return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            apply_user = MyUser.objects.get(username=username)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+
+        match = MultiMatch.objects.create(
+            name=multiMatch,
+            requester = apply_user,
+        )
+
+        serializer = MultiSerializer(multiMatch)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -60,16 +60,30 @@ class messageConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']
-
+        player1 = data.get('player1')
+        player2 = data.get('player2')
+        g_type = data.get('g_type')
+        g_id = data.get('g_id')
         await self.send(text_data=json.dumps({
             'type' : 'message',
-            'message': message
+            'message': message,
+            'player1' : player1,
+            'player2' : player2,
+            'g_type' : g_type,
+            'g_id' : g_id,
         }))
 
     async def message(self, event):
         message = event['message']
-
+        player1 = event.get('player1')
+        player2 = event.get('player2')
+        g_type = event.get('g_type')
+        g_id = event.get('g_id')
         await self.send(text_data=json.dumps({
             'type' : 'message',
-            'message': message
+            'message': message,
+            'player1' : player1,
+            'player2' : player2,
+            'g_type' : g_type,
+            'g_id' : g_id,
         }))

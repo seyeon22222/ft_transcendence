@@ -39,6 +39,31 @@ export async function matchLobby_view() {
             });
         }
 
+        const multiMatchcontainer = document.getElementById("multiMatch_list");
+        const m_response = await fetch('match/list', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            credentials: 'include',
+        });
+
+        if (m_response.ok) {
+            data = await response.json();
+            container.innerHTML = '';
+            // Append data to container
+            data.forEach(multiMatch => {
+                const multiMatchLink = document.createElement('a');
+                multiMatchLink.href = `/#multi/${multiMatch.name}`;
+                multiMatchLink.textContent = multiMatch.name;
+                multiMatchLink.classList.add('multiMatch-link', 'block', 'p-2', 'bg-gray-700', 'text-white', 'rounded', 'mb-2', 'hover:bg-gray-600');
+                multiMatchLink.style.marginLeft = '10px';
+                multiMatchLink.style.marginRight = '10px';
+                multiMatchcontainer.appendChild(multiMatchLink);
+            });
+        }
+
         const matchContainer = document.getElementById("match_list");
         const matchcsrftoken = Cookies.get('csrftoken');
         const matchresponse = await fetch('match/matchview', {
@@ -121,3 +146,7 @@ export async function matchLobby_view() {
         console.error('matchLobby : ', error);
     }
 }
+
+
+
+function 

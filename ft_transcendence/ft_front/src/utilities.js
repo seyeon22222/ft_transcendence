@@ -2,6 +2,7 @@
     check whether current user is login or not
     if login, return true. else, return false.
 */
+
 export async function check_login() {
   try {
     const csrftoken = Cookies.get('csrftoken');
@@ -16,6 +17,7 @@ export async function check_login() {
     if (response.status === 301) {
       return false;
     }
+    // initializeWebsocket();
     return true;
   } catch (error) {
     console.error('로그인 여부 확인 중 오류 발생 : ', error);

@@ -58,7 +58,6 @@ class Match(models.Model):
     is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requester')
-    slug = models.CharField(default='', max_length=10)
 
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.name}"
@@ -69,3 +68,18 @@ class matchmaking(models.Model):
 
     def __str__(self):
         return f"{self.pending_player.username} is waiting for matchmaking"
+
+
+class MultiMatch(models.Model):
+    name = models.CharField(max_length=100)
+    match_date = models.DateTimeField(null=True)
+    player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1_matches')
+    player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2_matches')
+    player3 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player3_matches')
+    player4 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player4_matches')
+    match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
+    is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
+    requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requested_matches')
+
+    def __str__(self):
+        return f"{self.player1.username}, {self.player2.username}, {self.player3.username}, {self.player4.username} in {self.name}"

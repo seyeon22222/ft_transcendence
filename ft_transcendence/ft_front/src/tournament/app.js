@@ -1,19 +1,15 @@
 import { formatDateTime } from "../info/info_func.js";
 import { check_login } from "../utilities.js"
 
-let socket;
-
 export async function tournament_view(hash) {
-
     // set style
     const style = document.getElementById("style");
     style.innerHTML = tournament_style();
-
-    if (socket) {
-        socket.close();
-        socket = null;
+    
+    if (window.t_socket) {
+        window.t_socket.close();
+        window.t_socket = null;
     }
-
     // check login status
     const check = await check_login();
     if (check === false) {
@@ -38,13 +34,13 @@ export async function tournament_view(hash) {
     const { player, tournament_id: updatedTournamentId } = result;
     tournament_id = updatedTournamentId;
 
-    socket = new WebSocket(
+    window.t_socket = new WebSocket(
         `wss://${window.location.host}/ws/tournament/${tournament_id}/`
     );
-    socket.onopen = function(e) {
-        // console.log("socket open");
+    window.t_socket.onopen = function(e) {
+        console.log("window.t_socket open");
     }
-    socket.onmessage = async function(e) {
+    window.t_socket.onmessage = async function(e) {
         const data = JSON.parse(e.data);
         // console.log(data.message);
 
@@ -54,8 +50,8 @@ export async function tournament_view(hash) {
         
     };
     // console.log(player);
-    socket.onclose = function(e) {
-        console.log('Chat socket closed unexpectedly');
+    window.t_socket.onclose = function(e) {
+        console.log('window.t_socket closed');
     };
 
     let t_data;
@@ -78,6 +74,10 @@ export async function tournament_view(hash) {
     } catch (error) {
         alert(error);
     }
+    const tournament_start = document.getElementById("tournament_start");
+    if (tournament_start !== null)
+        tournament_start.addEventListener("click", (event) => startTournamentListener(event, tournament_id));
+
 
     const apply_button = document.getElementById('tournament_button');
     apply_button.addEventListener("click", async (event) => {
@@ -145,14 +145,6 @@ function equal_arr(arr1, arr2) {
 }
 
 async function startTournament(tournament_id) {
-/*
-1. start가 눌렸을 때, 게임을 해야하는 인원이 매칭이 되는지 확인 -> 2명이 아닐경우, 바로 부전승 처리
-2. 매칭이 될 경우, 해당 매칭될 인원들에게 게임접속 메세지 전송(팝업 또는 기타 다른 방법)
-3. 수락 -> 게임 페이지로 리다이렉션 / 거절 -> 게임 자동 패배 처리
-4. 게임의 결과를 받았을 때, 해당 결과를 데이터베이스에서 매칭을 찾아서 정리 및 랜더링
-5. 다음 게임을 시작하는 로직
-*/
-
  // 1. 매칭 인원 확인 및 부전승 처리
     const csrftoken = Cookies.get('csrftoken');
     const response = await fetch(`match/t_list/${tournament_id}`, {
@@ -263,7 +255,7 @@ async function sendGameInvitation(tournament_id, player1, player2) {
             'X-CSRFToken': csrftoken,
         },
         credentials: 'include',
-        body: JSON.stringify({ player1: player1.player, player2: player2.player }),
+        body: JSON.stringify({ player1: player1.player, player2: player2.player, id: tournament_id }),
     });
     if (response.ok) {
         // alert(`${player1.nickname}와 ${player2.nickname}에게 게임 초대가 전송되었습니다.`);
@@ -301,8 +293,9 @@ async function startNextRound() {
  console.log('다음 라운드를 시작합니다.');
 }
 
-async function updateTournamentInfo(arr) {
 
+// 찾기
+async function updateTournamentInfo(arr) {
     const csrftoken = Cookies.get('csrftoken');
     const response = await fetch('match/list', {
         method: 'GET',
@@ -320,7 +313,7 @@ async function updateTournamentInfo(arr) {
         const data = await response.json();
         let operator;
         let flag;
-        // console.log(data)
+
         for (let i = 0; i < data.length; ++i) {
             if (equal_arr(arr, data[i].name.split(" "))) {
                 tournament_id = data[i].id;
@@ -332,7 +325,7 @@ async function updateTournamentInfo(arr) {
                 break;
             }
         }
-        
+
         player = player.sort((a, b) => a.index - b.index);
         const oper_csrftoken = Cookies.get('csrftoken');
         const oper_response = await fetch('user/info', {
@@ -342,18 +335,12 @@ async function updateTournamentInfo(arr) {
                 'X-CSRFToken': oper_csrftoken,
             },
             credentials: 'include',
-        })
+        });
+
         if (oper_response.ok) {
             const oper_data = await oper_response.json();
-            // console.log("oper",oper_data);
-            // if (operator === oper_data[0].user_id && flag == true) {
-            if (operator === oper_data[0].user_id) {
-                const tournament_start = document.getElementById("tournament_start");
-                tournament_start.addEventListener("click", (event) => {
-                    event.preventDefault();
-                    startTournament(tournament_id);
-                });
-            } else {
+
+            if (operator !== oper_data[0].user_id) {
                 const tournament_start = document.getElementById("button_container");
                 tournament_start.innerHTML = '';
             }
@@ -374,6 +361,12 @@ async function updateTournamentInfo(arr) {
 
     return { player, tournament_id };
 }
+
+function startTournamentListener(event, tournament_id) {
+    event.preventDefault();
+    startTournament(tournament_id);
+}
+
 
 function player_check(player) {
     for (let i = 0; i < player.length; ++i) {

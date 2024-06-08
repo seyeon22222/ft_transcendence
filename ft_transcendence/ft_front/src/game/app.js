@@ -12,8 +12,6 @@ import { Shader } from "../../static/graphics/Shader.js";
 import { VertexBuffer } from "../../static/graphics/VertexBuffer.js";
 import { Ball, Stick } from "../../static/phong/ball.js";
 
-let socket;
-
 class Main {
   static gl = null;
   static program = null;
@@ -27,7 +25,7 @@ class Main {
   static keyA = 0;
   static keyQ = 0;
   static lastTime = 0;
-  // static ws = null;
+  static ws = null;
   static players = 0;
   static camDegree = 0;
   static camMat4;
@@ -45,37 +43,95 @@ class Main {
     Main.stick1 = new Stick([-15, 0, 0]);
     Main.stick2 = new Stick([15, 0, 0]);
     console.log(Main.players);
-    if (socket) {
-      socket.close();
-      socket=null;
-    }
-    function connect() {
-      
-      socket = new WebSocket(
-        "wss://" + window.location.host + "/ws/game/" + get_hash + "/"
-      );
-
-      socket.onopen = function () {
-        console.log("웹소켓 연결 성공");
-        //requestAnimationFrame(Main.update);
-      };
-
-      socket.onclose = function (e) {
-        console.log("웹소켓 연결 끊김. 재연결 시도 중...");
-        setTimeout(function () {
-          connect();
-        }, 10000);
-      };
-
-      socket.onerror = function (err) {
-        console.error("웹소켓 오류 발생:", err);
-        socket.close(); // 오류 발생 시 명시적으로 닫기
-      };
-    }
-
-    connect();
     let flag = 1;
-    socket.onmessage = async function (e) {
+    // WebSocket 연결 시도
+    let ws = new WebSocket("wss://" + window.location.host + "/ws/game/" + get_hash + "/");
+    
+    function sleep(ms) {
+      const start = new Date().getTime();
+      while (new Date().getTime() < start + ms) {
+        // 아무것도 하지 않고 대기
+      }
+    }
+
+    window.addEventListener('popstate', function() {
+      // WebSocket 연결 닫기
+      if (ws && ws.readyState !== WebSocket.CLOSED) {
+        ws.close();
+        sleep(1000);
+        ws = null;
+        console.log("popstate : " + get_hash);
+      }
+      Main.players = 0;
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown);
+    });
+
+    const handleResize = () => {
+      canvas.height = window.innerHeight - 50;
+      canvas.width = window.innerWidth - 50;
+    };
+
+    const handleKeyUp = (event) => {
+      let message = { message: event.key, players: Main.players };
+      let keyflag = 0;
+      if (event.code === "KeyQ") {
+        message = { message: "1pupstop", players: Main.players };
+        keyflag = 1;
+      }
+      if (event.code == "KeyA") {
+        message = { message: "1pdownstop", players: Main.players };
+        keyflag = 1;
+      }
+      if (event.code === "KeyO") {
+        message = { message: "2pupstop", players: Main.players };
+        keyflag = 1;
+      }
+      if (event.code === "KeyL") {
+        message = { message: "2pdownstop", players: Main.players };
+        keyflag = 1;
+      }
+      if (event.code === "ArrowRight" || event.code === "ArrowLeft")
+        Main.camDegree = 0;
+      if (keyflag) ws.send(JSON.stringify(message));
+    };
+
+    const handleKeyDown = (event) => {
+      let message = { message: event.key, players: Main.players };
+      let keyflag = 0;
+      if (event.code === "KeyQ") {
+        message = { message: "1pup", players: Main.players };
+        keyflag = 1;
+      }
+      if (event.code === "KeyA") {
+        message = { message: "1pdown", players: Main.players };
+        keyflag = 1;
+      }
+      if (event.code === "KeyO") {
+        message = { message: "2pup", players: Main.players };
+        keyflag = 1;
+      }
+      if (event.code === "KeyL") {
+        message = { message: "2pdown", players: Main.players };
+        keyflag = 1;
+      }
+      if (event.code === "ArrowRight")
+        Main.camDegree = Math.min(45, Main.camDegree + 1);
+      if (event.code === "ArrowLeft")
+        Main.camDegree = Math.max(-45, Main.camDegree - 1);
+      if (keyflag) ws.send(JSON.stringify(message));
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("keydown", handleKeyDown);
+
+    ws.onclose = () => {
+      console.log("ws close : " + get_hash);
+    };
+
+    ws.onmessage = async function (e) {
       let data = JSON.parse(e.data);
       let ball_pos = data["ball_pos"];
       let paddle1_pos = data["paddle1_pos"];
@@ -110,11 +166,8 @@ class Main {
     const canvas = document.getElementById("canvas");
     canvas.height = window.innerHeight - 50;
     canvas.width = window.innerWidth - 50;
-
-    window.addEventListener("resize", () => {
-      canvas.height = window.innerHeight - 50;
-      canvas.width = window.innerWidth - 50;
-    });
+    console.log(canvas.height);
+    console.log(canvas.width);
 
     const gl = canvas.getContext("webgl2");
     if (!gl) {
@@ -275,57 +328,6 @@ class Main {
     Main.mesh2 = mesh2;
     Main.mesh3 = mesh3;
     Main.mesh4 = mesh4;
-
-    window.addEventListener("keydown", async function (event) {
-      let message = { message: event.key, players: Main.players };
-      let flag = 0;
-
-      if (event.code === "KeyQ") {
-        message = { message: "1pup", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "KeyA") {
-        message = { message: "1pdown", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "KeyO") {
-        message = { message: "2pup", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "KeyL") {
-        message = { message: "2pdown", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "ArrowRight")
-        Main.camDegree = Math.min(45, Main.camDegree + 1);
-      if (event.code === "ArrowLeft")
-        Main.camDegree = Math.max(-45, Main.camDegree - 1);
-      if (flag) socket.send(JSON.stringify(message));
-    });
-
-    window.addEventListener("keyup", async function (event) {
-      let message = { message: event.key, players: Main.players };
-      let flag = 0;
-      if (event.code === "KeyQ") {
-        message = { message: "1pupstop", players: Main.players };
-        flag = 1;
-      }
-      if (event.code == "KeyA") {
-        message = { message: "1pdownstop", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "KeyO") {
-        message = { message: "2pupstop", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "KeyL") {
-        message = { message: "2pdownstop", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "ArrowRight" || event.code === "ArrowLeft")
-        Main.camDegree = 0;
-      if (flag) socket.send(JSON.stringify(message));
-    });
     requestAnimationFrame(Main.update);
   }
   static render() {
