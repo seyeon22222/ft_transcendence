@@ -26,6 +26,8 @@ class matchSerializer(serializers.ModelSerializer):
     player1_username = serializers.SerializerMethodField()
     player2_username = serializers.SerializerMethodField()
     winner_username = serializers.SerializerMethodField()
+    player1_uuid = serializers.SerializerMethodField()
+    player2_uuid = serializers.SerializerMethodField()
 
     class Meta:
         model = Match
@@ -44,6 +46,11 @@ class matchSerializer(serializers.ModelSerializer):
             return obj.player2.username
         else:
             return None
+    def get_player1_uuid(self,obj):
+        return obj.player1.user_id
+    
+    def get_player2_uuid(self,obj):
+        return obj.player2.user_id
         
 
 class MultiSerializer(serializers.ModelSerializer):
