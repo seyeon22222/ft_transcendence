@@ -439,77 +439,81 @@ class MultiMatchListView(APIView):
         return Response(serializer.data)
     
     def post(self, request):
-        multimatch_name = request.data.get('multimatch_name')
-        player1_id = request.data.get('player1_id')
-        player2_id = request.data.get('player2_id')
-        player3_id = request.data.get('player3_id')
-        player4_id = request.data.get('player4_id')
-        requester_id = request.data.get('requester_id')
+        multiMatch = request.data.get('multiMatch')
+        username = request.data.get('username')
+        # apply_user = request.data.get('apply_user')
 
-        # check if all fields are provided
-        if not multimatch_name or not player1_id or not player2_id or not player3_id or not player4_id or not requester_id:
+        if not multiMatch or not username:
             return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # input validation for multimatch_name
-        valid, message = validate_input(multimatch_name)
+        valid, message = validate_input(multiMatch)
         if not valid:
             return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
 
-        # get user objects from user_id
         try:
-            player1 = MyUser.objects.get(username=player1_id)
-            player2 = MyUser.objects.get(username=player2_id)
-            player3 = MyUser.objects.get(username=player3_id)
-            player4 = MyUser.objects.get(username=player4_id)
-            requester = MyUser.objects.get(username=requester_id)
+            apply_user = MyUser.objects.get(username=username)
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 확인 및 수정 필요 : multimatch를 match 쪽으로 생각할지, tournament 쪽으로 생각할지
-        if MultiMatch.objects.filter(player1 = player1, player2 = player2, player3 = player3, player4 = player4, name = multimatch_name, is_active=True).exists():
-            return Response({'error': '해당 매치는 이미 존재합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        match = MultiMatch.objects.create(
+            name=multiMatch,
+            requester = apply_user,
+        )
 
-        # create multimatch
-        try:
-            created_match = MultiMatch.objects.create(
-                name=multimatch_name,
-                player1 = player1,
-                player2 = player2,
-                player3 = player3,
-                player4 = player4,
-                requester = requester,
-                is_active = True,
-            )
-        except Exception as e:
-            return Response({'error': f'MultiMatch 생성 중 오류 발생 :  {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        serializer = MultiSerializer(created_match)
+        serializer = MultiSerializer(multiMatch)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-# class MatchRequestView(APIView):
+
+# class MultiMatchListView(APIView):
+
+#     def get(self, request):
+#         multiMatch = MultiMatch.objects.all()
+#         serializer = MultiSerializer(multiMatch, many=True)
+#         return Response(serializer.data)
+    
 #     def post(self, request):
-#         apply_user_id = request.data.get('apply_user')
-#         accept_user_id = request.data.get('accept_user')
+#         multimatch_name = request.data.get('multimatch_name')
+#         player1_id = request.data.get('player1_id')
+#         player2_id = request.data.get('player2_id')
+#         player3_id = request.data.get('player3_id')
+#         player4_id = request.data.get('player4_id')
+#         requester_id = request.data.get('requester_id')
 
+#         # check if all fields are provided
+#         if not multimatch_name or not player1_id or not player2_id or not player3_id or not player4_id or not requester_id:
+#             return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # input validation for multimatch_name
+#         valid, message = validate_input(multimatch_name)
+#         if not valid:
+#             return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # get user objects from user_id
 #         try:
-#             apply_user = MyUser.objects.get(username=apply_user_id)
-#             accept_user = MyUser.objects.get(username=accept_user_id)
+#             player1 = MyUser.objects.get(username=player1_id)
+#             player2 = MyUser.objects.get(username=player2_id)
+#             player3 = MyUser.objects.get(username=player3_id)
+#             player4 = MyUser.objects.get(username=player4_id)
+#             requester = MyUser.objects.get(username=requester_id)
 #         except MyUser.DoesNotExist:
-#             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+#             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
 
-#         match_name = f"{apply_user.username} vs {accept_user.username}"
-
-#         if Match.objects.filter(player1=apply_user.user_id, player2=accept_user.user_id, is_active=True).exists() or \
-#            Match.objects.filter(player1=accept_user.user_id, player2=apply_user.user_id, is_active=True).exists():
+#         if MultiMatch.objects.filter(player1 = player1, player2 = player2, player3 = player3, player4 = player4, name = multimatch_name, is_active=True).exists():
 #             return Response({'error': '해당 매치는 이미 존재합니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-#         match = Match.objects.create(
-#             name=match_name,
-#             player1=apply_user,
-#             player2=accept_user,
-#             requester=apply_user,
-#             status='pending',
-#             is_active=True,
-#         )
+#         # create multimatch
+#         try:
+#             created_match = MultiMatch.objects.create(
+#                 name=multimatch_name,
+#                 player1 = player1,
+#                 player2 = player2,
+#                 player3 = player3,
+#                 player4 = player4,
+#                 requester = requester,
+#                 is_active = True,
+#             )
+#         except Exception as e:
+#             return Response({'error': f'MultiMatch 생성 중 오류 발생 :  {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-#         return Response({'message': 'Match request sent'}, status=status.HTTP_201_CREATED)
+#         serializer = MultiSerializer(created_match)
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
