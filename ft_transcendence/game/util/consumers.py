@@ -87,8 +87,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'is_active': False,
                 }
                 response = requests.post(backend_url, json=game_results)
-                print(response.status_code)
-                print(response.text)
+                # print(response.status_code)
+                # print(response.text)
             elif self.b.point2 == 5:
                 self.end = False
                 backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
@@ -98,8 +98,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'is_active': False,
                 }
                 response = requests.post(backend_url, json=game_results)
-                print(response.status_code)
-                print(response.text)
+                # print(response.status_code)
+                # print(response.text)
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,

@@ -1,3 +1,5 @@
+import { change_date } from "../utilities.js";
+
 export async function select_image_view(data) {
     const imageContainer = document.getElementById("profile-image");
     imageContainer.innerHTML = "";
@@ -38,10 +40,10 @@ export function select_game_stat_view(data) {
         winRate.textContent = "승률: 0%";
         reflectRate.textContent = "반사율: 0%";
     } else {
-        winCount.textContent = data.game_stat.win_count;
-        defeatCount.textContent = data.game_stat.defeat_count;
-        winRate.textContent = data.game_stat.win_rate;
-        reflectRate.textContent = data.game_stat.reflect_rate;
+        winCount.textContent = "승리 횟수: " + data.game_stat[0].win_count;
+        defeatCount.textContent = "패배 횟수: " + data.game_stat[0].defeat_count;
+        winRate.textContent = "승률: " + data.game_stat[0].win_rate + "%";
+        reflectRate.textContent = "반사율: " + data.game_stat[0].reflect_rate + "%";
     }
 
     gamestatus.appendChild(winCount);
@@ -58,8 +60,8 @@ export function select_match_info_view(data) {
       match_date.textContent = "최근 매치: 없음";
       match_result.textContent = "최근 매치 결과: 없음";
       } else {
-      match_date.textContent = "최근 매치:" + data.match_info.match_date[0];
-      match_result.textContent = "최근 매치 결과:" + data.match_info.match_result[0];
+      match_date.textContent = "최근 매치:" + change_date(data.match_info[0].match_date);
+      match_result.textContent = "최근 매치 결과:" + data.match_info[0].match_result;
       }
   match_info.appendChild(match_date);
   match_info.appendChild(match_result);

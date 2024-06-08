@@ -360,15 +360,30 @@ class matchResultView(APIView):
         match.is_active = is_active
         match.save()
 
-        player1_stat = GameStat.objects.get(user=match.player1)
-        player2_stat = GameStat.objects.get(user=match.player2)
+        # 플레이어1과 플레이어2의 GameStat 가져오기 또는 생성하기
+        try:
+            player1_stat = GameStat.objects.get(user=match.player1)
+        except GameStat.DoesNotExist:
+            player1_stat = GameStat.objects.create(user=match.player1)
 
-        player1_matchInfo = MatchInfo.objects.get(user=match.player1)
-        player2_matchInfo = MatchInfo.objects.get(user=match.player2)
+        try:
+            player2_stat = GameStat.objects.get(user=match.player2)
+        except GameStat.DoesNotExist:
+            player2_stat = GameStat.objects.create(user=match.player2)
+
+        # 플레이어1과 플레이어2의 MatchInfo 가져오기 또는 생성하기
+        try:
+            player1_matchInfo = MatchInfo.objects.get(user=match.player1)
+        except MatchInfo.DoesNotExist:
+            player1_matchInfo = MatchInfo.objects.create(user=match.player1, match_date=match_date, match_result='')
+
+        try:
+            player2_matchInfo = MatchInfo.objects.get(user=match.player2)
+        except MatchInfo.DoesNotExist:
+            player2_matchInfo = MatchInfo.objects.create(user=match.player2, match_date=match_date, match_result='')
 
         player1_matchInfo.match_date = match_date
         player2_matchInfo.match_date = match_date
-
 
         if match_result == 1:
             player1_stat.win_count += 1
@@ -381,9 +396,9 @@ class matchResultView(APIView):
             player2_matchInfo.match_result = "Win"
             player1_matchInfo.match_result = "Lose"
 
+        # 승률 업데이트
         player1_stat.win_rate = (player1_stat.win_count / (player1_stat.win_count + player1_stat.defeat_count)) * 100
         player2_stat.win_rate = (player2_stat.win_count / (player2_stat.win_count + player2_stat.defeat_count)) * 100
-
 
         # 반영된 정보 저장
         player1_stat.save()

@@ -1,4 +1,5 @@
 import { formatDateTime } from "../info/info_func.js";
+import { change_date } from "../utilities.js";
 
 // 유저 프로필에서 변경사항 저장 버튼 이벤트 핸들러 등록
 export async function dataChange(changeData, csrftoken) {
@@ -78,19 +79,19 @@ export function game_stat_view(data) {
         element.textContent = `${label}: ${value}`;
         return element;
     };
-
-    const stats = data.game_stat || {
+	
+    const stats = data[0].game_stat[0] || {
         win_count: 0,
         defeat_count: 0,
-        win_rate: "0%",
-        reflect_rate: "0%"
+        win_rate: "0",
+        reflect_rate: "0"
     };
 
     const statElements = [
         createStatElement("승리 횟수", stats.win_count),
         createStatElement("패배 횟수", stats.defeat_count),
-        createStatElement("승률", stats.win_rate),
-        createStatElement("반사율", stats.reflect_rate)
+        createStatElement("승률", stats.win_rate + "%"),
+        createStatElement("반사율", stats.reflect_rate + "%")
     ];
 
     statElements.forEach(element => gamestatus.appendChild(element));
@@ -105,15 +106,15 @@ export function match_info_view(data) {
         element.textContent = `${label}: ${value}`;
         return element;
     };
-
-    const matchData = data.match_info || {
+	
+    const matchData = data[0].match_info[0] || {
         match_date: ["없음"],
         match_result: ["없음"]
     };
 
     const infoElements = [
-        createInfoElement("최근 매치", matchData.match_date[0]),
-        createInfoElement("최근 매치 결과", matchData.match_result[0])
+        createInfoElement("최근 매치", data[0].match_info.length === 0 ? matchData.match_date : change_date(matchData.match_date)),
+        createInfoElement("최근 매치 결과", matchData.match_result)
     ];
 
     infoElements.forEach(element => match_info.appendChild(element));

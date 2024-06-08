@@ -142,7 +142,9 @@ class Main {
       let is_active = data["end"];
 
       if (score1 == 5 || score2 == 5) {
-        Main.ws.close();
+        ws.close();
+        sleep(100);
+        ws = null;
         let get_list_hash = get_hash.split("_");
         location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
         console.log(
