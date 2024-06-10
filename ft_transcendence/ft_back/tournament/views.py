@@ -244,6 +244,7 @@ class MatchmakingView(APIView):
                     is_active=True,
                     match_date=startDate, # 또는 다른 매칭 날짜 설정
                 )
+                # 매차 모델생성이 되어서 등록되어있는 플레이어에게 웹소켓으로 시작 날려주면 됨
                 return Response({'message': "new match created!"}, status=201)
         else: # 현재 유저를 매치메이킹에 등록
             new_matchmaking = matchmaking(pending_player = user)

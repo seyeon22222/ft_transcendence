@@ -161,13 +161,12 @@ export async function match_list_view(self_data, match_data, csrftoken) {
 			matchElement.className = 'match-item';
 			matchElement.innerHTML = `
             <p>${match.player1_username} vs ${match.player2_username}</p>
-            <button class="btn btn-outline-light btn-sm" data-translate="accept" data-match-id="${match.id}">승인</button>
-            <button class="btn btn-outline-light btn-sm" data-translate="reject" data-match-id="${match.id}">거절</button>
+            <button class="btn btn-outline-light btn-sm accept-button" data-translate="accept" data-match-id="${match.id}">승인</button>
+            <button class="btn btn-outline-light btn-sm reject-button" data-translate="reject" data-match-id="${match.id}">거절</button>
             `;
 			matchListContainer.appendChild(matchElement);
 		}
 	});
-
 	// 모든 1:1 매치에 대해 수락 시 이벤트 핸들러 등록
 	document.querySelectorAll('.accept-button').forEach(button => {
 		button.addEventListener('click', () => respondToMatch(button.dataset.matchId, 'accept', self_data, csrftoken));
