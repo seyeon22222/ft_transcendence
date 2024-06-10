@@ -5,7 +5,6 @@ import requests
 from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import ball
-from . import models
 
 class GameConsumer(AsyncWebsocketConsumer):
     consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
@@ -18,7 +17,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.b = ball.Ball()
         self.p1 = ball.Stick([-15,0,0])
         self.p2 = ball.Stick([15,0,0])
-        self.is_active = True
+        self.is_active = 1
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -49,13 +48,16 @@ class GameConsumer(AsyncWebsocketConsumer):
             }))
 
     async def disconnect(self, close_code):
+        
         self.task.cancel()
+        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.is_active) + "=====================")
         if self.players == 1:
+            self.is_active = 0
             del self.consumers[self.room_group_name]
             match_result = 2
-        else:
+        elif self.players == 2:
+            self.is_active = 0
             match_result = 1
-        self.is_active = False
         backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
         game_results = {
             'match_date': datetime.now().isoformat(),
@@ -65,7 +67,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
-        while self.is_active:
+        while True:
             # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
@@ -79,7 +81,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while self.is_active:
+        while True:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -125,15 +127,22 @@ class GameConsumer(AsyncWebsocketConsumer):
         player = text_data_json['players']
         uuid = text_data_json['uuid']
 
-        if self.players is None:
-            if (uuid == (self.room_name.split('_'))[1]):
-                self.players = 1
-            else: 
-                self.players = 2
-            print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
+        if self.players == None:
+            if (player == 1 or player == 2):
+               self.players = player
+            # else:
+            #     if (uuid == (self.room_name.split('_'))[1]):
+            #         self.players = 1
+            #     else: 
+            #         self.players = 2
         else:
-            if player is None:
-                player = self.players
+        #     if (uuid == (self.room_name.split('_'))[1]):
+        #         self.players = 1
+        #     else: 
+        #         self.players = 2
+        #     print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
+        # else:
+        #     if player == None
             player = int(player)
             if (message == '1pup' and player == 1):
                 self.p1.dir[1] = 1

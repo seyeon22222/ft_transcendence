@@ -129,6 +129,11 @@ class Main {
     window.addEventListener("keyup", handleKeyUp);
     window.addEventListener("keydown", handleKeyDown);
 
+    ws.onopen = () => {
+      let message = { message: "", players: window.players, uuid: ""};
+      ws.send(JSON.stringify(message));
+    }
+
     ws.onclose = () => {
       console.log("ws close : " + get_hash);
     };
@@ -144,12 +149,13 @@ class Main {
 
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
-        is_active = false;
+        is_active = 0;
         console.log(
           "===========href=========",
           `/#match/${get_list_hash[get_list_hash.length - 1]}`
         );
-      } else {
+      } 
+      else {
         document.getElementById("game-score").innerHTML =
           score1 + " : " + score2;
         for (let i = 0; i < 3; i++) {
@@ -166,10 +172,12 @@ class Main {
           flag = 1;
         }
 
-        if (is_active == false) {
-          console.log("is_active", is_active);
-          location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
         }
+        console.log("밖 is_active : " + is_active);
+      if (is_active == 0) {
+        console.log("안 is_active : " + is_active);
+        let get_list_hash = get_hash.split("_");
+        location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
       }
     };
   }
