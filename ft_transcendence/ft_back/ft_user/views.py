@@ -445,7 +445,6 @@ class LanguageSet(APIView):
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
 
-
     def post(self, request):
         language = request.data.get('language')
         user = request.data.get('user_id')

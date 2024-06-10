@@ -1,4 +1,5 @@
 
+
 function createInvitePopup() {
     const popupContainer = document.getElementById('popupContainer');
 
@@ -156,4 +157,4 @@ async function t_accept(invitePopup, player1, player2, g_id) {
 
 createInvitePopup();
 check_socket();
-initializeWebsocket();
+// initializeWebsocket();
