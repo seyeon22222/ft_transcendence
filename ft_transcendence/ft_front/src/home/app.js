@@ -29,6 +29,7 @@ export async function home_js() {
             const container = document.getElementById("buttons-container");
             container.innerHTML = home_logout_html();
         }
+		setLanguage("home");
     } catch (error) {
         console.error('home 화면에서 오류 발생 : ', error);
     }
@@ -105,19 +106,19 @@ function logout_button_eventhandler(button) {
 // home 화면에 login, signup 버튼을 추가
 function home_logout_html() {
     return `
-        <a href="/#login" class="btn btn-primary">Login</a>
-        <a href="/#signup" class="btn btn-primary">Signup</a>
+        <a href="/#login" class="btn btn-primary" data-translate="login">로그인</a>
+        <a href="/#signup" class="btn btn-primary" data-translate="signup">회원가입</a>
     `;
 }
 
 // home 화면에 profile, chatting, tournament, logout 버튼을 추가
 function home_login_html() {
     return `
-        <a href="/#profile" class="btn btn-primary">My Profile</a>
-        <a href="/#chatLobby" class="btn btn-primary">Chatting</a>
-        <a href="/#matchlobby" class="btn btn-primary">Game List</a>
-        <button class="btn" id="matchmaking_button">Matchmaking</button>
-        <button class="btn" id="logout_button">Logout</button>
+        <a href="/#profile" class="btn btn-primary" data-translate="my_profile">내 프로필</a>
+        <a href="/#chatLobby" class="btn btn-primary" data-translate="chatting">채팅</a>
+        <a href="/#matchlobby" class="btn btn-primary" data-translate="tournament">토너먼트</a>
+        <button class="btn" id="matchmaking_button" data-translate="matchmaking">매치메이킹</button>
+        <button class="btn" id="logout_button" data-translate="logout">로그아웃</button>
     `;
 }
 

@@ -161,8 +161,8 @@ export async function match_list_view(self_data, match_data, csrftoken) {
 			matchElement.className = 'match-item';
 			matchElement.innerHTML = `
             <p>${match.player1_username} vs ${match.player2_username}</p>
-            <button class="accept-button" data-match-id="${match.id}">Accept</button>
-            <button class="reject-button" data-match-id="${match.id}">Reject</button>
+            <button class="btn btn-outline-light btn-sm" data-translate="accept" data-match-id="${match.id}">승인</button>
+            <button class="btn btn-outline-light btn-sm" data-translate="reject" data-match-id="${match.id}">거절</button>
             `;
 			matchListContainer.appendChild(matchElement);
 		}

@@ -21,6 +21,7 @@ export function signup_js() {
     `;
 
     const signupForm = document.getElementById("signup_form");
+	setLanguage("signup");
 
     signupForm.addEventListener("submit", async (event) => {
         event.preventDefault();

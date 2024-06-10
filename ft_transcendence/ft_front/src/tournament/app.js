@@ -106,7 +106,6 @@ export async function tournament_view(hash) {
                 alert("최대 인원(8명)을 초과했습니다.");
                 return;
             }
-
             const formData = {
                 user_id: t_data[0].user_id,
                 tournament_name: tournament_name,
@@ -315,7 +314,6 @@ async function updateTournamentInfo(arr) {
         const data = await response.json();
         let operator;
         let flag;
-
         for (let i = 0; i < data.length; ++i) {
             if (equal_arr(arr, data[i].name.split(" "))) {
                 tournament_id = data[i].id;
@@ -327,7 +325,6 @@ async function updateTournamentInfo(arr) {
                 break;
             }
         }
-
         player = player.sort((a, b) => a.index - b.index);
         const oper_csrftoken = Cookies.get('csrftoken');
         const oper_response = await fetch('user/info', {

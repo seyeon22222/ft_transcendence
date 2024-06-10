@@ -68,6 +68,7 @@ export async function chatLobby_js() {
     }
     `;
 
+	setLanguage("chatlobby");
     // check login status
     const check = await check_login();
     if (check === false) {
@@ -156,7 +157,7 @@ export async function chatLobby_js() {
                 alert(data.error);
             }
         })
-
+		// setLanguage(document.getElementById("languageSelector").value, "chatlobby");
 
     } catch(error) {
         console.error('chatLobby.app Error occurs : ', error);

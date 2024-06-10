@@ -21,8 +21,12 @@ export function login_js() {
         margin-top: 3rem; /* Adjust the value as needed for desired spacing */
     }
     `;
-  const csrftoken = Cookies.get("csrftoken");
-  try {
+	
+	const csrftoken = Cookies.get("csrftoken");
+	setLanguage("login");
+	
+
+	try {
     fetch("user/check_login", {
       method: "GET",
       headers: {
