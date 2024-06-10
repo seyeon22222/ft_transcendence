@@ -186,6 +186,32 @@ class MatchRequestView(APIView):
 
         return Response({'message': 'Match request sent'}, status=status.HTTP_201_CREATED)
 
+# chanwopa
+class TournamentMatchRequestView(APIView):
+    def post(self, request):
+        apply_user_id = request.data.get('apply_user')
+        accept_user_id = request.data.get('accept_user')
+        tournament_id = request.data.get('tournament_id')
+
+        try:
+            apply_user = MyUser.objects.get(username=apply_user_id)
+            accept_user = MyUser.objects.get(username=accept_user_id)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            tournament_instance = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        tournament_match = tournamentMatch.objects.create(
+            tournament=tournament_instance,
+            player1=apply_user,
+            player2=accept_user,
+        )
+
+        return Response({'message': 'Tournament match created'}, status=status.HTTP_201_CREATED)
+
 class MatchResponseView(APIView):
     def post(self, request, match_id):
         response = request.data.get('response')
