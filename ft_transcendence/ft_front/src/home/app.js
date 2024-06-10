@@ -5,7 +5,6 @@ import { formatDateTime } from "../info/info_func.js";
 let i_socket;
 
 export async function home_js() {
-    console.log("qweqweqweq");
     if (i_socket) {
         i_socket.close();
         i_socket = null;

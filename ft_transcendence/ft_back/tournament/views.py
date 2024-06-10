@@ -266,17 +266,45 @@ class MatchmakingView(APIView):
                     player1=user,
                     player2=opponent_user,
                     requester=user,
-                    status='active',
+                    status='accepted',
                     is_active=True,
                     match_date=startDate, # 또는 다른 매칭 날짜 설정
                 )
                 # 매차 모델생성이 되어서 등록되어있는 플레이어에게 웹소켓으로 시작 날려주면 됨
+                self.matchmakingInvite(match.id, opponent_user, user)
                 return Response({'message': "new match created!"}, status=201)
         else: # 현재 유저를 매치메이킹에 등록
             new_matchmaking = matchmaking(pending_player = user)
             new_matchmaking.save()
             return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
-
+    
+    def matchmakingInvite(self, match_id, player1, player2):
+        str_player1 = str(player1.user_id)
+        str_player2 = str(player2.user_id)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{str_player1}',
+            {
+                'type': 'message',
+                'message': f'Invite to match {player1.username} vs {player2.username}.',
+                'player1' : str_player1,
+                'player2' : str_player2,
+                'g_type' : 'm',
+                'g_id' : match_id,
+            }
+        )
+        
+        async_to_sync(channel_layer.group_send)(
+            f'user_{str_player2}',
+            {
+                'type': 'message',
+                'message': f'Invite to match {player1.username} vs {player2.username}.',
+                'player1' : str_player1,
+                'player2' : str_player2,
+                'g_type' : 'm',
+                'g_id' : match_id,
+            }
+        )
 
 class tournamentInviteView(APIView):
     def post(self, request, tournament_id):
@@ -317,7 +345,7 @@ class MatchInviteView(APIView):
         match = get_object_or_404(Match, pk=match_id)
         player1 = request.data.get("player1")
         player2 = request.data.get("player2")
-        print(match_id)
+
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f'user_{player1}',
@@ -342,7 +370,7 @@ class MatchInviteView(APIView):
                 'g_id' : match_id,
             }
         )
-
+        
         return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
 
 

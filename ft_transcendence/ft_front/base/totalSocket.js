@@ -69,8 +69,6 @@ export async function initializeWebsocket() {
 }
 
 export async function check_socket() {
-    console.log("check_socket");
-    console.log(window.i_socket);
     if (window.i_socket) {
         console.log("close");
         window.i_socket.close();
@@ -157,4 +155,4 @@ async function t_accept(invitePopup, player1, player2, g_id) {
 
 createInvitePopup();
 check_socket();
-// initializeWebsocket();
+initializeWebsocket();
