@@ -21,7 +21,7 @@ export function login_js() {
     `;
 	
 	const csrftoken = Cookies.get("csrftoken");
-
+	setLanguage("login");
 	
 
 	try {
@@ -61,7 +61,6 @@ export function login_js() {
               const error = await response.json();
               alert(error.message);
             }
-
           } catch (error) {
             console.error("로그인 요청 중 오류 발생 : ", error);
           }

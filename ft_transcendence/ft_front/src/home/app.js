@@ -18,13 +18,12 @@ export async function home_js() {
 
             const matchmakingButton = document.getElementById('matchmaking_button');
             matchmaking_button_eventhandler(matchmakingButton);
-			setLanguage('', "home");
         }
         else {
             const container = document.getElementById("buttons-container");
             container.innerHTML = home_logout_html();
         }
-		setLanguage(document.getElementById("languageSelector").value, "home");
+		setLanguage("home");
     } catch (error) {
         console.error('home 화면에서 오류 발생 : ', error);
     }

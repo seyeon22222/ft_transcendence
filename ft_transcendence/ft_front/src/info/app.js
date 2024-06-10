@@ -98,8 +98,7 @@ export async function info_js() {
 		margin-bottom: 20px; /* Space between cards */
 	}
   `;
-
-//   setLanguage(document.getElementById("languageSelector").value, "info");
+	setLanguage("info");
 
     // check login status
     const check = await check_login();

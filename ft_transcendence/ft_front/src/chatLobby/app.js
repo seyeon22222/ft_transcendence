@@ -68,6 +68,7 @@ export async function chatLobby_js() {
     }
     `;
 
+	setLanguage("chatlobby");
     // check login status
     const check = await check_login();
     if (check === false) {

@@ -39,8 +39,8 @@ export async function profile_js() {
 				game_stat_view(data);
 				match_info_view(data);
 				fetchMatchList(data, csrftoken);
-				// setLanguage(document.getElementById("languageSelector").value, "profile");
 			}
+			setLanguage('profile');
 		} else {
 			const error = await response.json();
 			console.error('API 요청 실패', error);
@@ -51,7 +51,6 @@ export async function profile_js() {
 	} catch (error) {
 		console.error('API 요청 실패', error);
 	}
-	setLanguage(document.getElementById("languageSelector").value, "profile");
 }
 
 function profile_style_html() {

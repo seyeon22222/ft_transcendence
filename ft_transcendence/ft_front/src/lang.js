@@ -1,3 +1,5 @@
+// import { check_login } from '../utilities.js'
+
 const lang = {
 	ko: {
 		home: {
@@ -185,30 +187,27 @@ let langNow = 'ko';
 // 로그인이 되어있을 경우에는 newLang의 값을 '' 로 넘겨주면
 // 유저의 데이터베이스에 있는 언어로 변경
 
-async function setLanguage(newLang, category) {
-	if (newLang === '') {
-		if (await check_login() === true) {
-			const csrftoken = Cookies.get('csrftoken');
-			const response = await fetch('user/info', {
+
+async function setLanguage(category) {
+	if (await check_login() === true) {
+		const csrftoken = Cookies.get('csrftoken');
+		const response = await fetch('user/info', {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': csrftoken,
 			},
-			});
-			
-			if (response.ok) {
-				const data = await response.json();
-				console.log(data);
-				newLang = data[0].langauge;
-				document.getElementById("languageSelector").value = newLang;
-			}
+		});
+		
+		if (response.ok) {
+			const data = await response.json();
+			console.log(data);
+			langNow = data[0].langauge;
+			document.getElementById("languageSelector").value = langNow;
 		}
-	} else {
-		newLang = document.getElementById("languageSelector").value;
 	}
-	console.log(newLang);
-	langNow = newLang;
+	else
+		langNow = document.getElementById("languageSelector").value;
 	updateTexts(langNow, category);
 	console.log(langNow, category);
 }
@@ -216,7 +215,7 @@ async function setLanguage(newLang, category) {
 function updateTexts(langNow, category) {
 	document.querySelectorAll('[data-translate]').forEach(element => {
 		const key = element.getAttribute('data-translate');
-		console.log(key);
+		// console.log(key);
 		element.innerText = lang[langNow][category][key];
     });
 
@@ -228,30 +227,31 @@ function updateTexts(langNow, category) {
 
 
 async function check_login() {
-try {
-	const csrftoken = Cookies.get('csrftoken');
-	const response = await fetch('user/check_login', {
-	method: 'GET',
-	headers: {
-		'Content-Type': 'application/json',
-		'X-CSRFToken': csrftoken,
-	},
-	});
-	console.log(response.status);
-	if (response.status === 301) {
-	return false;
-	}
-	return true;
-	} catch (error) {
+	try {
+		const csrftoken = Cookies.get('csrftoken');
+		const response = await fetch('user/check_login', {
+		  method: 'GET',
+		  headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken,
+		  },
+		});
+	
+		if (response.status === 301) {
+		  return false;
+		}
+		return true;
+	  } catch (error) {
 		console.error('로그인 여부 확인 중 오류 발생 : ', error);
-	}
+	  }
 }
 
 
 const language = document.getElementById("languageSelector");
 language.addEventListener("change", async (event) => {
 	event.preventDefault();
-	if (check_login() === true) {
+
+	if (await check_login() === true) {
 		let data;
 		const csrftoken = Cookies.get('csrftoken');
 		const test_res = await fetch(`user/language`, {
@@ -262,7 +262,7 @@ language.addEventListener("change", async (event) => {
 			},
 			credentials: 'include',
 		});
-	
+
 		if (test_res.ok) {
 			data = await test_res.json();
 			console.log(data);
@@ -282,5 +282,4 @@ language.addEventListener("change", async (event) => {
 			console.log(data);
 		}
 	}
-
 });

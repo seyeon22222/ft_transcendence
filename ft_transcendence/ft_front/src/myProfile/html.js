@@ -19,7 +19,7 @@ export function profile_html() {
 						<input type="text" name="username" class="form-control" id="username_input">
 					</div>
 					<div class="mb-3">
-						<label for="email_input" class="form-label" data-translate="change_email">Email 변경</label>
+						<label for="email_input" class="form-label" data-translate="change_email">이메일 변경</label>
 						<input type="email" name="email" class="form-control" id="email_input">
 					</div>
 					<div class="d-grid gap-2 d-md-flex justify-content-md-evenly spacing">
