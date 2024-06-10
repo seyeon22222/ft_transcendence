@@ -24,6 +24,9 @@ export async function home_js() {
 
             const matchmakingButton = document.getElementById('matchmaking_button');
             matchmaking_button_eventhandler(matchmakingButton);
+
+            const mulmatchmakingButton = document.getElementById('mulmatchmaking_button');
+            mulmatchmaking_button_eventhandler(mulmatchmakingButton);
         }
         else {
             const container = document.getElementById("buttons-container");
@@ -56,6 +59,45 @@ function matchmaking_button_eventhandler(button) {
 	            const startDate = formatDateTime(new Date(now.getTime() + 300));
 
                 const matchmaking_response = await fetch("/match/matchmaking", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrftoken,
+                    },
+                    body: JSON.stringify({username, startDate}),
+                });
+                if (matchmaking_response.ok) {
+                    const result = await matchmaking_response.json();
+                    console.log(result.message);
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    });
+}
+
+function mulmatchmaking_button_eventhandler(button) {
+    button.addEventListener('click', async function() {
+        try {
+            const csrftoken = Cookies.get('csrftoken');
+            
+            // 현재 유저의 정보를 API를 통해 받아옴
+            const response = await fetch('user/info', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                credentials: 'include',
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const username = data[0].username;
+                const now = new Date();
+	            const startDate = formatDateTime(new Date(now.getTime() + 300));
+
+                const matchmaking_response = await fetch("/match/mulmatchmaking", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -118,6 +160,7 @@ function home_login_html() {
         <a href="/#chatLobby" class="btn btn-primary" data-translate="chatting">채팅</a>
         <a href="/#matchlobby" class="btn btn-primary" data-translate="tournament">토너먼트</a>
         <button class="btn" id="matchmaking_button" data-translate="matchmaking">매치메이킹</button>
+        <button class="btn" id="mulmatchmaking_button" data-translate="multimatchmaking">2:2 매치</button>
         <button class="btn" id="logout_button" data-translate="logout">로그아웃</button>
     `;
 }
