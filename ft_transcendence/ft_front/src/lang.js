@@ -201,7 +201,7 @@ async function setLanguage(category) {
 		
 		if (response.ok) {
 			const data = await response.json();
-			console.log(data);
+			console.log("setLanguage", data);
 			langNow = data[0].language;
 			document.getElementById("languageSelector").value = langNow;
 		}
@@ -215,7 +215,6 @@ async function setLanguage(category) {
 function updateTexts(langNow, category) {
 	document.querySelectorAll('[data-translate]').forEach(element => {
 		const key = element.getAttribute('data-translate');
-		// console.log("qqq",key);
 		element.innerText = lang[langNow][category][key];
     });
 
@@ -280,6 +279,12 @@ language.addEventListener("change", async (event) => {
 		if (response.ok) {
 			// const t_data = await response.json();
 			// console.log(t_data);
+			// console.log("change!", document.getElementById('languageSelector').value);
 		}
 	}
+	user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
+	category = user_location[0];
+	if (category.length === 0)
+		category = "home";
+	setLanguage(category);
 });
