@@ -250,7 +250,7 @@ async function check_login() {
 const language = document.getElementById("languageSelector");
 language.addEventListener("change", async (event) => {
 	event.preventDefault();
-
+	console.log("lang Change");
 	if (await check_login() === true) {
 		let data;
 		const csrftoken = Cookies.get('csrftoken');
@@ -281,5 +281,11 @@ language.addEventListener("change", async (event) => {
 			// const t_data = await response.json();
 			// console.log(t_data);
 		}
+	} else {
+		user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
+		category = user_location[0];
+		if (category.length === 0)
+			category = "home";
+		setLanguage(category);
 	}
 });
