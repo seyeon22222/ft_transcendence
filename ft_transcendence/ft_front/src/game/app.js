@@ -44,8 +44,10 @@ class Main {
     console.log(Main.players);
     let flag = 1;
     // WebSocket 연결 시도
-    let ws = new WebSocket("wss://" + window.location.host + "/ws/game/" + get_hash + "/");
-    
+    let ws = new WebSocket(
+      "wss://" + window.location.host + "/ws/game/" + get_hash + "/"
+    );
+
     function sleep(ms) {
       const start = new Date().getTime();
       while (new Date().getTime() < start + ms) {
@@ -53,7 +55,7 @@ class Main {
       }
     }
 
-    window.addEventListener('popstate', function() {
+    window.addEventListener("popstate", function () {
       // WebSocket 연결 닫기
       if (ws && ws.readyState !== WebSocket.CLOSED) {
         ws.close();
@@ -138,10 +140,11 @@ class Main {
       let paddle2_pos = data["paddle2_pos"];
       let score1 = data["score1"];
       let score2 = data["score2"];
+      let is_active = data["is_active"];
 
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
-        location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
+        is_active = false;
         console.log(
           "===========href=========",
           `/#match/${get_list_hash[get_list_hash.length - 1]}`
@@ -162,10 +165,14 @@ class Main {
           Main.entry();
           flag = 1;
         }
+
+        if (is_active == false) {
+          console.log("is_active", is_active);
+          location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
+        }
       }
     };
   }
-
   static entry() {
     const canvas = document.getElementById("canvas");
     canvas.height = window.innerHeight - 50;
@@ -443,8 +450,11 @@ export async function game_js(hash) {
         for (let i = 1; i < get_list_hash.length - 1; i++) {
           if (get_list_hash[i] == data[0].user_id) {
             window.uuid = data[0].user_id;
-            if (window.uuid == get_list_hash[1]){ window.players = 1;}
-            else{ window.players = 2;}
+            if (window.uuid == get_list_hash[1]) {
+              window.players = 1;
+            } else {
+              window.players = 2;
+            }
             flag = 1;
           }
         }

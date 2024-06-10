@@ -1,13 +1,11 @@
 import json
 import asyncio
 import time
-import psycopg2
 import requests
 from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import ball
 from . import models
-import psycopg2
 
 class GameConsumer(AsyncWebsocketConsumer):
     consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
@@ -20,7 +18,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.b = ball.Ball()
         self.p1 = ball.Stick([-15,0,0])
         self.p2 = ball.Stick([15,0,0])
-        self.end = True
+        self.is_active = True
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -34,7 +32,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.b = self.consumers[self.room_group_name].b
             self.p1 = self.consumers[self.room_group_name].p1
             self.p2 = self.consumers[self.room_group_name].p2
-            self.end = self.consumers[self.room_group_name].end
+            self.is_active = self.consumers[self.room_group_name].is_active
             self.task = self.loop.create_task(self.send_message())
         else:
             self.consumer = self
@@ -47,16 +45,27 @@ class GameConsumer(AsyncWebsocketConsumer):
             'paddle2_pos': self.p2.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'end':self.end
+            'is_active':self.is_active
             }))
 
     async def disconnect(self, close_code):
         self.task.cancel()
         if self.players == 1:
             del self.consumers[self.room_group_name]
+            match_result = 2
+        else:
+            match_result = 1
+        self.is_active = False
+        backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+        game_results = {
+            'match_date': datetime.now().isoformat(),
+            'match_result': match_result,
+            'is_active': False,
+        }
+        response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
-        while self.end:
+        while self.is_active:
             # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
@@ -64,13 +73,13 @@ class GameConsumer(AsyncWebsocketConsumer):
             'paddle2_pos': self.p2.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'end':self.end
+            'is_active':self.is_active
             }))
             # 초 대기
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while self.end:
+        while self.is_active:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -78,7 +87,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.p2.update(self.p2.dir[1] * 10 * self.dt)
             self.b.update(self.p1, self.p2, self.dt * 20)
             if self.b.point1 == 5 :
-                self.end = False
+                self.is_active = False
                 backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
@@ -89,7 +98,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 # print(response.status_code)
                 # print(response.text)
             elif self.b.point2 == 5:
-                self.end = False
+                self.is_active = False
                 backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
@@ -105,7 +114,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'paddle2_pos': self.p2.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'end' :self.end
+            'is_active' :self.is_active
             }))
             # 초 대기
             await asyncio.sleep(0.001)
