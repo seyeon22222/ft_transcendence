@@ -119,7 +119,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self.players is None:
             if (uuid == (self.room_name.split('_'))[1]):
                 self.players = 1
-            else: self.players = 2
+            else: 
+                self.players = 2
             print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
         else:
             if player is None:
