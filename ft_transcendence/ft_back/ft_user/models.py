@@ -8,6 +8,7 @@ class MyUser(AbstractUser):
     username = models.CharField(unique=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     block_list = models.ManyToManyField('self', through='Block', symmetrical=False, related_name='blocked_by')
+    language = models.CharField(default="ko")
 
     def __str__(self):
         return str(self.username)

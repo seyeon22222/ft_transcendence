@@ -138,7 +138,7 @@ class Main {
       let paddle2_pos = data["paddle2_pos"];
       let score1 = data["score1"];
       let score2 = data["score2"];
-      let players = data["players"];
+      // let players = data["players"];
       let is_active = data["end"];
 
       if (score1 == 5 || score2 == 5) {
@@ -160,7 +160,7 @@ class Main {
           Main.ball.pos[i] = ball_pos[i];
         }
         if (Main.players == 0) {
-          Main.players = players;
+          Main.players = window.players;
           flag = 0;
         }
         if (!flag) {
@@ -447,7 +447,8 @@ export async function game_js(hash) {
         let get_list_hash = get_hash.split("_");
         for (let i = 1; i < get_list_hash.length - 1; i++) {
           if (get_list_hash[i] == data[0].user_id) {
-            window.uuid = data[0].user_id;
+            if (window.uuid == get_list_hash[1]){ window.players = 1;}
+            else{ window.players = 2;}
             flag = 1;
           }
         }

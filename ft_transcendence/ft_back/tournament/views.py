@@ -38,6 +38,9 @@ class tournamentCreateView(APIView):
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
 
+        if tournament.objects.filter(name=tournament_name).exists():
+            return Response({'error': '중복된 방이 있습니다'}, status=status.HTTP_400_BAD_REQUEST)
+
         tournament_M = tournament.objects.create(
             name=tournament_name,
             start_date=start_date,
@@ -106,9 +109,9 @@ class addTournamentPlayer(APIView):
 class matchListView(APIView):
 
     def get(self, request):
-            matchs = Match.objects.all()
-            serializer = matchSerializer(matchs, many=True)
-            return Response(serializer.data)
+        matchs = Match.objects.all()
+        serializer = matchSerializer(matchs, many=True)
+        return Response(serializer.data)
     
 class matchDetailView(APIView):
 
@@ -457,7 +460,8 @@ class MultiMatchListView(APIView):
         multiMatch = request.data.get('multiMatch')
         username = request.data.get('username')
         # apply_user = request.data.get('apply_user')
-
+        print(request.data)
+        print(username)
         if not multiMatch or not username:
             return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -466,16 +470,23 @@ class MultiMatchListView(APIView):
             return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            apply_user = MyUser.objects.get(username=username)
+            apply_user = MyUser.objects.get(user_id=username)
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if MultiMatch.objects.filter(name=multiMatch).exists():
+            return Response({'error': '중복된 방이 있습니다'}, status=status.HTTP_400_BAD_REQUEST)
 
         match = MultiMatch.objects.create(
             name=multiMatch,
             requester = apply_user,
+            player1 = None,
+            player2 = None,
+            player3 = None,
+            player4 = None,
         )
 
-        serializer = MultiSerializer(multiMatch)
+        serializer = MultiSerializer(match)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

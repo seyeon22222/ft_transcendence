@@ -366,3 +366,31 @@ class GetUsersOnlineStatus(APIView):
         current_users = get_online_users()
         usernames = [user.username for user in current_users]
         return Response({'online_users': usernames})
+    
+
+
+class LanguageSet(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return MyUser.objects.filter(user_id=self.request.user.user_id)
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        serializer = UserSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+    def post(self, request):
+        language = request.data.get('language')
+        user = request.data.get('user_id')
+
+        try:
+            change_user = MyUser.objects.get(user_id=user)
+        except MyUser.DoesNotExist:
+            return Response({'error' : "Invaild User"}, status=status.HTTP_400_BAD_REQUEST)
+
+        change_user.language = language
+        change_user.save()
+
+        return Response(status=status.HTTP_200_OK)

@@ -27,5 +27,5 @@ urlpatterns = [
     path('tournamenthash/<uuid:player1><uuid:player2><int:tournament_id>', tournamentHash.as_view(), name='t_get_hash'),
     path('matchresult/<int:match_id>', matchResultView.as_view(), name='match_result'),
     path('multimatchapply/<int:multimatch_id>', MultiMatchApplyView.as_view(), name='multimatch'),
-    path('multimatchList/', MultiMatchListView.as_view(), name='multimatch_view'),
+    path('multimatchList', MultiMatchListView.as_view(), name='multimatch_view'),
 ]

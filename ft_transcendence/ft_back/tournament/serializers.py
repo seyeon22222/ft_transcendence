@@ -65,16 +65,28 @@ class MultiSerializer(serializers.ModelSerializer):
             fields = '__all__'
     
     def get_player1_username(self, obj):
-        return obj.player1.username
+        if obj.player1:
+            return obj.player1.username
+        else:
+            return None
 
     def get_player2_username(self, obj):
-        return obj.player2.username
+        if obj.player2:
+            return obj.player2.username
+        else:
+            return None
     
     def get_player3_username(self, obj):
-        return obj.player3.username
+        if obj.player3:
+            return obj.player3.username
+        else:
+            return None
 
     def get_player4_username(self, obj):
-        return obj.player4.username
+        if obj.player4:
+            return obj.player4.username
+        else:
+            return None
 
     def get_requester_username(self, obj):
         return obj.requester.username
