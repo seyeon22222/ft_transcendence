@@ -249,7 +249,7 @@ async function setLanguage(category) {
 		
 		if (response.ok) {
 			const data = await response.json();
-			// console.log("setLanguage", data);
+			console.log(data);
 			langNow = data[0].language;
 			document.getElementById("languageSelector").value = langNow;
 		}
