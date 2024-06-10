@@ -119,27 +119,28 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self.players is None:
             if (uuid == (self.room_name.split('_'))[1]):
                 self.players = 1
-            else: self.players = 2
+            else: 
+                self.players = 2
             print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
         else:
             if player is None:
                 player = self.players
             player = int(player)
-            if (message == '1pup' and player % 2 == 1):
+            if (message == '1pup' and player == 1):
                 self.p1.dir[1] = 1
-            if (message == '1pdown' and player % 2 == 1):
+            if (message == '1pdown' and player == 1):
                 self.p1.dir[1] = -1
-            if (message == '2pup' and player % 2 == 0):
+            if (message == '2pup' and player == 2):
                 self.p2.dir[1] = 1
-            if (message == '2pdown' and player % 2 == 0):
+            if (message == '2pdown' and player == 2):
                 self.p2.dir[1] = -1
-            if (message == '1pupstop' and self.p1.dir[1] == 1 and player % 2 == 1):
+            if (message == '1pupstop' and self.p1.dir[1] == 1 and player == 1):
                 self.p1.dir[1] = 0
-            if (message == '1pdownstop' and self.p1.dir[1] == -1 and player % 2 == 1):
+            if (message == '1pdownstop' and self.p1.dir[1] == -1 and player == 1):
                 self.p1.dir[1] = 0
-            if (message == '2pupstop' and self.p2.dir[1] == 1 and player % 2 == 0):
+            if (message == '2pupstop' and self.p2.dir[1] == 1 and player == 2):
                 self.p2.dir[1] = 0
-            if (message == '2pdownstop' and self.p2.dir[1] == -1 and player % 2 == 0):
+            if (message == '2pdownstop' and self.p2.dir[1] == -1 and player == 2):
                 self.p2.dir[1] = 0
         #데이터베이스 조회
         

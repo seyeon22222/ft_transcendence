@@ -25,7 +25,6 @@ class Main {
   static keyA = 0;
   static keyQ = 0;
   static lastTime = 0;
-  static ws = null;
   static players = 0;
   static camDegree = 0;
   static camMat4;
@@ -54,7 +53,7 @@ class Main {
       }
     }
 
-    window.addEventListener("popstate", function () {
+    window.addEventListener('popstate', function() {
       // WebSocket 연결 닫기
       if (ws && ws.readyState !== WebSocket.CLOSED) {
         ws.close();
@@ -74,53 +73,54 @@ class Main {
     };
 
     const handleKeyUp = (event) => {
-      let message = { message: event.key, players: Main.players };
-      let keyflag = 0;
+      let message = { message: event.key, players: Main.players, uuid: "" };
+      let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "1pupstop", players: Main.players };
-        keyflag = 1;
+        message = { message: "1pupstop", players: Main.players, uuid: "" };
+        flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "1pdownstop", players: Main.players };
-        keyflag = 1;
+        message = { message: "1pdownstop", players: Main.players, uuid: "" };
+        flag = 1;
       }
       if (event.code === "KeyO") {
-        message = { message: "2pupstop", players: Main.players };
-        keyflag = 1;
+        message = { message: "2pupstop", players: Main.players, uuid: "" };
+        flag = 1;
       }
       if (event.code === "KeyL") {
-        message = { message: "2pdownstop", players: Main.players };
-        keyflag = 1;
+        message = { message: "2pdownstop", players: Main.players, uuid: "" };
+        flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
         Main.camDegree = 0;
-      if (keyflag) ws.send(JSON.stringify(message));
+      if (flag) ws.send(JSON.stringify(message));
     };
 
     const handleKeyDown = (event) => {
       let message = { message: event.key, players: Main.players };
-      let keyflag = 0;
+      let flag = 0;
+
       if (event.code === "KeyQ") {
-        message = { message: "1pup", players: Main.players };
-        keyflag = 1;
+        message = { message: "1pup", players: Main.players, uuid: "" };
+        flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "1pdown", players: Main.players };
-        keyflag = 1;
+        message = { message: "1pdown", players: Main.players, uuid: "" };
+        flag = 1;
       }
       if (event.code === "KeyO") {
-        message = { message: "2pup", players: Main.players };
-        keyflag = 1;
+        message = { message: "2pup", players: Main.players, uuid: "" };
+        flag = 1;
       }
       if (event.code === "KeyL") {
-        message = { message: "2pdown", players: Main.players };
-        keyflag = 1;
+        message = { message: "2pdown", players: Main.players, uuid: "" };
+        flag = 1;
       }
       if (event.code === "ArrowRight")
         Main.camDegree = Math.min(45, Main.camDegree + 1);
       if (event.code === "ArrowLeft")
         Main.camDegree = Math.max(-45, Main.camDegree - 1);
-      if (keyflag) ws.send(JSON.stringify(message));
+      if (flag) ws.send(JSON.stringify(message));
     };
 
     window.addEventListener("resize", handleResize);
@@ -138,13 +138,8 @@ class Main {
       let paddle2_pos = data["paddle2_pos"];
       let score1 = data["score1"];
       let score2 = data["score2"];
-      // let players = data["players"];
-      let is_active = data["end"];
 
       if (score1 == 5 || score2 == 5) {
-        ws.close();
-        sleep(100);
-        ws = null;
         let get_list_hash = get_hash.split("_");
         location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
         console.log(
@@ -447,6 +442,7 @@ export async function game_js(hash) {
         let get_list_hash = get_hash.split("_");
         for (let i = 1; i < get_list_hash.length - 1; i++) {
           if (get_list_hash[i] == data[0].user_id) {
+            window.uuid = data[0].user_id;
             if (window.uuid == get_list_hash[1]){ window.players = 1;}
             else{ window.players = 2;}
             flag = 1;
