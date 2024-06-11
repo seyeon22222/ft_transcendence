@@ -19,9 +19,13 @@ class Main {
   static mesh2 = null;
   static mesh3 = null;
   static mesh4 = null;
+  static mesh5 = null;
+  static mesh6 = null;
+
   static ball = null;
   static stick1 = null;
   static stick2 = null;
+
   static keyA = 0;
   static keyQ = 0;
   static lastTime = 0;
@@ -31,21 +35,20 @@ class Main {
   static projMat4;
   static vpLoc;
 
-  static pos_ball_tmp = [0, 0, 0];
-  static paddle1 = [0, 0, 0];
-  static paddle2 = [0, 0, 0];
   static score1 = 0;
   static score2 = 0;
 
   static webfunc(get_hash) {
     Main.ball = new Ball();
-    Main.stick1 = new Stick([-15, 0, 0]);
-    Main.stick2 = new Stick([15, 0, 0]);
+    Main.stick1 = new Stick([-15, 1.5, 0]);
+    Main.stick2 = new Stick([15, 1.5, 0]);
     console.log(Main.players);
     let flag = 1;
     // WebSocket 연결 시도
-    let ws = new WebSocket("wss://" + window.location.host + "/ws/game/" + get_hash + "/");
-    
+    let ws = new WebSocket(
+      "wss://" + window.location.host + "/ws/game/" + get_hash + "/"
+    );
+
     function sleep(ms) {
       const start = new Date().getTime();
       while (new Date().getTime() < start + ms) {
@@ -53,7 +56,7 @@ class Main {
       }
     }
 
-    window.addEventListener('popstate', function() {
+    window.addEventListener("popstate", function () {
       // WebSocket 연결 닫기
       if (ws && ws.readyState !== WebSocket.CLOSED) {
         ws.close();
@@ -76,19 +79,11 @@ class Main {
       let message = { message: event.key, players: Main.players, uuid: "" };
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "1pupstop", players: Main.players, uuid: "" };
+        message = { message: "upstop", players: Main.players, uuid: "" };
         flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "1pdownstop", players: Main.players, uuid: "" };
-        flag = 1;
-      }
-      if (event.code === "KeyO") {
-        message = { message: "2pupstop", players: Main.players, uuid: "" };
-        flag = 1;
-      }
-      if (event.code === "KeyL") {
-        message = { message: "2pdownstop", players: Main.players, uuid: "" };
+        message = { message: "downstop", players: Main.players, uuid: "" };
         flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -101,19 +96,11 @@ class Main {
       let flag = 0;
 
       if (event.code === "KeyQ") {
-        message = { message: "1pup", players: Main.players, uuid: "" };
+        message = { message: "up", players: Main.players, uuid: "" };
         flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "1pdown", players: Main.players, uuid: "" };
-        flag = 1;
-      }
-      if (event.code === "KeyO") {
-        message = { message: "2pup", players: Main.players, uuid: "" };
-        flag = 1;
-      }
-      if (event.code === "KeyL") {
-        message = { message: "2pdown", players: Main.players, uuid: "" };
+        message = { message: "down", players: Main.players, uuid: "" };
         flag = 1;
       }
       if (event.code === "ArrowRight")
@@ -127,6 +114,11 @@ class Main {
     window.addEventListener("keyup", handleKeyUp);
     window.addEventListener("keydown", handleKeyDown);
 
+    ws.onopen = () => {
+      let message = { message: "", players: window.players, uuid: ""};
+      ws.send(JSON.stringify(message));
+    }
+
     ws.onclose = () => {
       console.log("ws close : " + get_hash);
     };
@@ -138,15 +130,17 @@ class Main {
       let paddle2_pos = data["paddle2_pos"];
       let score1 = data["score1"];
       let score2 = data["score2"];
+      let is_active = data["is_active"];
 
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
-        location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
+        // is_active = 0;
         console.log(
           "===========href=========",
           `/#match/${get_list_hash[get_list_hash.length - 1]}`
         );
-      } else {
+      } 
+      else {
         document.getElementById("game-score").innerHTML =
           score1 + " : " + score2;
         for (let i = 0; i < 3; i++) {
@@ -162,10 +156,16 @@ class Main {
           Main.entry();
           flag = 1;
         }
+
+        }
+        console.log("밖 is_active : " + is_active);
+      if (is_active == 0) {
+        console.log("안 is_active : " + is_active);
+        let get_list_hash = get_hash.split("_");
+        location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
       }
     };
   }
-
   static entry() {
     const canvas = document.getElementById("canvas");
     canvas.height = window.innerHeight - 50;
@@ -317,21 +317,25 @@ class Main {
     if (Main.players == 1) {
       buffer_view["position"] = pos_view;
       buffer_view["color"] = color_box_view;
-      mesh2 = Mesh.from(gl, buffer_view, box1.indices);
+      Main.mesh2 = Mesh.from(gl, buffer_view, box1.indices);
       buffer_view["color"] = color_view;
-      mesh4 = Mesh.from(gl, buffer_view, box1.indices);
-    } else {
-      buffer_view["position"] = pos_view;
-      buffer_view["color"] = color_view;
-      mesh2 = Mesh.from(gl, buffer_view, box1.indices);
-      buffer_view["color"] = color_box_view;
-      mesh4 = Mesh.from(gl, buffer_view, box1.indices);
+      Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
+      Main.mesh5 = Main.mesh4;
+      Main.mesh6 = Main.mesh4;
+    } 
+    else {
+      console.log("player: ", 2);
+        buffer_view["position"] = pos_view;
+        buffer_view["color"] = color_view;
+        Main.mesh6 = Mesh.from(gl, buffer_view, box1.indices);
+        buffer_view["color"] = color_box_view;
+        Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
+        Main.mesh2 = Main.mesh4;
+        Main.mesh5 = Main.mesh4;
     }
 
     Main.mesh = mesh;
-    Main.mesh2 = mesh2;
     Main.mesh3 = mesh3;
-    Main.mesh4 = mesh4;
     requestAnimationFrame(Main.update);
   }
   static render() {
@@ -353,7 +357,7 @@ class Main {
     Main.gl.uniformMatrix4fv(
       modelLocation,
       true,
-      Mat4x4.transportMat(Main.pos_ball_tmp)
+      Mat4x4.transportMat(Main.ball.pos)
     );
     Main.mesh.draw(Main.program);
 
@@ -361,7 +365,7 @@ class Main {
     Main.gl.uniformMatrix4fv(
       modelLocation,
       true,
-      Mat4x4.transportMat(Main.paddle1)
+      Mat4x4.transportMat(Main.stick1.pos)
     );
     Main.mesh2.draw(Main.program);
 
@@ -369,10 +373,10 @@ class Main {
     Main.gl.uniformMatrix4fv(
       modelLocation,
       true,
-      Mat4x4.transportMat(Main.paddle2)
+      Mat4x4.transportMat(Main.stick2.pos)
     );
     Main.mesh4.draw(Main.program);
-
+  
     // wall_1
     Main.gl.uniformMatrix4fv(
       modelLocation,
@@ -390,17 +394,12 @@ class Main {
     Main.mesh3.draw(Main.program);
   }
   static update() {
-    for (let i = 0; i < 3; i++) {
-      Main.pos_ball_tmp[i] = Main.ball.pos[i];
-      Main.paddle1[i] = Main.stick1.pos[i];
-      Main.paddle2[i] = Main.stick2.pos[i];
-    }
     Main.render();
     requestAnimationFrame(Main.update);
   }
 }
 
-export async function game_js(hash) {
+export async function game_m_js(hash) {
   const get_hash = hash.slice(1);
   let flag = 0;
   let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
@@ -443,8 +442,11 @@ export async function game_js(hash) {
         for (let i = 1; i < get_list_hash.length - 1; i++) {
           if (get_list_hash[i] == data[0].user_id) {
             window.uuid = data[0].user_id;
-            if (window.uuid == get_list_hash[1]){ window.players = 1;}
-            else{ window.players = 2;}
+            if (window.uuid == get_list_hash[1]) {
+              window.players = 1;
+            } else {
+              window.players = 2;
+            }
             flag = 1;
           }
         }
