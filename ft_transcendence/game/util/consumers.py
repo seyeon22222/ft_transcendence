@@ -92,9 +92,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
-            map_length = self.obtacles[0].bot1[1] - self.obtacles[1].top1[1]
-            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
-            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
+            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
+            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
             self.b.pos[2] = 1
             self.b.update(self.paddles, self.obtacles, self.dt * 20)
             self.b.pos[2] = 0
@@ -250,9 +249,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
-            map_length = self.obtacles[0].bot1[1] - self.obtacles[1].top1[1]
-            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
-            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
+            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
+            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
             self.b.pos[2] = 1
             self.b.update(self.paddles, self.obtacles, self.dt * 20)
             self.b.pos[2] = 0
@@ -322,6 +320,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
             if (message == 'downstop' and self.paddles[i].dir[1] == -1 and player == i + 1):
                 self.paddles[i].dir[1] = 0
 
+num = 0
+
 class MultiGameConsumer(AsyncWebsocketConsumer):
     consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
 
@@ -329,7 +329,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.dt = 0
         self.lastTime = 0
-        self.players = None
+        self.players = 1
         self.b = ball.Ball(0.5)
         self.p1 = ball.Stick([-15,1.5,0], 0.5, 3)
         self.p2 = ball.Stick([15,1.5,0], 0.5, 3)
@@ -342,6 +342,9 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
         self.room_group_name = f'game_{self.room_name}'
         self.loop = asyncio.get_event_loop()
+        global num
+        num += 1
+        self.players = num
     
         await self.accept()
 
@@ -367,7 +370,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.obtacles.append(ball.Box(30, 0.5))
             self.obtacles[1].movePos([0, -8, 0])
             self.task = self.loop.create_task(self.game_update())
-
+        
         await self.send(text_data=json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -376,7 +379,8 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             'paddle4_pos': self.p4.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'is_active':self.b.is_active
+            'is_active':self.b.is_active,
+            'aaa' : self.players
             }))
 
     async def disconnect(self, close_code):
@@ -385,6 +389,8 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
         if self.players == 1:
             del self.consumers[self.room_group_name]
+            global num
+            num = 0
             match_result = 2
         elif self.players == 2:
             match_result = 1
@@ -408,7 +414,8 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             'paddle4_pos': self.p4.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'is_active':self.b.is_active
+            'is_active':self.b.is_active,
+            'aaa' : self.players
             }))
             # 초 대기
             await asyncio.sleep(0.001)
@@ -456,7 +463,8 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             'paddle4_pos': self.p4.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'is_active' :self.b.is_active
+            'is_active' :self.b.is_active,
+            
             }))
             # 초 대기
             await asyncio.sleep(0.001)
@@ -464,7 +472,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        player = text_data_json['players']
+        player = text_data_json['pid']
         uuid = text_data_json['uuid']
 
         if self.players == None:
@@ -484,6 +492,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         # else:
         #     if player == None
             player = int(player)
+        player = self.players
         for i in range(0, 4):
             if (message == 'up' and player == i + 1):
                 self.paddles[i].dir[1] = 1

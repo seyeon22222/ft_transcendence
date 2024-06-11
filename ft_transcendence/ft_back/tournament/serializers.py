@@ -67,7 +67,6 @@ class MultiSerializer(serializers.ModelSerializer):
     player2_username = serializers.SerializerMethodField()
     player3_username = serializers.SerializerMethodField()
     player4_username = serializers.SerializerMethodField()
-
     player1_uuid  = serializers.SerializerMethodField()
     player2_uuid  = serializers.SerializerMethodField()
     player3_uuid  = serializers.SerializerMethodField()
