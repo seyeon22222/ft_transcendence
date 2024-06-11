@@ -154,12 +154,12 @@ export function tournament_html() {
             </div>
 
             <div>
-                <input type="text" id="nickname_input" placeholder="별칭을 입력하세요">
-                <button type="button" id="tournament_button">토너먼트 신청</button>
+                <input type="text" id="nickname_input" data-translate-placeholder="nick_input" placeholder="별칭을 입력하세요">
+                <button type="button" id="tournament_button" data-translate="apply">토너먼트 신청</button>
             </div>
 
             <div id="button_container">
-                <button type="button" id="tournament_start">토너먼트 시작</button>
+                <button type="button" id="tournament_start" data-translate="start">토너먼트 시작</button>
             </div>
 
         </div>

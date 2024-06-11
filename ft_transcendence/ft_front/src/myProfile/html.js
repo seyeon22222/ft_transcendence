@@ -48,7 +48,7 @@ export function profile_html() {
 		</div>
 	</div>
     <div>
-        <h2 class="my-4">1:1 Match List</h2>
+        <h2 class="my-4" data-translate="match_list">1:1 Match List</h2>
         <div id="1:1_Match_List">
         </div>
     </div>

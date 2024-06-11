@@ -39,6 +39,8 @@ export async function matchLobby_view() {
             });
         }
 
+
+		// TODO: 2:2 매치 리스트 출력 부분
         const multiMatchcontainer = document.getElementById("multiMatch_list");
         const m_response = await fetch('match/multimatchList', {
             method: 'GET',
@@ -64,6 +66,8 @@ export async function matchLobby_view() {
             });
         }
 
+
+		// 1:1 매치 리스트 출력 부분
         const matchContainer = document.getElementById("match_list");
         const matchcsrftoken = Cookies.get('csrftoken');
         const matchresponse = await fetch('match/matchview', {

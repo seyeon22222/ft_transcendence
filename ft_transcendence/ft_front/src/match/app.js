@@ -46,7 +46,6 @@ function makeButton(Button, matchId, data, player_data) {
 
 async function start_match(event, matchId, data) {
   event.preventDefault();
-  console.log("qqq",data);
   const csrftoken = Cookies.get('csrftoken');
   const response = await fetch(`match/invite_m/${matchId}`, {
       method: 'POST',

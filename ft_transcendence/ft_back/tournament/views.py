@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch
+from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch, multimatchmaking
 from .serializers import tournamentSerializer, tournamentParticipantSerializer, tournamentMatchSerializer, matchSerializer, MultiSerializer
 from ft_user.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
@@ -240,16 +240,155 @@ class MatchmakingView(APIView):
                     player1=user,
                     player2=opponent_user,
                     requester=user,
-                    status='active',
+                    status='accepted',
                     is_active=True,
                     match_date=startDate, # 또는 다른 매칭 날짜 설정
                 )
+                self.matchmakingInvite(match.id, user, opponent_user)
                 return Response({'message': "new match created!"}, status=201)
         else: # 현재 유저를 매치메이킹에 등록
             new_matchmaking = matchmaking(pending_player = user)
             new_matchmaking.save()
             return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
+    
+    def matchmakingInvite(self, match_id, player1, player2):
+        str_player1 = str(player1.user_id)
+        str_player2 = str(player2.user_id)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{str_player1}',
+            {
+                'type': 'message',
+                'message': f'Invite to match {player1.username} vs {player2.username}.',
+                'player1' : str_player1,
+                'player2' : str_player2,
+                'g_type' : 'm',
+                'g_id' : match_id,
+            }
+        )
+        
+        async_to_sync(channel_layer.group_send)(
+            f'user_{str_player2}',
+            {
+                'type': 'message',
+                'message': f'Invite to match {player1.username} vs {player2.username}.',
+                'player1' : str_player1,
+                'player2' : str_player2,
+                'g_type' : 'm',
+                'g_id' : match_id,
+            }
+        )
 
+
+class multiMatchmakingView(APIView):
+    def post(self, request):
+        current_username = request.data.get('username')
+        startDate = request.data.get('startDate')
+        user = get_object_or_404(MyUser, username=current_username)
+        pending_matchmaking = multimatchmaking.objects.first()
+
+        # 이미 matchmaking 중인 user가 존재
+        if pending_matchmaking:
+            opponent_user = pending_matchmaking.pending_player
+            opponent_username = opponent_user.username
+
+            # matchmaking 중인 유저가 현재 유저와 동일할경우, matchmaking 취소
+            if opponent_username == current_username:
+                pending_matchmaking.delete()
+                return Response({'message': "canceled multimatchmaking"}, status=status.HTTP_200_OK)
+            elif pending_matchmaking.await_player1 is None:
+                pending_matchmaking.await_player1 = user
+                pending_matchmaking.save()
+                return Response({'message' : 'player2 enrolled'}, status=status.HTTP_200_OK)
+            elif pending_matchmaking.await_player2 is None:
+                pending_matchmaking.await_player2 = user
+                pending_matchmaking.save()
+                return Response({'message' : 'player3 enrolled'}, status=status.HTTP_200_OK)
+            elif pending_matchmaking.await_player3 is None:
+                pending_matchmaking.await_player3 = user
+                pending_matchmaking.save()
+                match = MultiMatch.objects.create(
+                    name = f'2:2 Match {pending_matchmaking.id}',
+                    player1=pending_matchmaking.pending_player,
+                    player2=pending_matchmaking.await_player1,
+                    player3=pending_matchmaking.await_player2,
+                    player4=pending_matchmaking.await_player3,
+                    is_active=True,
+                    match_date=startDate, # 또는 다른 매칭 날짜 설정
+                )
+                pending_matchmaking.delete()
+                self.multimatchmakingInvite(match.name, match.id, match.player1, match.player2, match.player3, match.player4)
+                return Response({'message': "new 2:2 match created!"}, status=201)
+        else: # 현재 유저를 매치메이킹에 등록
+            new_matchmaking = multimatchmaking(pending_player = user)
+            new_matchmaking.save()
+            return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
+    
+    def multimatchmakingInvite(self, match_name, multimatch_id, player1, player2, player3, player4):
+        str_player1 = str(player1.user_id)
+        str_player2 = str(player2.user_id)
+        str_player3 = str(player3.user_id)
+        str_player4 = str(player4.user_id)
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{str_player1}',
+            {
+                'type': 'message',
+                'message': f'Invite to match 2:2 Match {match_name}.',
+                'player1' : str_player1,
+                'player2' : str_player2,
+                'player3' : str_player3,
+                'player4' : str_player4,
+                'g_type' : 'mul',
+                'g_id' : multimatch_id,
+            }
+        )
+        
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{str_player2}',
+            {
+                'type': 'message',
+                'message': f'Invite to match 2:2 Match {match_name}.',
+                'player1' : str_player1,
+                'player2' : str_player2,
+                'player3' : str_player3,
+                'player4' : str_player4,
+                'g_type' : 'mul',
+                'g_id' : multimatch_id,
+            }
+        )
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{str_player3}',
+            {
+                'type': 'message',
+                'message': f'Invite to match 2:2 Match {match_name}.',
+                'player1' : str_player1,
+                'player2' : str_player2,
+                'player3' : str_player3,
+                'player4' : str_player4,
+                'g_type' : 'mul',
+                'g_id' : multimatch_id,
+            }
+        )
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{str_player4}',
+            {
+                'type': 'message',
+                'message': f'Invite to match 2:2 Match {match_name}.',
+                'player1' : str_player1,
+                'player2' : str_player2,
+                'player3' : str_player3,
+                'player4' : str_player4,
+                'g_type' : 'mul',
+                'g_id' : multimatch_id,
+            }
+        )
 
 class tournamentInviteView(APIView):
     def post(self, request, tournament_id):
@@ -290,7 +429,7 @@ class MatchInviteView(APIView):
         match = get_object_or_404(Match, pk=match_id)
         player1 = request.data.get("player1")
         player2 = request.data.get("player2")
-        print(match_id)
+
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f'user_{player1}',
@@ -315,7 +454,7 @@ class MatchInviteView(APIView):
                 'g_id' : match_id,
             }
         )
-
+        
         return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
 
 
@@ -349,6 +488,24 @@ class tournamentHash(APIView):
             print(f"Error in matchGetHash: {e}")
             return Response({'error':'Internal Server Error'}, status=500)
         
+class multiMatchHash(APIView):
+
+    def get(self, request, player1, player2, player3, player4, match_id):
+        hash_url=''
+        try :
+            player1_id = player1
+            player2_id = player2
+            player3_id = player3
+            player4_id = player4
+            
+            hash_url = f"mul_{player1_id}_{player2_id}_{player3_id}_{player4_id}_{match_id}"
+            # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
+            return Response({'hash': hash_url}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error in matchGetHash: {e}")
+            return Response({'error':'Internal Server Error'}, status=500)
+        
+
 
 class matchResultView(APIView):
 
@@ -456,6 +613,8 @@ class MultiMatchListView(APIView):
         serializer = MultiSerializer(multiMatch, many=True)
         return Response(serializer.data)
     
+
+    # 필요가 없을 것 같음
     def post(self, request):
         multiMatch = request.data.get('multiMatch')
         username = request.data.get('username')

@@ -1,5 +1,28 @@
 import { formatDateTime } from "../info/info_func.js";
 import { change_date } from "../utilities.js";
+// import { lang } from "../lang.js";
+
+// let langNow = document.getElementById('languageSelector').value; 
+
+// if (await check_login() === true) {
+// 	let data;
+// 	const csrftoken = Cookies.get('csrftoken');
+// 	const response = await fetch(`user/language`, {
+// 		method : 'GET',
+// 		headers : {
+// 			'Content-Type': 'application/json',
+// 			'X-CSRFToken': csrftoken,
+// 		},
+// 		credentials: 'include',
+// 	});
+
+// 	if (response.ok) {
+// 		data = await response.json();
+// 		console.log(data);
+// 		langNow = data[0].language;
+// 	}
+// }
+
 
 // 유저 프로필에서 변경사항 저장 버튼 이벤트 핸들러 등록
 export async function dataChange(changeData, csrftoken) {
@@ -88,7 +111,8 @@ export function game_stat_view(data) {
     };
 
     const statElements = [
-        createStatElement("승리 횟수", stats.win_count),
+        // createStatElement(lang[langNow][profile][win_percent], stats.win_count),
+		createStatElement("승리 횟수", stats.win_count),
         createStatElement("패배 횟수", stats.defeat_count),
         createStatElement("승률", stats.win_rate + "%"),
         createStatElement("반사율", stats.reflect_rate + "%")
@@ -111,10 +135,16 @@ export function match_info_view(data) {
         match_date: ["없음"],
         match_result: ["없음"]
     };
-
+	let format;
+	if (matchData.match_result === "Lose") {
+		format = 패배
+	} else if (matchData.match_result === "Win") {
+		format = 승
+	}
     const infoElements = [
         createInfoElement("최근 매치", data[0].match_info.length === 0 ? matchData.match_date : change_date(matchData.match_date)),
-        createInfoElement("최근 매치 결과", matchData.match_result)
+		
+		createInfoElement("최근 매치 결과", matchData.match_result)
     ];
 
     infoElements.forEach(element => match_info.appendChild(element));
@@ -161,13 +191,12 @@ export async function match_list_view(self_data, match_data, csrftoken) {
 			matchElement.className = 'match-item';
 			matchElement.innerHTML = `
             <p>${match.player1_username} vs ${match.player2_username}</p>
-            <button class="btn btn-outline-light btn-sm" data-translate="accept" data-match-id="${match.id}">승인</button>
-            <button class="btn btn-outline-light btn-sm" data-translate="reject" data-match-id="${match.id}">거절</button>
+            <button class="btn btn-outline-light btn-sm accept-button" data-translate="accept" data-match-id="${match.id}">승인</button>
+            <button class="btn btn-outline-light btn-sm reject-button" data-translate="reject" data-match-id="${match.id}">거절</button>
             `;
 			matchListContainer.appendChild(matchElement);
 		}
 	});
-
 	// 모든 1:1 매치에 대해 수락 시 이벤트 핸들러 등록
 	document.querySelectorAll('.accept-button').forEach(button => {
 		button.addEventListener('click', () => respondToMatch(button.dataset.matchId, 'accept', self_data, csrftoken));

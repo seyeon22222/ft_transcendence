@@ -58,7 +58,6 @@ class MultiSerializer(serializers.ModelSerializer):
     player2_username = serializers.SerializerMethodField()
     player3_username = serializers.SerializerMethodField()
     player4_username = serializers.SerializerMethodField()
-    requester_username = serializers.SerializerMethodField()
 
     class Meta:
             model = MultiMatch
@@ -87,6 +86,3 @@ class MultiSerializer(serializers.ModelSerializer):
             return obj.player4.username
         else:
             return None
-
-    def get_requester_username(self, obj):
-        return obj.requester.username

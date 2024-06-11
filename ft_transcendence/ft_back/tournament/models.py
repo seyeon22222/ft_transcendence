@@ -69,9 +69,17 @@ class matchmaking(models.Model):
     def __str__(self):
         return f"{self.pending_player.username} is waiting for matchmaking"
 
+class multimatchmaking(models.Model):
+    pending_player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='multipending_player')
+    await_player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='await_player1', null=True, blank=True)
+    await_player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='await_player2', null=True, blank=True)
+    await_player3 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='await_player3', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.pending_player.username} is waiting for matchmaking"
 
 class MultiMatch(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, default='')
     match_date = models.DateTimeField(null=True)
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1_matches', null=True, blank=True)
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2_matches', null=True, blank=True)
@@ -79,7 +87,7 @@ class MultiMatch(models.Model):
     player4 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player4_matches', null=True, blank=True)
     match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
     is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
-    requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requested_matches')
+    # requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requested_matches')
 
     def __str__(self):
         return f"{self.player1.username}, {self.player2.username}, {self.player3.username}, {self.player4.username} in {self.name}"
