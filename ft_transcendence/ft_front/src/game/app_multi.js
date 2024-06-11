@@ -440,7 +440,7 @@ class Main {
   }
 }
 
-export async function game_js(hash) {
+export async function game_multi_js(hash) {
   const get_hash = hash.slice(1);
   let flag = 0;
   let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
