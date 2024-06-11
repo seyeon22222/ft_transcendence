@@ -19,9 +19,13 @@ class Main {
   static mesh2 = null;
   static mesh3 = null;
   static mesh4 = null;
+  static mesh5 = null;
+  static mesh6 = null;
+
   static ball = null;
   static stick1 = null;
   static stick2 = null;
+
   static keyA = 0;
   static keyQ = 0;
   static lastTime = 0;
@@ -31,16 +35,13 @@ class Main {
   static projMat4;
   static vpLoc;
 
-  static pos_ball_tmp = [0, 0, 0];
-  static paddle1 = [0, 0, 0];
-  static paddle2 = [0, 0, 0];
   static score1 = 0;
   static score2 = 0;
 
   static webfunc(get_hash) {
     Main.ball = new Ball();
-    Main.stick1 = new Stick([-15, 0, 0]);
-    Main.stick2 = new Stick([15, 0, 0]);
+    Main.stick1 = new Stick([-15, 1.5, 0]);
+    Main.stick2 = new Stick([15, 1.5, 0]);
     console.log(Main.players);
     let flag = 1;
     // WebSocket 연결 시도
@@ -78,19 +79,11 @@ class Main {
       let message = { message: event.key, players: Main.players, uuid: "" };
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "1pupstop", players: Main.players, uuid: "" };
+        message = { message: "upstop", players: Main.players, uuid: "" };
         flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "1pdownstop", players: Main.players, uuid: "" };
-        flag = 1;
-      }
-      if (event.code === "KeyO") {
-        message = { message: "2pupstop", players: Main.players, uuid: "" };
-        flag = 1;
-      }
-      if (event.code === "KeyL") {
-        message = { message: "2pdownstop", players: Main.players, uuid: "" };
+        message = { message: "downstop", players: Main.players, uuid: "" };
         flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -103,19 +96,11 @@ class Main {
       let flag = 0;
 
       if (event.code === "KeyQ") {
-        message = { message: "1pup", players: Main.players, uuid: "" };
+        message = { message: "up", players: Main.players, uuid: "" };
         flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "1pdown", players: Main.players, uuid: "" };
-        flag = 1;
-      }
-      if (event.code === "KeyO") {
-        message = { message: "2pup", players: Main.players, uuid: "" };
-        flag = 1;
-      }
-      if (event.code === "KeyL") {
-        message = { message: "2pdown", players: Main.players, uuid: "" };
+        message = { message: "down", players: Main.players, uuid: "" };
         flag = 1;
       }
       if (event.code === "ArrowRight")
@@ -130,9 +115,9 @@ class Main {
     window.addEventListener("keydown", handleKeyDown);
 
     ws.onopen = () => {
-      let message = { message: "", players: window.players, uuid: "" };
+      let message = { message: "", players: window.players, uuid: ""};
       ws.send(JSON.stringify(message));
-    };
+    }
 
     ws.onclose = () => {
       console.log("ws close : " + get_hash);
@@ -154,7 +139,8 @@ class Main {
           "===========href=========",
           `/#match/${get_list_hash[get_list_hash.length - 1]}`
         );
-      } else {
+      } 
+      else {
         document.getElementById("game-score").innerHTML =
           score1 + " : " + score2;
         for (let i = 0; i < 3; i++) {
@@ -170,8 +156,9 @@ class Main {
           Main.entry();
           flag = 1;
         }
-      }
-      console.log("밖 is_active : " + is_active);
+
+        }
+        console.log("밖 is_active : " + is_active);
       if (is_active == 0) {
         console.log("안 is_active : " + is_active);
         let get_list_hash = get_hash.split("_");
@@ -330,21 +317,25 @@ class Main {
     if (Main.players == 1) {
       buffer_view["position"] = pos_view;
       buffer_view["color"] = color_box_view;
-      mesh2 = Mesh.from(gl, buffer_view, box1.indices);
+      Main.mesh2 = Mesh.from(gl, buffer_view, box1.indices);
       buffer_view["color"] = color_view;
-      mesh4 = Mesh.from(gl, buffer_view, box1.indices);
-    } else {
-      buffer_view["position"] = pos_view;
-      buffer_view["color"] = color_view;
-      mesh2 = Mesh.from(gl, buffer_view, box1.indices);
-      buffer_view["color"] = color_box_view;
-      mesh4 = Mesh.from(gl, buffer_view, box1.indices);
+      Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
+      Main.mesh5 = Main.mesh4;
+      Main.mesh6 = Main.mesh4;
+    } 
+    else {
+      console.log("player: ", 2);
+        buffer_view["position"] = pos_view;
+        buffer_view["color"] = color_view;
+        Main.mesh6 = Mesh.from(gl, buffer_view, box1.indices);
+        buffer_view["color"] = color_box_view;
+        Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
+        Main.mesh2 = Main.mesh4;
+        Main.mesh5 = Main.mesh4;
     }
 
     Main.mesh = mesh;
-    Main.mesh2 = mesh2;
     Main.mesh3 = mesh3;
-    Main.mesh4 = mesh4;
     requestAnimationFrame(Main.update);
   }
   static render() {
@@ -366,7 +357,7 @@ class Main {
     Main.gl.uniformMatrix4fv(
       modelLocation,
       true,
-      Mat4x4.transportMat(Main.pos_ball_tmp)
+      Mat4x4.transportMat(Main.ball.pos)
     );
     Main.mesh.draw(Main.program);
 
@@ -374,7 +365,7 @@ class Main {
     Main.gl.uniformMatrix4fv(
       modelLocation,
       true,
-      Mat4x4.transportMat(Main.paddle1)
+      Mat4x4.transportMat(Main.stick1.pos)
     );
     Main.mesh2.draw(Main.program);
 
@@ -382,10 +373,10 @@ class Main {
     Main.gl.uniformMatrix4fv(
       modelLocation,
       true,
-      Mat4x4.transportMat(Main.paddle2)
+      Mat4x4.transportMat(Main.stick2.pos)
     );
     Main.mesh4.draw(Main.program);
-
+  
     // wall_1
     Main.gl.uniformMatrix4fv(
       modelLocation,
@@ -403,18 +394,16 @@ class Main {
     Main.mesh3.draw(Main.program);
   }
   static update() {
-    for (let i = 0; i < 3; i++) {
-      Main.pos_ball_tmp[i] = Main.ball.pos[i];
-      Main.paddle1[i] = Main.stick1.pos[i];
-      Main.paddle2[i] = Main.stick2.pos[i];
-    }
     Main.render();
     requestAnimationFrame(Main.update);
   }
 }
 
-async function m_check(get_list_hash, match_id) {
+export async function game_js(hash) {
+  const get_hash = hash.slice(1);
   let flag = 0;
+  let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
+  let match_id = get_list_hash[get_list_hash.length - 1]; //
 
   const csrftoken = Cookies.get("csrftoken");
   console.log("matchvie/${match_id}", `/matchview/${match_id}`);
@@ -427,9 +416,11 @@ async function m_check(get_list_hash, match_id) {
     },
     credentials: "include",
   });
-
   if (response.ok) {
     let data = await response.json();
+    console.log(data.player1_uuid, "===", get_list_hash[1]);
+    console.log(data.player2_uuid, "===", get_list_hash[2]);
+    console.log(data.winner_username, "===", "null");
     if (
       data.player1_uuid === get_list_hash[1] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
       data.player2_uuid === get_list_hash[2] &&
@@ -476,12 +467,4 @@ async function m_check(get_list_hash, match_id) {
     const error = await response.json();
     console.log("match API 요청 실패", error);
   }
-}
-
-export async function game_js(hash) {
-  const get_hash = hash.slice(1);
-  let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
-  let match_id = get_list_hash[get_list_hash.length - 1]; //
-
-  m_check(get_list_hash, match_id);
 }
