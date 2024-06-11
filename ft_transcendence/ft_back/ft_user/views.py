@@ -194,8 +194,6 @@ class Sign_up(APIView):
     def post(self, request):
         form = signForm(request.POST, request.FILES)  # Include request.FILES for handling file uploads
 
-        form = signForm(request.POST, request.FILES)  # Include request.FILES for handling file uploads
-
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']

@@ -287,108 +287,79 @@ class multiMatchmakingView(APIView):
         user = get_object_or_404(MyUser, username=current_username)
         pending_matchmaking = multimatchmaking.objects.first()
 
-        # 이미 matchmaking 중인 user가 존재
         if pending_matchmaking:
             opponent_user = pending_matchmaking.pending_player
-            opponent_username = opponent_user.username
 
-            # matchmaking 중인 유저가 현재 유저와 동일할경우, matchmaking 취소
-            if opponent_username == current_username:
+            # 방 생성자가 다시 누를 경우 매치메이킹 종료
+            if opponent_user == user:
                 pending_matchmaking.delete()
                 return Response({'message': "canceled multimatchmaking"}, status=status.HTTP_200_OK)
-            elif pending_matchmaking.await_player1 is None:
+
+            # 해당 플레이어가 이미 대기 중인 경우 매치메이킹 종료
+            if self._remove_player_if_exists(pending_matchmaking, user):
+                return Response({'message': "player removed from matchmaking"}, status=status.HTTP_200_OK)
+
+            # 대기 중인 슬롯에 플레이어 등록
+            if not pending_matchmaking.await_player1:
                 pending_matchmaking.await_player1 = user
                 pending_matchmaking.save()
-                return Response({'message' : 'player2 enrolled'}, status=status.HTTP_200_OK)
-            elif pending_matchmaking.await_player2 is None:
+                return Response({'message': 'player2 enrolled'}, status=status.HTTP_200_OK)
+            elif not pending_matchmaking.await_player2:
                 pending_matchmaking.await_player2 = user
                 pending_matchmaking.save()
-                return Response({'message' : 'player3 enrolled'}, status=status.HTTP_200_OK)
-            elif pending_matchmaking.await_player3 is None:
+                return Response({'message': 'player3 enrolled'}, status=status.HTTP_200_OK)
+            elif not pending_matchmaking.await_player3:
                 pending_matchmaking.await_player3 = user
                 pending_matchmaking.save()
                 match = MultiMatch.objects.create(
-                    name = f'2:2 Match {pending_matchmaking.id}',
+                    name=f'2:2 Match {pending_matchmaking.id}',
                     player1=pending_matchmaking.pending_player,
                     player2=pending_matchmaking.await_player1,
                     player3=pending_matchmaking.await_player2,
                     player4=pending_matchmaking.await_player3,
                     is_active=True,
-                    match_date=startDate, # 또는 다른 매칭 날짜 설정
+                    match_date=startDate,  # 또는 다른 매칭 날짜 설정
                 )
                 pending_matchmaking.delete()
                 self.multimatchmakingInvite(match.name, match.id, match.player1, match.player2, match.player3, match.player4)
                 return Response({'message': "new 2:2 match created!"}, status=201)
-        else: # 현재 유저를 매치메이킹에 등록
-            new_matchmaking = multimatchmaking(pending_player = user)
+
+        else:
+            new_matchmaking = multimatchmaking(pending_player=user)
             new_matchmaking.save()
             return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
-    
-    def multimatchmakingInvite(self, match_name, multimatch_id, player1, player2, player3, player4):
-        str_player1 = str(player1.user_id)
-        str_player2 = str(player2.user_id)
-        str_player3 = str(player3.user_id)
-        str_player4 = str(player4.user_id)
+
+    def _remove_player_if_exists(self, pending_matchmaking, user):
+        if pending_matchmaking.await_player1 == user:
+            pending_matchmaking.await_player1 = None
+        elif pending_matchmaking.await_player2 == user:
+            pending_matchmaking.await_player2 = None
+        elif pending_matchmaking.await_player3 == user:
+            pending_matchmaking.await_player3 = None
+        else:
+            return False
+        pending_matchmaking.save()
+        return True
+
+    def multimatchmakingInvite(self, match_name, match_id, player1, player2, player3, player4):
+        player_ids = [str(player.user_id) for player in [player1, player2, player3, player4]]
 
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f'user_{str_player1}',
-            {
-                'type': 'message',
-                'message': f'Invite to match 2:2 Match {match_name}.',
-                'player1' : str_player1,
-                'player2' : str_player2,
-                'player3' : str_player3,
-                'player4' : str_player4,
-                'g_type' : 'mul',
-                'g_id' : multimatch_id,
-            }
-        )
-        
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f'user_{str_player2}',
-            {
-                'type': 'message',
-                'message': f'Invite to match 2:2 Match {match_name}.',
-                'player1' : str_player1,
-                'player2' : str_player2,
-                'player3' : str_player3,
-                'player4' : str_player4,
-                'g_type' : 'mul',
-                'g_id' : multimatch_id,
-            }
-        )
+        for player_id in player_ids:
+            async_to_sync(channel_layer.group_send)(
+                f'user_{player_id}',
+                {
+                    'type': 'message',
+                    'message': f'Invite to match {match_name}.',
+                    'player1': player_ids[0],
+                    'player2': player_ids[1],
+                    'player3': player_ids[2],
+                    'player4': player_ids[3],
+                    'g_type': 'mul',
+                    'g_id': match_id,
+                }
+            )
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f'user_{str_player3}',
-            {
-                'type': 'message',
-                'message': f'Invite to match 2:2 Match {match_name}.',
-                'player1' : str_player1,
-                'player2' : str_player2,
-                'player3' : str_player3,
-                'player4' : str_player4,
-                'g_type' : 'mul',
-                'g_id' : multimatch_id,
-            }
-        )
-
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f'user_{str_player4}',
-            {
-                'type': 'message',
-                'message': f'Invite to match 2:2 Match {match_name}.',
-                'player1' : str_player1,
-                'player2' : str_player2,
-                'player3' : str_player3,
-                'player4' : str_player4,
-                'g_type' : 'mul',
-                'g_id' : multimatch_id,
-            }
-        )
 
 class tournamentInviteView(APIView):
     def post(self, request, tournament_id):
@@ -647,58 +618,3 @@ class MultiMatchListView(APIView):
 
         serializer = MultiSerializer(match)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-# class MultiMatchListView(APIView):
-
-#     def get(self, request):
-#         multiMatch = MultiMatch.objects.all()
-#         serializer = MultiSerializer(multiMatch, many=True)
-#         return Response(serializer.data)
-    
-#     def post(self, request):
-#         multimatch_name = request.data.get('multimatch_name')
-#         player1_id = request.data.get('player1_id')
-#         player2_id = request.data.get('player2_id')
-#         player3_id = request.data.get('player3_id')
-#         player4_id = request.data.get('player4_id')
-#         requester_id = request.data.get('requester_id')
-
-#         # check if all fields are provided
-#         if not multimatch_name or not player1_id or not player2_id or not player3_id or not player4_id or not requester_id:
-#             return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # input validation for multimatch_name
-#         valid, message = validate_input(multimatch_name)
-#         if not valid:
-#             return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # get user objects from user_id
-#         try:
-#             player1 = MyUser.objects.get(username=player1_id)
-#             player2 = MyUser.objects.get(username=player2_id)
-#             player3 = MyUser.objects.get(username=player3_id)
-#             player4 = MyUser.objects.get(username=player4_id)
-#             requester = MyUser.objects.get(username=requester_id)
-#         except MyUser.DoesNotExist:
-#             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         if MultiMatch.objects.filter(player1 = player1, player2 = player2, player3 = player3, player4 = player4, name = multimatch_name, is_active=True).exists():
-#             return Response({'error': '해당 매치는 이미 존재합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # create multimatch
-#         try:
-#             created_match = MultiMatch.objects.create(
-#                 name=multimatch_name,
-#                 player1 = player1,
-#                 player2 = player2,
-#                 player3 = player3,
-#                 player4 = player4,
-#                 requester = requester,
-#                 is_active = True,
-#             )
-#         except Exception as e:
-#             return Response({'error': f'MultiMatch 생성 중 오류 발생 :  {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-#         serializer = MultiSerializer(created_match)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
