@@ -40,7 +40,7 @@ export function multiMatch_html() {
 				</div>
 				<div class="column">
                     <div class="match">
-                        <div class="match-top team" id="semi_final3">
+                        <div class="match-top team">
                             <span class="image"></span>
                             <span class="name" id="semi_final3"></span>
                         </div>
