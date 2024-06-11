@@ -11,16 +11,25 @@ class tournamentParticipantSerializer(serializers.ModelSerializer):
 
 class tournamentSerializer(serializers.ModelSerializer):
     participants = tournamentParticipantSerializer(many=True, read_only=True)
-
+    
     class Meta:
         model = tournament
         fields = '__all__'
 
 class tournamentMatchSerializer(serializers.ModelSerializer):
-
+    player1_uuid = serializers.SerializerMethodField()
+    player2_uuid = serializers.SerializerMethodField()
+    
     class Meta:
         model = tournamentMatch
         fields = '__all__'
+        
+    def get_player1_uuid(self,obj):
+        return obj.player1.user_id
+    
+    def get_player2_uuid(self,obj):
+        return obj.player2.user_id
+
 
 class matchSerializer(serializers.ModelSerializer):
     player1_username = serializers.SerializerMethodField()
@@ -58,6 +67,11 @@ class MultiSerializer(serializers.ModelSerializer):
     player2_username = serializers.SerializerMethodField()
     player3_username = serializers.SerializerMethodField()
     player4_username = serializers.SerializerMethodField()
+    requester_username = serializers.SerializerMethodField()
+    player1_uuid  = serializers.SerializerMethodField()
+    player2_uuid  = serializers.SerializerMethodField()
+    player3_uuid  = serializers.SerializerMethodField()
+    player4_uuid  = serializers.SerializerMethodField()
 
     class Meta:
             model = MultiMatch
@@ -84,5 +98,29 @@ class MultiSerializer(serializers.ModelSerializer):
     def get_player4_username(self, obj):
         if obj.player4:
             return obj.player4.username
+        else:
+            return None
+
+    def get_player1_uuid(self, obj):
+        if obj.player1:
+            return obj.player1.uuid
+        else:
+            return None
+        
+    def get_player2_uuid(self, obj):
+        if obj.player1:
+            return obj.player2.uuid
+        else:
+            return None
+    
+    def get_player3_uuid(self, obj):
+        if obj.player1:
+            return obj.player3.uuid
+        else:
+            return None
+    
+    def get_player4_uuid(self, obj):
+        if obj.player1:
+            return obj.player4.uuid
         else:
             return None

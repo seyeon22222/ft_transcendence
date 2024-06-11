@@ -6,6 +6,10 @@ from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import ball
 
+
+# class MultiGameConsumer(AsyncWebsocketConsumer):
+
+
 class GameConsumer(AsyncWebsocketConsumer):
     consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
 

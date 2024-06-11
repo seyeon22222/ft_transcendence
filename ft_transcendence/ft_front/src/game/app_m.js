@@ -130,9 +130,9 @@ class Main {
     window.addEventListener("keydown", handleKeyDown);
 
     ws.onopen = () => {
-      let message = { message: "", players: window.players, uuid: ""};
+      let message = { message: "", players: window.players, uuid: "" };
       ws.send(JSON.stringify(message));
-    }
+    };
 
     ws.onclose = () => {
       console.log("ws close : " + get_hash);
@@ -154,8 +154,7 @@ class Main {
           "===========href=========",
           `/#match/${get_list_hash[get_list_hash.length - 1]}`
         );
-      } 
-      else {
+      } else {
         document.getElementById("game-score").innerHTML =
           score1 + " : " + score2;
         for (let i = 0; i < 3; i++) {
@@ -171,9 +170,8 @@ class Main {
           Main.entry();
           flag = 1;
         }
-
-        }
-        console.log("밖 is_active : " + is_active);
+      }
+      console.log("밖 is_active : " + is_active);
       if (is_active == 0) {
         console.log("안 is_active : " + is_active);
         let get_list_hash = get_hash.split("_");
@@ -415,11 +413,8 @@ class Main {
   }
 }
 
-export async function game_js(hash) {
-  const get_hash = hash.slice(1);
+async function m_check(get_list_hash, match_id) {
   let flag = 0;
-  let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
-  let match_id = get_list_hash[get_list_hash.length - 1]; //
 
   const csrftoken = Cookies.get("csrftoken");
   console.log("matchvie/${match_id}", `/matchview/${match_id}`);
@@ -432,11 +427,9 @@ export async function game_js(hash) {
     },
     credentials: "include",
   });
+
   if (response.ok) {
     let data = await response.json();
-    console.log(data.player1_uuid, "===", get_list_hash[1]);
-    console.log(data.player2_uuid, "===", get_list_hash[2]);
-    console.log(data.winner_username, "===", "null");
     if (
       data.player1_uuid === get_list_hash[1] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
       data.player2_uuid === get_list_hash[2] &&
@@ -483,4 +476,12 @@ export async function game_js(hash) {
     const error = await response.json();
     console.log("match API 요청 실패", error);
   }
+}
+
+export async function game_js(hash) {
+  const get_hash = hash.slice(1);
+  let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
+  let match_id = get_list_hash[get_list_hash.length - 1]; //
+
+  m_check(get_list_hash, match_id);
 }
