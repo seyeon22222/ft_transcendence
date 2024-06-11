@@ -147,50 +147,6 @@ export async function matchLobby_view() {
                 alert(data.error);
             }
         })
-
-        const multiCreateForm = document.getElementById("multiMatch_form");
-        multiCreateForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            let data;
-            const csrftoken = Cookies.get('csrftoken');
-            const response_t = await fetch('user/info', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken,
-                },
-                credentials: 'include',
-            });
-            if (response_t.ok) {
-                data = await response_t.json();
-            } else {
-                const error = await response_t.json();
-                console.error('API 요청 실패', error);
-            }
-
-            const multiMatch_name = document.getElementById("multiMatch_name").value;
-            const name = data[0].user_id;
-            const formData = new FormData();
-            formData.append('multiMatch', multiMatch_name);
-            formData.append('username', name);
-            
-            const m_res = await fetch('match/multimatchList', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                },
-                body: formData
-            });
-
-            if (m_res.ok) {
-                const data = await m_res.json();
-                alert(`2:2 Match ${data.name} is created!`);
-                router();
-            } else {
-                const data = await m_res.json();
-                alert(data.error);
-            }
-        })
     } catch(error) {
         console.error('matchLobby : ', error);
     }    

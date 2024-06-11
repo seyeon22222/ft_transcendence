@@ -9,13 +9,13 @@ export function multiMatch_html() {
 			<div class="bracket disable-borders">
 				<div class="column">
 					<div class="match">
-						<div class="match-top team" id="final1">
+						<div class="match-top team">
 							<span class="image"></span>
-							<span class="name"></span>
+							<span class="name" id="final1"></span>
 						</div>
-						<div class="match-bottom team" id="final2">
+						<div class="match-bottom team">
 							<span class="image"></span>
-							<span class="name"></span>
+							<span class="name" id="final2"></span>
 						</div>
 					</div>
 				</div>
@@ -23,13 +23,13 @@ export function multiMatch_html() {
 			<div class="bracket disable-borders">
 				<div class="column">
                     <div class="match">
-                        <div class="match-top team" id="semi_final1">
+                        <div class="match-top team">
                             <span class="image"></span>
-                            <span class="name"></span>
+                            <span class="name" id="semi_final1"></span>
                         </div>
-                        <div class="match-bottom team" id="semi_final2">
+                        <div class="match-bottom team">
                             <span class="image"></span>
-                            <span class="name"></span>
+                            <span class="name" id="semi_final2"></span>
                         </div>
                     </div>
                 </div>
@@ -40,13 +40,13 @@ export function multiMatch_html() {
 				</div>
 				<div class="column">
                     <div class="match">
-                        <div class="match-top team" id="semi_final3">
+                        <div class="match-top team">
                             <span class="image"></span>
-                            <span class="name"></span>
+                            <span class="name" id="semi_final3"></span>
                         </div>
-                        <div class="match-bottom team" id="semi_final4">
+                        <div class="match-bottom team">
                             <span class="image"></span>
-                            <span class="name"></span>
+                            <span class="name" id="semi_final4"></span>
                         </div>
                     </div>        
                 </div>
