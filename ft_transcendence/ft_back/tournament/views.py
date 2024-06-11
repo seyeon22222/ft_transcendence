@@ -120,6 +120,33 @@ class matchDetailView(APIView):
         serializer = matchSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+# chanwopa, API for tournamentMatch
+class tournamentMatchView(APIView):
+
+    def get(self, request):
+        tournament_matches = tournamentMatch.objects.all()
+        serializer = tournamentMatchSerializer(tournament_matches, many=True)
+        return Response(serializer.data)
+
+# chanwopa, API for specific tournamentMatch
+class tournamentMatchDetailView(APIView):
+    
+    def get(self, request, player1, player2, tournament_id):
+        try:
+            player1 = MyUser.objects.get(user_id=player1)
+            player2 = MyUser.objects.get(user_id=player2)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            tournament_instance = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        serializer = tournamentMatchSerializer(tournament_match)
+        return Response(serializer.data)
+
 class matchView(APIView):
     
     def get(self, request):
@@ -185,6 +212,32 @@ class MatchRequestView(APIView):
         )
 
         return Response({'message': 'Match request sent'}, status=status.HTTP_201_CREATED)
+
+# chanwopa, create tournament Match object with given info
+class TournamentMatchRequestView(APIView):
+    def post(self, request):
+        apply_user_id = request.data.get('apply_user')
+        accept_user_id = request.data.get('accept_user')
+        tournament_id = request.data.get('tournament_id')
+
+        try:
+            apply_user = MyUser.objects.get(user_id=apply_user_id)
+            accept_user = MyUser.objects.get(user_id=accept_user_id)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            tournament_instance = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        tournament_match = tournamentMatch.objects.create(
+            tournament=tournament_instance,
+            player1=apply_user,
+            player2=accept_user,
+        )
+
+        return Response({'message': 'Tournament match created'}, status=status.HTTP_201_CREATED)
 
 class MatchResponseView(APIView):
     def post(self, request, match_id):

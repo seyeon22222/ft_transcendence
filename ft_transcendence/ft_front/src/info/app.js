@@ -189,7 +189,7 @@ export async function info_js() {
       name: match_name,
     };
 
-    const mat_response = await fetch("/match/request", {
+    const mat_response = await fetch("/match/m_request", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
