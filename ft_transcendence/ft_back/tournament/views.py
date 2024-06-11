@@ -317,7 +317,7 @@ class multiMatchmakingView(APIView):
                     match_date=startDate, # 또는 다른 매칭 날짜 설정
                 )
                 pending_matchmaking.delete()
-                self.multimatchmakingInvite(match.id, match.name, match.player1, match.player2, match.player3, match.player4)
+                self.multimatchmakingInvite(match.name, match.id, match.player1, match.player2, match.player3, match.player4)
                 return Response({'message': "new 2:2 match created!"}, status=201)
         else: # 현재 유저를 매치메이킹에 등록
             new_matchmaking = multimatchmaking(pending_player = user)
@@ -335,7 +335,7 @@ class multiMatchmakingView(APIView):
             f'user_{str_player1}',
             {
                 'type': 'message',
-                'message': f'Invite to match {match_name}.',
+                'message': f'Invite to match 2:2 Match {match_name}.',
                 'player1' : str_player1,
                 'player2' : str_player2,
                 'player3' : str_player3,
@@ -350,7 +350,7 @@ class multiMatchmakingView(APIView):
             f'user_{str_player2}',
             {
                 'type': 'message',
-                'message': f'Invite to match {match_name}.',
+                'message': f'Invite to match 2:2 Match {match_name}.',
                 'player1' : str_player1,
                 'player2' : str_player2,
                 'player3' : str_player3,
@@ -365,7 +365,7 @@ class multiMatchmakingView(APIView):
             f'user_{str_player3}',
             {
                 'type': 'message',
-                'message': f'Invite to match {match_name}.',
+                'message': f'Invite to match 2:2 Match {match_name}.',
                 'player1' : str_player1,
                 'player2' : str_player2,
                 'player3' : str_player3,
@@ -380,7 +380,7 @@ class multiMatchmakingView(APIView):
             f'user_{str_player4}',
             {
                 'type': 'message',
-                'message': f'Invite to match {match_name}.',
+                'message': f'Invite to match 2:2 Match {match_name}.',
                 'player1' : str_player1,
                 'player2' : str_player2,
                 'player3' : str_player3,
@@ -488,6 +488,24 @@ class tournamentHash(APIView):
             print(f"Error in matchGetHash: {e}")
             return Response({'error':'Internal Server Error'}, status=500)
         
+class multiMatchHash(APIView):
+
+    def get(self, request, player1, player2, player3, player4, match_id):
+        hash_url=''
+        try :
+            player1_id = player1
+            player2_id = player2
+            player3_id = player3
+            player4_id = player4
+            
+            hash_url = f"mul_{player1_id}_{player2_id}_{player3_id}_{player4_id}_{match_id}"
+            # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
+            return Response({'hash': hash_url}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error in matchGetHash: {e}")
+            return Response({'error':'Internal Server Error'}, status=500)
+        
+
 
 class matchResultView(APIView):
 

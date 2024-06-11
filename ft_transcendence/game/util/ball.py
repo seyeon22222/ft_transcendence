@@ -7,7 +7,11 @@ MIN = 0.000000001
 class Ball:
     def __init__(self):
         self.pos = [0, 0, 0]
-        self.dir = [1, 0, 0]
+        flag = random.randrange(0, 100)
+        if (flag < 50):
+            self.dir = [1, 0, 0]
+        else:
+            self.dir = [-1, 0, 0]
         self.cnt1 = 0
         self.cnt2 = 0
         self.point1 = 0
@@ -66,7 +70,11 @@ class Ball:
             else:
                 self.point1 += 1
             self.pos = [0, 0, 0]
-            self.dir = [-1, 0, 0]
+            flag = random.randrange(0, 100)
+            if (flag < 50):
+                self.dir = [-1, 0, 0]
+            else:
+                self.dir = [1, 0, 0]
             self.cnt1 = 0
             self.cnt2 = 0
             return False

@@ -1,6 +1,7 @@
 import router from '../../base/router.js'
 import { check_login } from '../utilities.js'
 import { formatDateTime } from "../info/info_func.js";
+import { check_socket } from '../../base/totalSocket.js';
 
 let i_socket;
 
@@ -133,6 +134,7 @@ function logout_button_eventhandler(button) {
             if (response.ok) {
                 const data = await response.json();
                 alert(data.message);
+                check_socket();
                 router();
             } else {
                 const error = await response.json();
