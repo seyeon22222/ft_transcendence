@@ -176,6 +176,9 @@ async function startTournament(tournament_id) {
             for (let i = 0; i < players.length - 1; i += 2) {
                 const player1 = players[i];
                 const player2 = players[i + 1];
+
+                await createTournamentMatch(tournament_id, player1, player2);        
+
                 await sendGameInvitation(tournament_id, player1, player2);
             }
         }
@@ -184,6 +187,9 @@ async function startTournament(tournament_id) {
             for (let i = 0; i < players.length; i += 2) {
                 const player1 = players[i];
                 const player2 = players[i + 1];
+
+                await createTournamentMatch(tournament_id, player1, player2);
+
                 await sendGameInvitation(tournament_id, player1, player2);
             }
         }
@@ -249,7 +255,7 @@ async function handleByePlayer(player, players) {
 async function sendGameInvitation(tournament_id, player1, player2) {
     console.log("invite ",player1, player2);
     const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch(`match/invite/${tournament_id}`, {
+    const response = await fetch(`match/invite_t/${tournament_id}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -263,6 +269,26 @@ async function sendGameInvitation(tournament_id, player1, player2) {
     } else {
         alert('게임 초대 전송에 실패했습니다.');
     }
+}
+
+// 토너먼트의 각각의 매치 생성에 사용하는 함수
+async function createTournamentMatch(tournament_id, player1, player2) {
+    const csrftoken = Cookies.get('csrftoken');
+    const t_response = await fetch(`match/t_request`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body : JSON.stringify({tournament_id : tournament_id, apply_user : player1.player, accept_user : player2.player})
+    });
+
+    if (t_response.ok) {
+        const t_data = await t_response.json();
+        console.log('토너먼트 매치 생성 성공' + t_response.status);
+    } else {
+        console.error('토너먼트 매치 생성 실패' + t_response.status);
+    }    
 }
 
 // 게임 결과 처리 함수

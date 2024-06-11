@@ -7,6 +7,7 @@ from .views import (
     tournamentInviteView, matchGetHash, tournamentHash,
     MatchInviteView, matchResultView, MultiMatchApplyView,
     MultiMatchListView, TournamentMatchRequestView,
+    tournamentMatchView, tournamentMatchDetailView,
 )
 
 app_name = "tournament"
@@ -17,12 +18,14 @@ urlpatterns = [
     path('matchapply/<int:tournament_id>', addTournamentPlayer.as_view(), name='match_add_player'),
     path('matchview', matchListView.as_view(), name='match_view'),
     path('matchview/<int:match_id>', matchDetailView.as_view(), name='match_view'),
+    path('t_matchview', tournamentMatchView.as_view(), name='tournament_match_view'),
+    path('t_matchview/<uuid:player1><uuid:player2><int:tournament_id>', tournamentMatchDetailView.as_view(), name='tournament_match_detail_view'),
     path('selfview', matchView.as_view(), name='match_selfview'),
     path('m_request', MatchRequestView.as_view(), name='match_request'),
     path('t_request', TournamentMatchRequestView.as_view(), name='tournament_match_request'),
     path('response/<int:match_id>', MatchResponseView.as_view(), name='match_response'),
     path('matchmaking', MatchmakingView.as_view(), name='matchmaking_view'),
-    path('invite/<int:tournament_id>', tournamentInviteView.as_view(), name='gamestart_view'),
+    path('invite_t/<int:tournament_id>', tournamentInviteView.as_view(), name='gamestart_view'),
     path('invite_m/<int:match_id>', MatchInviteView.as_view(), name='matchstart_view'),
     path('matchgethash/<int:match_id>', matchGetHash.as_view(), name='get_hash'),
     path('tournamenthash/<uuid:player1><uuid:player2><int:tournament_id>', tournamentHash.as_view(), name='t_get_hash'),
