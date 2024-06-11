@@ -16,6 +16,7 @@ class Ball:
         self.cnt2 = 0
         self.point1 = 0
         self.point2 = 0
+        self.is_active = 1
 
     def reflectVector(self, normal):
         normal = ballUtils.normalized(normal)

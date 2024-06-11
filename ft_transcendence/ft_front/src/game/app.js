@@ -149,7 +149,7 @@ class Main {
 
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
-        is_active = 0;
+        // is_active = 0;
         console.log(
           "===========href=========",
           `/#match/${get_list_hash[get_list_hash.length - 1]}`

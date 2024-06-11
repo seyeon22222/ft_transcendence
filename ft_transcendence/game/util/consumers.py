@@ -17,7 +17,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.b = ball.Ball()
         self.p1 = ball.Stick([-15,0,0])
         self.p2 = ball.Stick([15,0,0])
-        self.is_active = 1
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -31,7 +30,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.b = self.consumers[self.room_group_name].b
             self.p1 = self.consumers[self.room_group_name].p1
             self.p2 = self.consumers[self.room_group_name].p2
-            self.is_active = self.consumers[self.room_group_name].is_active
             self.task = self.loop.create_task(self.send_message())
         else:
             self.consumer = self
@@ -44,20 +42,19 @@ class GameConsumer(AsyncWebsocketConsumer):
             'paddle2_pos': self.p2.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'is_active':self.is_active
+            'is_active':self.b.is_active
             }))
 
     async def disconnect(self, close_code):
         
         self.task.cancel()
-        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.is_active) + "=====================")
+        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
         if self.players == 1:
-            self.is_active = 0
             del self.consumers[self.room_group_name]
             match_result = 2
         elif self.players == 2:
-            self.is_active = 0
             match_result = 1
+        self.b.is_active = 0
         backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
         game_results = {
             'match_date': datetime.now().isoformat(),
@@ -75,7 +72,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'paddle2_pos': self.p2.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'is_active':self.is_active
+            'is_active':self.b.is_active
             }))
             # 초 대기
             await asyncio.sleep(0.001)
@@ -89,7 +86,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.p2.update(self.p2.dir[1] * 10 * self.dt)
             self.b.update(self.p1, self.p2, self.dt * 20)
             if self.b.point1 == 5 :
-                self.is_active = False
+                self.b.is_active = 0
                 backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
@@ -100,7 +97,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 # print(response.status_code)
                 # print(response.text)
             elif self.b.point2 == 5:
-                self.is_active = False
+                self.b.is_active = 0
                 backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
@@ -116,7 +113,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'paddle2_pos': self.p2.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'is_active' :self.is_active
+            'is_active' :self.b.is_active
             }))
             # 초 대기
             await asyncio.sleep(0.001)
@@ -160,20 +157,3 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.p2.dir[1] = 0
             if (message == '2pdownstop' and self.p2.dir[1] == -1 and player == 2):
                 self.p2.dir[1] = 0
-        #데이터베이스 조회
-        
-        # conn = psycopg2.connect(
-        #     host="db",
-        #     database="ft_db",
-        #     user="admin",
-        #     password="qwer1234!"
-        # )
-        # cur = conn.cursor()
-        # cur.execute("SELECT * FROM ft_user_myuser")
-        # rows = cur.fetchall()
-
-        # for row in rows:
-        #     print(list(row)[9])
-        #     print(" : row\n")
-
-        # conn.close()
