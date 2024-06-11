@@ -435,7 +435,7 @@ class matchGetHash(APIView):
             match = get_object_or_404(Match, id=match_id)
             player1 = match.player1
             player2 = match.player2
-            combined_string = f"m/{match.player1.user_id}_{match.player2.user_id}_{match_id}"
+            combined_string = f"{match.player1.user_id}_{match.player2.user_id}_{match_id}"
 
             return Response({'hash': combined_string}, status=status.HTTP_200_OK)
         except Match.DoesNotExist:
@@ -452,7 +452,7 @@ class tournamentHash(APIView):
             player1_id = player1
             player2_id = player2
             
-            hash_url = f"t/{player1_id}_{player2_id}_{tournament_id}"
+            hash_url = f"{player1_id}_{player2_id}_{tournament_id}"
             # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
             return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -469,7 +469,7 @@ class multiMatchHash(APIView):
             player3_id = player3
             player4_id = player4
             
-            hash_url = f"mul_{player1_id}_{player2_id}_{player3_id}_{player4_id}_{match_id}"
+            hash_url = f"{player1_id}_{player2_id}_{player3_id}_{player4_id}_{match_id}"
             # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
             return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:

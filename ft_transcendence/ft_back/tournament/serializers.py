@@ -67,7 +67,7 @@ class MultiSerializer(serializers.ModelSerializer):
     player2_username = serializers.SerializerMethodField()
     player3_username = serializers.SerializerMethodField()
     player4_username = serializers.SerializerMethodField()
-    requester_username = serializers.SerializerMethodField()
+    
     player1_uuid  = serializers.SerializerMethodField()
     player2_uuid  = serializers.SerializerMethodField()
     player3_uuid  = serializers.SerializerMethodField()
@@ -103,24 +103,24 @@ class MultiSerializer(serializers.ModelSerializer):
 
     def get_player1_uuid(self, obj):
         if obj.player1:
-            return obj.player1.uuid
+            return obj.player1.user_id
         else:
             return None
         
     def get_player2_uuid(self, obj):
-        if obj.player1:
-            return obj.player2.uuid
+        if obj.player2:
+            return obj.player2.user_id
         else:
             return None
     
     def get_player3_uuid(self, obj):
-        if obj.player1:
-            return obj.player3.uuid
+        if obj.player3:
+            return obj.player3.user_id
         else:
             return None
     
     def get_player4_uuid(self, obj):
-        if obj.player1:
-            return obj.player4.uuid
+        if obj.player4:
+            return obj.player4.user_id
         else:
             return None

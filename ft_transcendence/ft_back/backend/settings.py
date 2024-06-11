@@ -147,7 +147,17 @@ CHANNEL_LAYERS = {
     }
 }
 
-CSRF_TRUSTED_ORIGINS = ['https://127.0.0.1:8000']
-CORS_ALLOWED_ORIGINS = ['https://127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = ['https://127.0.0.1:8000', 'https://10.18.223.53:8000', "https://10.19.212.14:8000"]
+# CORS_ALLOWED_ORIGINS = ['https://127.0.0.1:8000']
+CORS_ORIGIN_ALLOW_ALL = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    "Referer",
+    "access-control-allow-origin",
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+]
+CORS_ALLOW_METHODS = ["GET", "POST", "DELETE", "OPTIONS", "PATCH"]
