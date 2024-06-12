@@ -590,14 +590,15 @@ class tournamentMatchResultView(APIView):
         tournament_match.match_date = match_date
         tournament_match.match_result = match_result
 
-        # GameStat 관련 로직
-        # MatchInfo 관련 로직
-        # player 승률 업데이트 로직
-
-        # tournamentMatch 승자, 패자 level 및 정보 업데이트
-
-        # tournament에 완료된 게임 + 1
-        # 그 결과가 모든 게임 완료라면, 다음 게임 참가자들에게 초대 진항
-        # tournamentInviteView
-
-        # tournament websocket으로 메시지 전송
+        # 1. 게임서버 → API URL : match/t_matchresult/<int:tournament_id>/
+        #     - 첨부 body : match_date, match_result, player1_uuid, player2_uuid
+        # 2. 게임의 승자 player의 정보 업데이트
+        #     1. tournament → participant → level_choice 업데이트
+        #     2. tournament → participant → index 업데이트
+        # 3. tournamentMatch 정보 업데이트
+        #     1. match_date
+        #     2. match_result
+        # 4. (선택) GameStat, MatchInfo, Player 승률 업데이트
+        # 5. tournament 모델에 완료된 게임 + 1
+        # 6. 완료된 게임 체크, 현재 level의 모든 게임이 끝났다면 TournamentMatchRequestView로 새로운 토너먼트매치 객체 생성, tournamentInviteView로 플레이어에게 초대 전송
+        # 7. (선택) tournament websocket에 메시지 전송해서 onmessage 호출로 대진표 update
