@@ -80,7 +80,7 @@ export function select_match_info_view(data) {
 			? matchData.match_date
 			: change_date(matchData.match_date)
 		),
-		createInfoElement("최근 매치 결과", matchData.match_result),햣
+		createInfoElement("최근 매치 결과", matchData.match_result),
 	];
 
 	infoElements.forEach((element) => match_info.appendChild(element));
