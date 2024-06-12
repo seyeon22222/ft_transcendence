@@ -39,17 +39,30 @@ export async function tournament_view(hash) {
     window.t_socket = new WebSocket(
         `wss://${window.location.host}/ws/tournament/${tournament_id}/`
     );
+
+    // debug
+    console.log("tournament socket : ");
+    console.log(window.t_socket);
+
     window.t_socket.onopen = function(e) {
         console.log("window.t_socket open");
     }
     window.t_socket.onmessage = async function(e) {
         const data = JSON.parse(e.data);
-        // console.log(data.message);
+        console.log("window.t_socket message : ", data.message);
 
-        // 필요한 DOM 업데이트 로직
-        const result = await updateTournamentInfo(arr);
-        const { player, tournament_id } = result;
-        
+        const current_hash = window.location.hash;
+        console.log(current_hash);
+
+        if (current_hash !== `#tournament/${tournament_name}`) {
+            console.log("hash not matched");
+            return;
+        } else {
+            // 필요한 DOM 업데이트 로직
+            console.log("hash matched");
+            const result = await updateTournamentInfo(arr);
+            // const { player, tournament_id } = result;
+        }
     };
     // console.log(player);
     window.t_socket.onclose = function(e) {
