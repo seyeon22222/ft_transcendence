@@ -76,14 +76,14 @@ class Main {
     };
 
     const handleKeyUp = (event) => {
-      let message = { message: event.key, players: Main.players, uuid: "" };
+      let message = { message: event.key, players: window.players, uuid: "" };
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "upstop", players: Main.players, uuid: "" };
+        message = { message: "upstop", players: window.players, uuid: "" };
         flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "downstop", players: Main.players, uuid: "" };
+        message = { message: "downstop", players: window.players, uuid: "" };
         flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -92,15 +92,15 @@ class Main {
     };
 
     const handleKeyDown = (event) => {
-      let message = { message: event.key, players: Main.players };
+      let message = { message: event.key, players: window.players , uuid: "" };
       let flag = 0;
 
       if (event.code === "KeyQ") {
-        message = { message: "up", players: Main.players, uuid: "" };
+        message = { message: "up", players: window.players, uuid: "" };
         flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "down", players: Main.players, uuid: "" };
+        message = { message: "down", players: window.players, uuid: "" };
         flag = 1;
       }
       if (event.code === "ArrowRight")
@@ -434,14 +434,11 @@ export async function game_m_js(hash) {
         //url에 해당 uuid값이 있는지
         let data = await response_name.json();
         let get_list_hash = get_hash.split("_");
+        window.players = 0;
         for (let i = 0; i < get_list_hash.length - 1; i++) {
           if (get_list_hash[i] == data[0].user_id) {
             window.uuid = data[0].user_id;
-            if (window.uuid == get_list_hash[1]) {
-              window.players = 1;
-            } else {
-              window.players = 2;
-            }
+            window.players = i + 1;
             flag = 1;
           }
         }

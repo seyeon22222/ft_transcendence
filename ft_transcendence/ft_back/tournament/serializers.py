@@ -73,6 +73,8 @@ class MultiSerializer(serializers.ModelSerializer):
     player3_uuid  = serializers.SerializerMethodField()
     player4_uuid  = serializers.SerializerMethodField()
 
+    match_result = serializers.SerializerMethodField()
+
     class Meta:
             model = MultiMatch
             fields = '__all__'
@@ -122,5 +124,11 @@ class MultiSerializer(serializers.ModelSerializer):
     def get_player4_uuid(self, obj):
         if obj.player4:
             return obj.player4.user_id
+        else:
+            return None
+    
+    def get_match_result(self, obj):
+        if obj.match_result:
+            return obj.match_result
         else:
             return None
