@@ -784,57 +784,33 @@ class tournamentDetailView(APIView):
         match = get_object_or_404(tournamentMatch, id=tournament_id)
         serializer = tournamentMatchSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
+class tournamentMatchResultView(APIView):
+    def post(self, request, tournament_id):
+        tournament_instance = get_object_or_404(tournament, pk=tournament_id)
+        match_date = request.data.get('match_date')
+        match_result = request.data.get('match_result')
+        player1_uuid = request.data.get('player1')
+        player2_uuid = request.data.get('player2')
 
-# class MultiMatchListView(APIView):
+        try:
+            player1 = MyUser.objects.get(user_id=player1_uuid)
+            player2 = MyUser.objects.get(user_id=player2_uuid)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
 
-#     def get(self, request):
-#         multiMatch = MultiMatch.objects.all()
-#         serializer = MultiSerializer(multiMatch, many=True)
-#         return Response(serializer.data)
-    
-#     def post(self, request):
-#         multimatch_name = request.data.get('multimatch_name')
-#         player1_id = request.data.get('player1_id')
-#         player2_id = request.data.get('player2_id')
-#         player3_id = request.data.get('player3_id')
-#         player4_id = request.data.get('player4_id')
-#         requester_id = request.data.get('requester_id')
+        # tournament match data change
+        tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        tournament_match.match_date = match_date
+        tournament_match.match_result = match_result
 
-#         # check if all fields are provided
-#         if not multimatch_name or not player1_id or not player2_id or not player3_id or not player4_id or not requester_id:
-#             return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
+        # GameStat 관련 로직
+        # MatchInfo 관련 로직
+        # player 승률 업데이트 로직
 
-#         # input validation for multimatch_name
-#         valid, message = validate_input(multimatch_name)
-#         if not valid:
-#             return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
+        # tournamentMatch 승자, 패자 level 및 정보 업데이트
 
-#         # get user objects from user_id
-#         try:
-#             player1 = MyUser.objects.get(username=player1_id)
-#             player2 = MyUser.objects.get(username=player2_id)
-#             player3 = MyUser.objects.get(username=player3_id)
-#             player4 = MyUser.objects.get(username=player4_id)
-#             requester = MyUser.objects.get(username=requester_id)
-#         except MyUser.DoesNotExist:
-#             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+        # tournament에 완료된 게임 + 1
+        # 그 결과가 모든 게임 완료라면, 다음 게임 참가자들에게 초대 진항
+        # tournamentInviteView
 
-#         if MultiMatch.objects.filter(player1 = player1, player2 = player2, player3 = player3, player4 = player4, name = multimatch_name, is_active=True).exists():
-#             return Response({'error': '해당 매치는 이미 존재합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # create multimatch
-#         try:
-#             created_match = MultiMatch.objects.create(
-#                 name=multimatch_name,
-#                 player1 = player1,
-#                 player2 = player2,
-#                 player3 = player3,
-#                 player4 = player4,
-#                 requester = requester,
-#                 is_active = True,
-#             )
-#         except Exception as e:
-#             return Response({'error': f'MultiMatch 생성 중 오류 발생 :  {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-#         serializer = MultiSerializer(created_match)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # tournament websocket으로 메시지 전송
