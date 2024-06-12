@@ -237,6 +237,16 @@ class TournamentMatchRequestView(APIView):
             player2=accept_user,
         )
 
+        # 웹소켓을 통해 업데이트 정보 전송 - 토너먼트 참여중이지 않지만 방에 들어온 유저의 화면 업데이트를 위함
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'tournament_{tournament_id}',
+            {
+                'type': 'tournament_message',
+                'message': f'tournament match created between {apply_user.username} and {accept_user.username}.'
+            }
+        )
+
         return Response({'message': 'Tournament match created'}, status=status.HTTP_201_CREATED)
 
 class MatchResponseView(APIView):
