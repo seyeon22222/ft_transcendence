@@ -1,6 +1,6 @@
 export function profile_html() {
     return `
-	<h1 class="my-4 text-center">USER INFORMATION</h1>
+	<h1 class="my-4 text-center" data-translate="title">유저 프로필</h1>
 	<br>
     <div class="userinfo-container">
 		<div class="col">
@@ -34,21 +34,21 @@ export function profile_html() {
 	<div class="stat-container">
 		<div class="col">
 			<div class="gamestat-container">
-				<h2 class="my-4">GAME STAT</h2>
+				<h2 class="my-4" data-translate="game_stat">게임 스탯</h2>
 				<div id="game_status">
 				</div>
 			</div>
 		</div>
 		<div class="col">
 			<div class="match-container">
-				<h2 class="my-4">MATCH HISTORY</h2>
+				<h2 class="my-4" data-translate="match_his">매치 히스토리</h2>
 				<div id="match_info">
 				</div>
 			</div>
 		</div>
 	</div>
     <div>
-        <h2 class="my-4">1:1 Match List</h2>
+        <h2 class="my-4" data-translate="match_list">1:1 매치 초대</h2>
         <div id="1:1_Match_List">
         </div>
     </div>

@@ -46,7 +46,7 @@
 
 export function info_html() {
     return `
-    <h1 class"my-4 text-center">USER INFORMATION</h1>
+    <h1 class"my-4 text-center" data-translate="title">유저 프로필</h1>
 	<br>
     <div class="userinfo-container">
 		<div class="col">
@@ -67,14 +67,14 @@ export function info_html() {
     <div class="stat-container">
 		<div class="col">
 			<div class="gamestat-container">
-				<h2 class="my-4">GAME STAT</h2>
+				<h2 class="my-4" data-translate="game_stat">GAME STAT</h2>
 				<div id="game_status">
 				</div>
 			</div>
 		</div>
 		<div class="col">
 			<div class="match-container">
-				<h2 class="my-4">MATCH HISTORY</h2>
+				<h2 class="my-4" data-translate="match_his">MATCH HISTORY</h2>
 				<div id="match_info">
 				</div>
 			</div>

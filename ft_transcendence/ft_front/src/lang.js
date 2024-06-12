@@ -1,6 +1,6 @@
 // import { check_login } from '../utilities.js'
 
-const lang = {
+window.lang = {
 	ko: {
 		home: {
 			login: "로그인",
@@ -27,30 +27,48 @@ const lang = {
 			email: "이메일",
 		},
 		profile: {
+			title: "유저 프로필",
 			change_pic: "사진 변경",
 			change_id: "ID 변경",
 			change_email: "이메일 변경",
 			save_changes: "변경사항 저장",
+			game_stat: "게임 스탯",
 			wins: "승리 횟수",
 			loses: "패배 횟수",
 			win_percent: "승률",
 			reflections: "반사율",
+			match_his: "매치 히스토리",
 			recent_match: "최근 매치",
 			recent_match_res: "최근 매치 결과",
+			win: "승리",
+			lose: "패배",
+			match_list: "1:1 매치 초대",
 			accept: "승인",
 			reject: "거절",
 		},
 		info: {
+			title: "유저 프로필",
 			match_request: "매치 신청",
 			chat: "1:1 채팅",
 			chat_block: "1:1 채팅 차단",
 			chat_unblock: "1:1 채팅 차단 해제",
+			game_stat: "게임 스탯",
+			wins: "승리 횟수",
+			loses: "패배 횟수",
+			win_percent: "승률",
+			reflections: "반사율",
+			match_his: "매치 히스토리",
+			recent_match: "최근 매치",
+			recent_match_res: "최근 매치 결과",
+			win: "승리",
+			lose: "패배",
 		},
 		chat: {
 			msg: "메세지를 입력하세요"
 		},
 		chatprivate: {
-			msg: "메세지를 입력하세요"
+			msg: "메세지를 입력하세요",
+			submit: "전송",
 		},
 		chatlobby: {
 			room_list: "채팅방 목록",
@@ -86,30 +104,48 @@ const lang = {
 			email: "Write Your Email",
 		},
 		profile: {
+			title: "USER INFOMATION",
 			change_pic: "change profile image",
 			change_id: "change id",
 			change_email: "change email",
 			save_changes: "Save Changes",
+			game_stat: "GAME STAT",
 			wins: "Wins",
 			loses: "Loses",
 			win_percent: "Win Percentage",
 			reflections: "Reflections",
+			match_his: "MATCH HISTORY",
 			recent_match: "Recent Match",
-			recent_match_res: "Recent Match Results",
+			recent_match_res: "Recent Match Result",
+			win: "Win",
+			lose: "Lose",
+			match_list: "1:1 Match Invite List",
 			accept: "accept",
 			reject: "reject",
 		},
 		info: {
+			title: "USER INFORMATION",
 			match_request: "Request Match",
 			chat: "1:1 Chat",
 			chat_block: "1:1 Chat Block",
 			chat_unblock: "1:1 Chat Unblock",
+			game_stat: "GAME STAT",
+			wins: "Wins",
+			loses: "Loses",
+			win_percent: "Win Percentage",
+			reflections: "Reflections",
+			match_his: "MATCH HISTORY",
+			recent_match: "Recent Match",
+			recent_match_res: "Recent Match Results",
+			win: "Win",
+			lose: "Lose",
 		},
 		chat: {
 			msg: "Write Message Here"
 		},
 		chatprivate: {
-			msg: "Write Message Here"
+			msg: "Write Message Here",
+			submit: "Submit",
 		},
 		chatlobby: {
 			room_list: "Room List",
@@ -145,30 +181,48 @@ const lang = {
 			email: "メールを書く",
 		},
 		profile: {
+			title: "ユーザー情報",
 			change_pic: "プロフィール画像を変更する",
 			change_id: "IDを変更する",
 			change_email: "メールを変更する",
 			save_changes: "変更を保存する",
-			wins: "勝利",
-			loses: "負け",
-			win_percent: "Win Percentage",
-			reflections: "Reflections",
-			recent_match: "Recent Match",
-			recent_match_res: "Recent Match Results",
+			game_stat: "ゲームスタッツ",
+			wins: "勝利回数",
+			loses: "負け回数",
+			win_percent: "勝率",
+			reflections: "反射率",
+			match_his: "試合履歴",
+			recent_match: "最近の試合",
+			recent_match_res: "最近の試合結果",
+			win: "勝利",
+			lose: "負け",
+			match_list: "1:1試合招待リスト",
 			accept: "受諾",
 			reject: "拒否",
 		},
 		info: {
+			title: "ユーザー情報",
 			match_request: "マッチリクエスト",
 			chat: "1:1チャット",
-			chat_block: "1:1 Chat Block",
-			chat_unblock: "1:1 Chat Unblock",
+			chat_block: "1:1チャットブロック",
+			chat_unblock: "1:1チャットブロック解除",
+			game_stat: "ゲームスタッツ",
+			wins: "勝利回数",
+			loses: "負け回数",
+			win_percent: "勝率",
+			reflections: "反射率",
+			match_his: "試合履歴",
+			recent_match: "最近の試合",
+			recent_match_res: "最近の試合結果",
+			win: "勝利",
+			lose: "負け",
 		},
 		chat: {
 			msg: "Write Message Here"
 		},
 		chatprivate: {
-			msg: "Write Message Here"
+			msg: "メッセージを入力してください",
+			submit: "転送",
 		},
 		chatlobby: {
 			room_list: "Room List",
@@ -181,12 +235,6 @@ const lang = {
 };
 
 let langNow = 'ko';
-
-
-// newLang -> 언어의 값이 변경일어남
-// 로그인이 되어있을 경우에는 newLang의 값을 '' 로 넘겨주면
-// 유저의 데이터베이스에 있는 언어로 변경
-
 
 async function setLanguage(category) {
 	if (await check_login() === true) {

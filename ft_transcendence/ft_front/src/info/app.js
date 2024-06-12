@@ -142,6 +142,7 @@ export async function info_js() {
         select_game_stat_view(element);
         select_match_info_view(element);
       }
+	  setLanguage('info');
     });
     if (!flag) {
       alert("해당 유저가 없습니다");

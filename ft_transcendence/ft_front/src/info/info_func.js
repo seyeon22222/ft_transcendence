@@ -29,42 +29,61 @@ export async function select_image_view(data) {
 }
 
 export function select_game_stat_view(data) {
-    const gamestatus = document.getElementById("game_status");
-    const winCount = document.createElement("h4");
-    const defeatCount = document.createElement("h4");
-    const winRate = document.createElement("h4");
-    const reflectRate = document.createElement("h4");
-    if (data.game_stat.length === 0) {
-        winCount.textContent = "승리 횟수: 0";
-        defeatCount.textContent = "패배 횟수: 0";
-        winRate.textContent = "승률: 0%";
-        reflectRate.textContent = "반사율: 0%";
-    } else {
-        winCount.textContent = "승리 횟수: " + data.game_stat[0].win_count;
-        defeatCount.textContent = "패배 횟수: " + data.game_stat[0].defeat_count;
-        winRate.textContent = "승률: " + data.game_stat[0].win_rate + "%";
-        reflectRate.textContent = "반사율: " + data.game_stat[0].reflect_rate + "%";
-    }
 
-    gamestatus.appendChild(winCount);
-    gamestatus.appendChild(defeatCount);
-    gamestatus.appendChild(winRate);
-    gamestatus.appendChild(reflectRate);
+	const gamestatus = document.getElementById("game_status");
+
+	const createStatElement = (label, value) => {
+	  const keyword = { "승리 횟수": "wins", "패배 횟수": "loses", "승률": "win_percent", "반사율": "reflections"};
+	  const element = document.createElement("h4");
+  
+	  element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: ${value}</span>`;
+	  return element;
+	};
+  
+	const stats = data.game_stat[0] || {
+	  win_count: 0,
+	  defeat_count: 0,
+	  win_rate: "0",
+	  reflect_rate: "0",
+	};
+  
+	const statElements = [
+	  createStatElement("승리 횟수", stats.win_count),
+	  createStatElement("패배 횟수", stats.defeat_count),
+	  createStatElement("승률", stats.win_rate + "%"),
+	  createStatElement("반사율", stats.reflect_rate + "%"),
+	];
+  
+	statElements.forEach((element) => gamestatus.appendChild(element));	
 }
 
 export function select_match_info_view(data) {
-  const match_info = document.getElementById("match_info");
-  const match_date = document.createElement("h4");
-  const match_result = document.createElement("h4");
-      if (data.match_info.length === 0) {
-      match_date.textContent = "최근 매치: 없음";
-      match_result.textContent = "최근 매치 결과: 없음";
-      } else {
-      match_date.textContent = "최근 매치:" + change_date(data.match_info[0].match_date);
-      match_result.textContent = "최근 매치 결과:" + data.match_info[0].match_result;
-      }
-  match_info.appendChild(match_date);
-  match_info.appendChild(match_result);
+	const match_info = document.getElementById("match_info");
+
+	const createInfoElement = (label, value) => {
+		const keyword = { "최근 매치": "recent_match", "최근 매치 결과": "recent_match_res"};
+
+		const element = document.createElement("h4");
+		element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: ${value}</span>`;
+		return element;
+	};
+
+	const matchData = data.match_info[0] || {
+		match_date: ["-"],
+		match_result: ["-"],
+	};
+
+	const infoElements = [
+		createInfoElement(
+		"최근 매치",
+		data.match_info.length === 0
+			? matchData.match_date
+			: change_date(matchData.match_date)
+		),
+		createInfoElement("최근 매치 결과", matchData.match_result),
+	];
+
+	infoElements.forEach((element) => match_info.appendChild(element));
 }
 
 

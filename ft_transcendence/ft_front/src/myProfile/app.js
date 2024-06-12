@@ -6,6 +6,7 @@ export async function profile_js() {
 		// set css style
 		const style = document.getElementById("style");
 		style.innerHTML = profile_style_html();
+		// setLanguage("profile");
 
 		// check login status
 		const check = await check_login();
