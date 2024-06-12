@@ -155,36 +155,6 @@ class matchView(APIView):
         serializer = matchSerializer(matches, many=True)
         return Response(serializer.data)
 
-
-    # def post(self, request):
-    #     apply_user_id = request.data.get('apply_user')
-    #     accept_user_id = request.data.get('accept_user')
-    #     start_date = request.data.get('start_date')
-    #     end_date = request.data.get('end_date')
-
-    #     try:
-    #         apply_user = MyUser.objects.get(username=apply_user_id)
-    #         accept_user = MyUser.objects.get(username=accept_user_id)
-    #     except MyUser.DoesNotExist:
-    #         return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
-
-    #     match_name = f"{apply_user.username} vs {accept_user.username}"
-
-    #     if Match.objects.filter(player1=apply_user.user_id, player2=accept_user.user_id, is_active=True).exists() or \
-    #        Match.objects.filter(player1=accept_user.user_id, player2=apply_user.user_id, is_active=True).exists():
-    #         return Response({'error': '해당 매치는 이미 존재합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-    #     match = Match.objects.create(
-    #         name = match_name,
-    #         player1=apply_user,
-    #         player2=accept_user,
-    #         is_active = True
-    #     )
-
-    #     serializer = matchSerializer(match)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
 class MatchRequestView(APIView):
     def post(self, request):
         apply_user_id = request.data.get('apply_user')

@@ -7,8 +7,9 @@ from .views import (
     tournamentInviteView, matchGetHash, tournamentHash,
     MatchInviteView, matchResultView, MultiMatchApplyView,
     MultiMatchListView, TournamentMatchRequestView,
-    tournamentMatchView, tournamentMatchDetailView, multiMatchmakingView, multiMatchHash,
-    multimatchResultView, MultiMatchDetailView, tournamentDetailView
+    tournamentMatchView, tournamentMatchDetailView, multiMatchmakingView, 
+    multiMatchHash, multimatchResultView, MultiMatchDetailView,
+    tournamentDetailView,
 )
 
 app_name = "tournament"

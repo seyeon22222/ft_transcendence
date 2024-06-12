@@ -180,8 +180,6 @@ export async function match_list_view(self_data, match_data, csrftoken) {
             <p>${match.player1_username} vs ${match.player2_username}</p>
             <button class="btn btn-outline-light btn-sm accept-button" data-translate="accept" data-match-id="${match.id}">승인</button>
             <button class="btn btn-outline-light btn-sm reject-button" data-translate="reject" data-match-id="${match.id}">거절</button>
-            <button class="btn btn-outline-light btn-sm accept-button" data-translate="accept" data-match-id="${match.id}">승인</button>
-            <button class="btn btn-outline-light btn-sm reject-button" data-translate="reject" data-match-id="${match.id}">거절</button>
             `;
       matchListContainer.appendChild(matchElement);
     }
