@@ -13,6 +13,7 @@ export async function matchLobby_view() {
 
     let data;
     try {
+		setLanguage("matchlobby");
         const container = document.getElementById("tournament_list");
         const csrftoken = Cookies.get('csrftoken');
         const response = await fetch('match/list', {
@@ -39,8 +40,6 @@ export async function matchLobby_view() {
             });
         }
 
-
-		// TODO: 2:2 매치 리스트 출력 부분
         const multiMatchcontainer = document.getElementById("multiMatch_list");
         const m_response = await fetch('match/multimatchList', {
             method: 'GET',

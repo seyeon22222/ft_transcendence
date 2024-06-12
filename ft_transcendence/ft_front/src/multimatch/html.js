@@ -1,4 +1,4 @@
-// TODO : 토너먼트와 비슷한 뷰를 가지도록 내용 수정 / 2:2이기 때문에, 팀1 vs 팀2  -> 승자가 출력되는 형식으로 수정
+// TODO : 선!
 
 export function multiMatch_html() {
     return `
