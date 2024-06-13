@@ -151,7 +151,7 @@ async function m_accept(invitePopup, player1, player2, g_id) {
 async function t_accept(invitePopup, player1, player2, g_id) {
     let url;
     const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch(`match/multiMatchHash/${player1}${player2}${g_id}`,  {
+    const response = await fetch(`match/tournamenthash/${player1}${player2}${g_id}`,  {
         method : 'GET',
         headers : {
             'Content-Type': 'application/json',
