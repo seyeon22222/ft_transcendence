@@ -135,7 +135,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         player = text_data_json['players']
-        uuid = text_data_json['uuid']
 
         if self.players == None:
             if (player == 1 or player == 2):
@@ -293,7 +292,6 @@ class TGameConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         player = text_data_json['players']
-        uuid = text_data_json['uuid']
 
         if self.players == None:
             if (player == 1 or player == 2):
@@ -466,7 +464,6 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         player = text_data_json['pid']
-        uuid = text_data_json['uuid']
 
         if self.players == None:
             if (player == 1 or player == 2 or player == 3 or player == 4):
