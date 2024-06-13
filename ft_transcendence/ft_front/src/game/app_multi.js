@@ -136,13 +136,13 @@ class Main {
       let score1 = data["score1"];
       let score2 = data["score2"];
       let is_active = data["is_active"];
-
+  
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
         // is_active = 0;
         console.log(
           "===========href=========",
-          `/#match/${get_list_hash[get_list_hash.length - 1]}`
+          `/#multi/${get_list_hash[get_list_hash.length - 1]}`
         );
       } 
       else {
@@ -167,7 +167,7 @@ class Main {
         }
       if (is_active == 0) {
         let get_list_hash = get_hash.split("_");
-        location.href = `/#multi/${get_list_hash[get_list_hash.length - 1]}`;
+        location.href = `/#multi/2:2 Match ${get_list_hash[get_list_hash.length - 1]}`;
       }
     };
   }
