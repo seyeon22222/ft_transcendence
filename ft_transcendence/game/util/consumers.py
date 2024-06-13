@@ -368,6 +368,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.obtacles[1].movePos([0, -8, 0])
             self.task = self.loop.create_task(self.game_update())
         
+        
         await self.send(text_data=json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
