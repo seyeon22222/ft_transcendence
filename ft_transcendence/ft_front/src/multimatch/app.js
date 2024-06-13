@@ -58,7 +58,7 @@ function multimatch_render(data) {
 		player4.innerHTML = player4_name;
 	}
 
-	if (data.match_result !== "") {
+	if (data.match_result !== null) {
 		const winner1 = document.getElementById("final1");
 		const winner2 = document.getElementById("final2");
 		if (winner1 && winner2) {

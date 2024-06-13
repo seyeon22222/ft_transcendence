@@ -78,7 +78,7 @@ function match_render(data) {
     player2.innerHTML = player2_name;
   }
 
-  if (data.match_result !== "") {
+  if (data.match_result !== null) {
     const winner = document.getElementById("final");
     if (winner) {
       let winner_name;
