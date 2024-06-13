@@ -57,7 +57,6 @@ function multimatch_render(data) {
 	if (player4) {
 		player4.innerHTML = player4_name;
 	}
-
 	if (data.match_result !== null) {
 		const winner1 = document.getElementById("final1");
 		const winner2 = document.getElementById("final2");
