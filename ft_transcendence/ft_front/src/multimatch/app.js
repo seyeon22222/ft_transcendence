@@ -34,8 +34,8 @@ export async function multiMatch_js(hash) {
 function multimatch_render(data) {
 	document.getElementById("match_name").innerHTML = data.name;
 	const player1_name = data.player1_username;
-	const player2_name = data.player2_username;
-	const player3_name = data.player3_username;
+	const player2_name = data.player3_username;
+	const player3_name = data.player2_username;
 	const player4_name = data.player4_username;
 
 	const player1 = document.getElementById("semi_final1");
