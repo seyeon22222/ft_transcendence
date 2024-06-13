@@ -8,6 +8,7 @@ from .views import (
     MatchInviteView, matchResultView, MultiMatchApplyView,
     MultiMatchListView, TournamentMatchRequestView,
     tournamentMatchView, tournamentMatchDetailView,
+    tournamentMatchResultView,
 )
 
 app_name = "tournament"
@@ -32,4 +33,5 @@ urlpatterns = [
     path('matchresult/<int:match_id>', matchResultView.as_view(), name='match_result'),
     path('multimatchapply/<int:multimatch_id>', MultiMatchApplyView.as_view(), name='multimatch'),
     path('multimatchList', MultiMatchListView.as_view(), name='multimatch_view'),
+    path('t_matchresult/<int:tournament_id>', tournamentMatchResultView.as_view(), name='tournament_match_result'),
 ]

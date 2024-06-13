@@ -12,6 +12,7 @@ import requests
 from ft_user.utils import validate_input
 from datetime import datetime
 import hashlib
+from .utils import handle_tournamentMatch_result
 
 class tournamentCreateView(APIView):
 
@@ -349,6 +350,9 @@ class tournamentInviteView(APIView):
         player1 = request.data.get("player1")
         player2 = request.data.get("player2")
 
+        # debug
+        print(f'player1: {player1}, player2: {player2}')
+
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f'user_{player1}',
@@ -595,20 +599,39 @@ class tournamentMatchResultView(APIView):
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # tournament match data change
+        if match_result == 1:
+            winner = tournamentParticipant.objects.get(tournament=tournament_instance, player=player1)
+            loser = tournamentParticipant.objects.get(tournament=tournament_instance, player=player2)
+        elif match_result == 2:
+            winner = tournamentParticipant.objects.get(tournament=tournament_instance, player=player2)
+            loser = tournamentParticipant.objects.get(tournament=tournament_instance, player=player1)
+        else:
+            return Response({'error': 'Invalid match result'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 2. participant level_choice update, completed_match + 1, check tournament complete, create and invite new match
+        tournament_participants_count = tournament_instance.participants.count()
+        tournament_completed_matches = tournament_instance.completed_matches
+
+        result = handle_tournamentMatch_result(tournament_participants_count, tournament_completed_matches, tournament_instance, winner, loser, match_date)
+        if result == -1:
+            return Response({'error': 'Error while handling tournament result'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 3. tournament match data change
         tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
         tournament_match.match_date = match_date
         tournament_match.match_result = match_result
+        tournament_match.save()
 
-        # 1. 게임서버 → API URL : match/t_matchresult/<int:tournament_id>/
-        #     - 첨부 body : match_date, match_result, player1_uuid, player2_uuid
-        # 2. 게임의 승자 player의 정보 업데이트
-        #     1. tournament → participant → level_choice 업데이트
-        #     2. tournament → participant → index 업데이트
-        # 3. tournamentMatch 정보 업데이트
-        #     1. match_date
-        #     2. match_result
         # 4. (선택) GameStat, MatchInfo, Player 승률 업데이트
-        # 5. tournament 모델에 완료된 게임 + 1
-        # 6. 완료된 게임 체크, 현재 level의 모든 게임이 끝났다면 TournamentMatchRequestView로 새로운 토너먼트매치 객체 생성, tournamentInviteView로 플레이어에게 초대 전송
+
         # 7. (선택) tournament websocket에 메시지 전송해서 onmessage 호출로 대진표 update
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'tournament_{tournament_id}',
+            {
+                'type': 'tournament_message',
+                'message': f'Tournament match result updated between {player1.username} and {player2.username}.'
+            }
+        )
+
+        return Response({'message': 'Tournament match result updated'}, status=status.HTTP_200_OK)

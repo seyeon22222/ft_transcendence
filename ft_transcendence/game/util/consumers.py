@@ -77,28 +77,49 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.p1.update(self.p1.dir[1] * 10 * self.dt)
             self.p2.update(self.p2.dir[1] * 10 * self.dt)
             self.b.update(self.p1, self.p2, self.dt * 20)
+
             if self.b.point1 == 5 :
+
                 self.end = False
-                backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
-                game_results = {
-                    'match_date': datetime.now().isoformat(),
-                    'match_result': 1,
-                    'is_active': False,
-                }
+                split_list = list(self.room_name.split('_'))
+                if split_list[0] == 'm':
+                    backend_url = 'http://backend:8000/match/matchresult/' + split_list[-1]
+                    game_results = {
+                        'match_date': datetime.now().isoformat(),
+                        'match_result': 1,
+                        'is_active': False,
+                    }
+                elif split_list[0] == 't':
+                    backend_url = 'http://backend:8000/match/t_matchresult/' + split_list[-1]
+                    game_results = {
+                        'match_date': datetime.now().isoformat(),
+                        'match_result': 1,
+                        'player1': split_list[1],
+                        'player2': split_list[2],
+                    }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
+
             elif self.b.point2 == 5:
+
                 self.end = False
-                backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
-                game_results = {
-                    'match_date': datetime.now().isoformat(),
-                    'match_result': 2,
-                    'is_active': False,
-                }
+                split_list = list(self.room_name.split('_'))
+                if split_list[0] == 'm':
+                    backend_url = 'http://backend:8000/match/matchresult/' + split_list[-1]
+                    game_results = {
+                        'match_date': datetime.now().isoformat(),
+                        'match_result': 2,
+                        'is_active': False,
+                    }
+                elif split_list[0] == 't':
+                    backend_url = 'http://backend:8000/match/t_matchresult/' + split_list[-1]
+                    game_results = {
+                        'match_date': datetime.now().isoformat(),
+                        'match_result': 2,
+                        'player1': split_list[1],
+                        'player2': split_list[2],
+                    }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
+
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
