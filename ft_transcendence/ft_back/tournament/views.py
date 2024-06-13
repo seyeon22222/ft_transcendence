@@ -345,7 +345,7 @@ class multiMatchmakingView(APIView):
                 pending_matchmaking.await_player3 = user
                 pending_matchmaking.save()
                 match = MultiMatch.objects.create(
-                    name=f'2:2 Match {pending_matchmaking.id}',
+                    # name=f'2:2 Match {pending_matchmaking.id}',
                     player1=pending_matchmaking.pending_player,
                     player2=pending_matchmaking.await_player1,
                     player3=pending_matchmaking.await_player2,
@@ -353,6 +353,8 @@ class multiMatchmakingView(APIView):
                     is_active=True,
                     match_date=startDate,  # 또는 다른 매칭 날짜 설정
                 )
+                match.name = f'2:2 Match {match.id}'
+                match.save()
                 pending_matchmaking.delete()
                 self.multimatchmakingInvite(match.name, match.id, match.player1, match.player2, match.player3, match.player4)
                 return Response({'message': "new 2:2 match created!"}, status=201)
