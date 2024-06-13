@@ -142,6 +142,7 @@ export async function info_js() {
         select_game_stat_view(element);
         select_match_info_view(element);
       }
+	  setLanguage('info');
     });
     if (!flag) {
       alert("해당 유저가 없습니다");
@@ -189,7 +190,7 @@ export async function info_js() {
       name: match_name,
     };
 
-    const mat_response = await fetch("/match/request", {
+    const mat_response = await fetch("/match/m_request", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

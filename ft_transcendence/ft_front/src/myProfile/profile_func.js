@@ -80,11 +80,14 @@ export async function image_view(data, csrftoken) {
 
 // 유저 프로필에서 게임 스탯 불러와 HTML에 렌더링
 export function game_stat_view(data) {
+	
   const gamestatus = document.getElementById("game_status");
 
   const createStatElement = (label, value) => {
+	const keyword = { "승리 횟수": "wins", "패배 횟수": "loses", "승률": "win_percent", "반사율": "reflections"};
     const element = document.createElement("h4");
-    element.textContent = `${label}: ${value}`;
+
+	element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: ${value}</span>`;
     return element;
   };
 
@@ -110,16 +113,23 @@ export function match_info_view(data) {
   const match_info = document.getElementById("match_info");
 
   const createInfoElement = (label, value) => {
+	const keyword = { "최근 매치": "recent_match", "최근 매치 결과": "recent_match_res"};
+
     const element = document.createElement("h4");
-    element.textContent = `${label}: ${value}`;
-    return element;
+	if (value === "Win")
+		element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: </span><span data-translate="win">승리</span>`;
+	else if (value === "Lose")
+		element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: </span><span data-translate="lose">패배</span>`;
+	else
+		element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: ${value}</span>`;
+	return element;
+	//Win Lose
   };
 
   const matchData = data[0].match_info[0] || {
-    match_date: ["없음"],
-    match_result: ["없음"],
+    match_date: ["-"],
+    match_result: ["-"],
   };
-
   const infoElements = [
     createInfoElement(
       "최근 매치",
@@ -178,8 +188,6 @@ export async function match_list_view(self_data, match_data, csrftoken) {
       matchElement.className = "match-item";
       matchElement.innerHTML = `
             <p>${match.player1_username} vs ${match.player2_username}</p>
-            <button class="btn btn-outline-light btn-sm accept-button" data-translate="accept" data-match-id="${match.id}">승인</button>
-            <button class="btn btn-outline-light btn-sm reject-button" data-translate="reject" data-match-id="${match.id}">거절</button>
             <button class="btn btn-outline-light btn-sm accept-button" data-translate="accept" data-match-id="${match.id}">승인</button>
             <button class="btn btn-outline-light btn-sm reject-button" data-translate="reject" data-match-id="${match.id}">거절</button>
             `;

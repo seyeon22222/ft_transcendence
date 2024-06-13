@@ -136,7 +136,9 @@ class Main {
       let score1 = data["score1"];
       let score2 = data["score2"];
       let is_active = data["is_active"];
+      let aaa = data["aaa"];
 
+      Main.players = aaa;
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
         // is_active = 0;
