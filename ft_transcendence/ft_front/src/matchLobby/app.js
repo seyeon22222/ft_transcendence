@@ -65,6 +65,8 @@ export async function matchLobby_view() {
             });
         }
 
+
+		// 1:1 매치 리스트 출력 부분
         const matchContainer = document.getElementById("match_list");
         const matchcsrftoken = Cookies.get('csrftoken');
         const matchresponse = await fetch('match/matchview', {

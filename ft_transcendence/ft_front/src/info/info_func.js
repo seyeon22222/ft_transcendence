@@ -86,7 +86,6 @@ export function select_match_info_view(data) {
 	infoElements.forEach((element) => match_info.appendChild(element));
 }
 
-
 export function formatDateTime(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');

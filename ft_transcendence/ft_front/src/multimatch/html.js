@@ -2,8 +2,8 @@
 
 export function multiMatch_html() {
     return `
-        <div class="p-10 lg:p-20 text-center">
-            <h1 class="text-3xl lg:text-6xl" id="tournament_name"></h1>
+		<div class="p-10 lg:p-20 text-center">
+            <h1 class="text-3xl lg:text-6xl" id="match_name"></h1>
         </div>
 		<div class="theme theme-dark">
 			<div class="bracket disable-borders">
@@ -50,25 +50,7 @@ export function multiMatch_html() {
                         </div>
                     </div>        
                 </div>
-                <div class="column four">
-                    <div class="match winner-top">
-                        <div class="match-top team">
-                            <span class="image"></span>
-                            <span class="name" id="final"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <input type="text" id="nickname_input" placeholder="별칭을 입력하세요">
-                <button type="button" id="tournament_button">토너먼트 신청</button>
-            </div>
-
-            <div id="button_container">
-                <button type="button" id="tournament_start">토너먼트 시작</button>
-            </div>
-
-        </div>
+			</div>
+		</div>
     `;   
 }

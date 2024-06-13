@@ -9,6 +9,7 @@ window.lang = {
 			chatting: "채팅",
 			tournament: "토너먼트",
 			matchmaking: "매치메이킹",
+			multimatchmaking: "2:2 매치",
 			logout: "로그아웃",
 		},
 		login: {
@@ -76,7 +77,21 @@ window.lang = {
 			create_room: "채팅방 만들기",
 			room_name: "새 채팅방 이름",
 			create_btn: "생성",
+		},
+		matchlobby: {
+			tournament_list: "토너먼트 매치",
+			create_tournament: "토너먼트 만들기",
+			tournament_name: "토너먼트 이름",
+			create_btn: "생성",
+			two_match_list: "2:2 매치",
+			one_match_list: "1:1 매치",
+		},
+		tournament: {
+			nick_input: "별칭을 입력하세요",
+			apply: "토너먼트 신청",
+			start: "토너먼트 시작",
 		}
+
 	},
 	en: {
 		home: {
@@ -86,6 +101,7 @@ window.lang = {
 			chatting: "Chatting",
 			tournament: "Tournament",
 			matchmaking: "Matchmaking",
+			multimatchmaking: "2:2 Match",
 			logout: "Logout",
 		},
 		login: {
@@ -153,6 +169,19 @@ window.lang = {
 			create_room: "Create a new room",
 			room_name: "Write Room Name",
 			create_btn: "Create",
+		},
+		matchlobby: {
+			tournament_list: "Tournament List",
+			create_tournament: "Create a tournament",
+			tournament_name: "Tournamennt Name",
+			create_btn: "Create",
+			two_match_list: "2:2 Match List",
+			one_match_list: "1:1 Match List",
+		},
+		tournament: {
+			nick_input: "Wirte nickname here",
+			apply: "Tournament Apply",
+			start: "Tournament Start",
 		}
 	},
 	ja: {
@@ -163,6 +192,7 @@ window.lang = {
 			chatting: "チャット",
 			tournament: "トーナメント",
 			matchmaking: "マッチメイキング",
+			multimatchmaking: "2:2マッチ",
 			logout: "ログアウト",
 		},
 		login: {
@@ -218,18 +248,31 @@ window.lang = {
 			lose: "負け",
 		},
 		chat: {
-			msg: "Write Message Here"
+			msg: "メッセージを入力してください"
 		},
 		chatprivate: {
 			msg: "メッセージを入力してください",
 			submit: "転送",
 		},
 		chatlobby: {
-			room_list: "Room List",
-			user_list: "User List",
-			create_room: "Create a new room",
-			room_name: "Write Room Name",
-			create_btn: "Create",
+			room_list: "チャットルーム一覧",
+			user_list: "ユーザー一覧",
+			create_room: "チャットルームの作成",
+			room_name: "新しいチャットルーム名",
+			create_btn: "作成",
+		},
+		matchlobby: {
+			tournament_list: "トーナメントマッチ",
+			create_tournament: "トーナメント作成",
+			tournament_name: "トーナメント名",
+			create_btn: "作成",
+			two_match_list: "2:2マッチ",
+			one_match_list: "1:1マッチ",
+		},
+		tournament: {
+			nick_input: "エイリアスを入力してください",
+			apply: "トーナメント申込",
+			start: "トーナメント開始",
 		}
 	}
 };
@@ -249,7 +292,7 @@ async function setLanguage(category) {
 		
 		if (response.ok) {
 			const data = await response.json();
-			console.log(data);
+			console.log("setLanguage", data);
 			langNow = data[0].language;
 			document.getElementById("languageSelector").value = langNow;
 		}
@@ -257,7 +300,7 @@ async function setLanguage(category) {
 	else
 		langNow = document.getElementById("languageSelector").value;
 	updateTexts(langNow, category);
-	// console.log(langNow, category);
+	console.log(langNow, category);
 }
 
 function updateTexts(langNow, category) {
@@ -312,7 +355,7 @@ language.addEventListener("change", async (event) => {
 
 		if (test_res.ok) {
 			data = await test_res.json();
-			// console.log(data);
+			console.log(data);
 		}
 	
 		const response = await fetch('user/language', {
