@@ -329,7 +329,7 @@ async function handleByePlayer(players) {
             console.error('부전승 처리 실패:', error);
         }
 
-        return 4;
+        return 4; // player 6일때만 호출됨, 8강 경기는 처음 4명만 진행
     }
 
     return players.length - 1; // return 2, 4, 6
