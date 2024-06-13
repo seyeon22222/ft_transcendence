@@ -137,7 +137,7 @@ class Main {
         // is_active = 0;
         console.log(
           "===========href=========",
-          `/#match/${get_list_hash[get_list_hash.length - 1]}`
+          `/#tournament/${get_list_hash[get_list_hash.length - 1]}`
         );
       } 
       else {
@@ -160,8 +160,22 @@ class Main {
         }
       if (is_active == 0) {
         let get_list_hash = get_hash.split("_");
-        location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
+        const csrftoken_t = Cookies.get("csrftoken");
+        const response_t = await fetch(`/match/tornamentview/${get_list_hash[get_list_hash.length - 1]}`, {
+          //match serializer 반환값 가져옴
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken_t,
+          },
+          credentials: "include",
+        });
+        if (response_t.ok) {
+        let data = await response_t.json();
+        let name_t = data[0].tournament.name;
+        location.href = `/#tournament/${name_t}`;
       }
+    }
     };
   }
   static entry() {

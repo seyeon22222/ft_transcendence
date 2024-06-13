@@ -223,7 +223,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
             match_result = 1
         if self.b.is_active == 1:
             self.b.is_active = 0
-            backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+            backend_url = 'http://backend:8000/match/tournametresult/' + list(self.room_name.split('_'))[-1]
             game_results = {
                 'match_date': datetime.now().isoformat(),
                 'match_result': match_result,
@@ -257,7 +257,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
             self.b.pos[2] = 0
             if self.b.point1 == 5 :
                 self.b.is_active = 0
-                backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+                backend_url = 'http://backend:8000/match/tournametresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 1,
@@ -268,7 +268,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 # print(response.text)
             elif self.b.point2 == 5:
                 self.b.is_active = 0
-                backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+                backend_url = 'http://backend:8000/match/tournametresult/ + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 2,
