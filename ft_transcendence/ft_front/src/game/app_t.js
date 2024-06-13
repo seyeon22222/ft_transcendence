@@ -137,7 +137,7 @@ class Main {
         // is_active = 0;
         console.log(
           "===========href=========",
-          `/#match/${get_list_hash[get_list_hash.length - 1]}`
+          `/#tournament/${get_list_hash[get_list_hash.length - 1]}`
         );
       } 
       else {
@@ -160,8 +160,22 @@ class Main {
         }
       if (is_active == 0) {
         let get_list_hash = get_hash.split("_");
-        location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
+        const csrftoken_t = Cookies.get("csrftoken");
+        const response_t = await fetch(`/match/tornamentview/${get_list_hash[get_list_hash.length - 1]}`, {
+          //match serializer 반환값 가져옴
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken_t,
+          },
+          credentials: "include",
+        });
+        if (response_t.ok) {
+        let data = await response_t.json();
+        let name_t = data[0].tournament.name;
+        location.href = `/#tournament/${name_t}`;
       }
+    }
     };
   }
   static entry() {
@@ -400,8 +414,8 @@ export async function game_t_js(hash) {
   let match_id = get_list_hash[get_list_hash.length - 1]; //
 
   const csrftoken = Cookies.get("csrftoken");
-  console.log("matchview/${match_id}", `/matchview/${match_id}`);
-  const response = await fetch(`/match/matchview/${match_id}`, {
+  console.log("tournamentview/${match_id}", `/tournamentview/${match_id}`);
+  const response = await fetch(`/match/tournamentview/${match_id}`, {
     //match serializer 반환값 가져옴
     method: "GET",
     headers: {
@@ -416,9 +430,9 @@ export async function game_t_js(hash) {
     console.log(data.player2_uuid, "===", get_list_hash[1]);
     console.log(data.winner_username, "===", "null");
     if (
-      data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
-      data.player2_uuid === get_list_hash[1] &&
-      data.winner_username === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
+      data[0].player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
+      data[0].player2_uuid === get_list_hash[1] &&
+      data[0].match_result === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
     ) {
       console.log("abc");
       const response_name = await fetch("user/info", {
@@ -436,11 +450,7 @@ export async function game_t_js(hash) {
         for (let i = 0; i < get_list_hash.length - 1; i++) {
           if (get_list_hash[i] == data[0].user_id) {
             window.uuid = data[0].user_id;
-            if (window.uuid == get_list_hash[1]) {
-              window.players = 1;
-            } else {
-              window.players = 2;
-            }
+            window.players = i + 1;
             flag = 1;
           }
         }
