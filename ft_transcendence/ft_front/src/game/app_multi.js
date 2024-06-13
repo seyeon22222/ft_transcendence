@@ -80,14 +80,14 @@ class Main {
     };
 
     const handleKeyUp = (event) => {
-      let message = { message: event.key, pid: window.players, uuid: "" };
+      let message = { message: event.key, pid: window.players};
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "upstop", pid: window.players, uuid: "" };
+        message = { message: "upstop", pid: window.players};
         flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "downstop", pid: window.players, uuid: "" };
+        message = { message: "downstop", pid: window.players};
         flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -96,14 +96,14 @@ class Main {
     };
 
     const handleKeyDown = (event) => {
-      let message = { message: event.key, pid: window.players, uuid: "" };
+      let message = { message: event.key, pid: window.players};
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "up", pid: window.players, uuid: "" };
+        message = { message: "up", pid: window.players};
         flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "down", pid: window.players, uuid: "" };
+        message = { message: "down", pid: window.players};
         flag = 1;
       }
       if (event.code === "ArrowRight")
@@ -118,7 +118,7 @@ class Main {
     window.addEventListener("keydown", handleKeyDown);
 
     ws.onopen = () => {
-      let message = { message: "", pid: window.players, uuid: ""};
+      let message = { message: "", pid: window.players};
       ws.send(JSON.stringify(message));
     }
 

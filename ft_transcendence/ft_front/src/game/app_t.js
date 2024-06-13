@@ -76,14 +76,14 @@ class Main {
     };
 
     const handleKeyUp = (event) => {
-      let message = { message: event.key, players: Main.players, uuid: "" };
+      let message = { message: event.key, players: Main.players };
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "upstop", players: Main.players, uuid: "" };
+        message = { message: "upstop", players: Main.players };
         flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "downstop", players: Main.players, uuid: "" };
+        message = { message: "downstop", players: Main.players };
         flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -96,11 +96,11 @@ class Main {
       let flag = 0;
 
       if (event.code === "KeyQ") {
-        message = { message: "up", players: Main.players, uuid: "" };
+        message = { message: "up", players: Main.players };
         flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "down", players: Main.players, uuid: "" };
+        message = { message: "down", players: Main.players };
         flag = 1;
       }
       if (event.code === "ArrowRight")
@@ -115,7 +115,7 @@ class Main {
     window.addEventListener("keydown", handleKeyDown);
 
     ws.onopen = () => {
-      let message = { message: "", players: window.players, uuid: ""};
+      let message = { message: "", players: window.players};
       ws.send(JSON.stringify(message));
     }
 
@@ -400,7 +400,7 @@ export async function game_t_js(hash) {
   let match_id = get_list_hash[get_list_hash.length - 1]; //
 
   const csrftoken = Cookies.get("csrftoken");
-  console.log("matchvie/${match_id}", `/matchview/${match_id}`);
+  console.log("matchview/${match_id}", `/matchview/${match_id}`);
   const response = await fetch(`/match/matchview/${match_id}`, {
     //match serializer 반환값 가져옴
     method: "GET",

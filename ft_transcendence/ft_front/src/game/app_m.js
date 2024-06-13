@@ -76,14 +76,14 @@ class Main {
 		};
 
     const handleKeyUp = (event) => {
-      let message = { message: event.key, players: window.players, uuid: "" };
+      let message = { message: event.key, players: window.players};
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "upstop", players: window.players, uuid: "" };
+        message = { message: "upstop", players: window.players};
         flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "downstop", players: window.players, uuid: "" };
+        message = { message: "downstop", players: window.players};
         flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -92,15 +92,15 @@ class Main {
     };
 
     const handleKeyDown = (event) => {
-      let message = { message: event.key, players: window.players , uuid: "" };
+      let message = { message: event.key, players: window.players };
       let flag = 0;
 
       if (event.code === "KeyQ") {
-        message = { message: "up", players: window.players, uuid: "" };
+        message = { message: "up", players: window.players};
         flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "down", players: window.players, uuid: "" };
+        message = { message: "down", players: window.players};
         flag = 1;
       }
       if (event.code === "ArrowRight")
@@ -115,7 +115,7 @@ class Main {
     window.addEventListener("keydown", handleKeyDown);
 
     ws.onopen = () => {
-      let message = { message: "", players: window.players, uuid: ""};
+      let message = { message: "", players: window.players};
       ws.send(JSON.stringify(message));
     }
 
