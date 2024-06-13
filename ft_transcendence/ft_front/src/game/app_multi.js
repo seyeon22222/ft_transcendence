@@ -167,7 +167,7 @@ class Main {
         }
       if (is_active == 0) {
         let get_list_hash = get_hash.split("_");
-        location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
+        location.href = `/#multi/${get_list_hash[get_list_hash.length - 1]}`;
       }
     };
   }
@@ -444,7 +444,7 @@ export async function game_multi_js(hash) {
   let match_id = get_list_hash[get_list_hash.length - 1]; //
 
   const csrftoken = Cookies.get("csrftoken");
-  console.log("matchvie/${match_id}", `/multimatchview/${match_id}`);
+  console.log("matchview/${match_id}", `/multimatchview/${match_id}`);
   const response = await fetch(`/match/multimatchview/${match_id}`, {
     //match serializer 반환값 가져옴
     method: "GET",

@@ -89,7 +89,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while True:
+        while self.b.is_active:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -247,7 +247,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while True:
+        while self.b.is_active:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -382,7 +382,20 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         self.task.cancel()
         print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
-        self.b.is_active = 0
+        if self.players == 1 or self.players == 3:
+            del self.consumers[self.room_group_name]
+            match_result = 2
+        elif self.players == 2 or self.players == 4:
+            match_result = 1
+        if self.b.is_active == 1 :
+                self.b.is_active = 0
+                backend_url = 'http://backend:8000/match/multimatchresult/' + list(self.room_name.split('_'))[-1]
+                game_results = {
+                    'match_date': datetime.now().isoformat(),
+                    'match_result': match_result,
+                    'is_active': False,
+                }
+                response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
         while True:
@@ -401,7 +414,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while True:
+        while self.b.is_active:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
