@@ -602,24 +602,24 @@ class multimatchResultView(APIView):
 
         if match_result == 1:
             player1_stat.win_count += 1
-            player2_stat.win_count += 1
-            player3_stat.defeat_count += 1
+            player3_stat.win_count += 1
+            player2_stat.defeat_count += 1
             player4_stat.defeat_count += 1
 
             player1_matchInfo.match_result = "Win"
-            player2_matchInfo.match_result = "Win"
-            player3_matchInfo.match_result = "Lose"
+            player3_matchInfo.match_result = "Win"
+            player2_matchInfo.match_result = "Lose"
             player4_matchInfo.match_result = "Lose"
 
         elif match_result == 2:
-            player3_stat.win_count += 1
+            player2_stat.win_count += 1
             player4_stat.win_count += 1
             player1_stat.defeat_count += 1
-            player2_stat.defeat_count += 1
-            player3_matchInfo.match_result = "Win"
+            player3_stat.defeat_count += 1
+            player2_matchInfo.match_result = "Win"
             player4_matchInfo.match_result = "Win"
             player1_matchInfo.match_result = "Lose"
-            player2_matchInfo.match_result = "Lose"
+            player3_matchInfo.match_result = "Lose"
 
         # 승률 업데이트
         player1_stat.win_rate = (player1_stat.win_count / (player1_stat.win_count + player1_stat.defeat_count)) * 100
