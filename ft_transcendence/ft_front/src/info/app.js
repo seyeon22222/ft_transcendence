@@ -11,6 +11,7 @@ export async function info_js() {
   let accept_user;
   let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
   let user_name = user_location[1];
+  let user_lang = document.getElementById("languageSelector").value;
   let data;
   let response;
   let csrftoken;
@@ -97,6 +98,10 @@ export async function info_js() {
 		color: #000; /* Set text color to black */
 		margin-bottom: 20px; /* Space between cards */
 	}
+	.modal {
+		color: #000;
+		display: none;
+	}
   `;
 	setLanguage("info");
 
@@ -145,10 +150,19 @@ export async function info_js() {
 	  setLanguage('info');
     });
     if (!flag) {
-      alert("해당 유저가 없습니다");
-      location.href = "/#";
+    	alert("해당 유저가 없습니다");
+		// 모달 띄우는걸로 하면 모달 확인할 새도 없이 바로 홈화면으로 가버림
+		// const infoModal = document.getElementById('infoModal');
+		// const modalTitle = document.querySelector('#infoModal .modal-title');
+		// const modalBody = document.querySelector('#infoModal .modal-body p');
+		// modalTitle.innerText = window.lang[user_lang].message.err;
+		// modalBody.innerText = window.lang[user_lang].message.info_nouser_err;
+		// infoModal.style.display = 'block';
+    	location.href = "/#";
     }
   }
+
+
   let temp_data;
   const requestMatchButton = document.getElementById("match_button");
   requestMatchButton.addEventListener("click", async (event) => {
@@ -165,6 +179,7 @@ export async function info_js() {
       });
       if (req_response.ok) {
         temp_data = await req_response.json();
+		user_lang = temp_data[0].language;
       } else {
         const error = await req_response.json();
         console.error("API 요청 실패", error);
@@ -173,8 +188,13 @@ export async function info_js() {
       console.error("API 요청 실패", error);
     }
     if (temp_data[0].username === accept_user) {
-      alert("자기 자신에게는 매치 신청이 불가능합니다!!");
-      return;
+		const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.err;
+		modalBody.innerText = window.lang[user_lang].message.info_selfmatch_err;
+		infoModal.style.display = 'block';
+    	return;
     }
     apply_user = temp_data[0].username;
     const match_name = apply_user + " vs " + accept_user;
@@ -200,17 +220,31 @@ export async function info_js() {
     });
 
     if (mat_response.ok) {
-      alert("매치 신청 성공!");
-      location.href = "/#";
+    //   alert("매치 신청 성공!");
+		const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.notify;
+		modalBody.innerText = window.lang[user_lang].message.info_match_req;
+		infoModal.style.display = 'block';
+		// location.href = "/#";
     } else {
-      const error = await mat_response.json();
-      console.log(error);
+    	const error = await mat_response.json();
+    	console.log(error);
+		const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.err;
+		modalBody.innerText = window.lang[user_lang].message.info_match_req_err;
+		infoModal.style.display = 'block';
     }
   });
 
   const applyChat = document.getElementById("chat_button");
   applyChat.addEventListener("click", async (event) => {
     event.preventDefault();
+	applyChat.removeAttribute('data-bs-toggle');
+	applyChat.removeAttribute('data-bs-target');
     try {
       csrftoken = Cookies.get("csrftoken");
       response = await fetch(`user/info`, {
@@ -232,8 +266,20 @@ export async function info_js() {
     }
 
     if (temp_data[0].username === accept_user) {
-      alert("자기 자신에게는 채팅 신청이 불가능합니다!!");
-      return;
+		applyChat.setAttribute('data-bs-toggle', 'modal');
+		applyChat.setAttribute('data-bs-target', '#infoModal');
+		const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.err;
+		modalBody.innerText = window.lang[user_lang].message.info_selfchat_err;
+		infoModal.style.display = 'block';
+		// const test_button = document.getElementById("test_button");
+		// test_button.addEventListener("click",(event) => {
+		// 	event.preventDefault();
+		// 	location.href = '/#';
+		// })
+		return ;
     }
 
     // get private room and check duplicate
@@ -270,8 +316,10 @@ export async function info_js() {
         });
 
         if (response.status === 200) {
+			const infoModal = document.getElementById('infoModal');
+		  infoModal.style.display = 'none';
+		  
           console.log("already private chatting exists");
-
           data = await response.json();
 
           const slug = data.slug;
@@ -291,6 +339,7 @@ export async function info_js() {
 
           data = await response.json();
 
+
           const slug = data.slug;
           location.href = "/#chatprivate/" + slug;
         }
@@ -298,7 +347,14 @@ export async function info_js() {
         console.error("API failed : ", error);
       }
     } else {
-      alert("채팅 차단 상태입니다!");
+    	applyChat.setAttribute('data-bs-toggle', 'modal');
+		applyChat.setAttribute('data-bs-target', '#infoModal');
+		const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.notify;
+		modalBody.innerText = window.lang[user_lang].message.info_is_blocked;
+		infoModal.style.display = 'block';
     }
   });
 
@@ -326,8 +382,14 @@ export async function info_js() {
       console.error("API 요청 실패", error);
     }
     if (temp_data[0].username === accept_user) {
-      alert("자기 자신에게는 채팅 차단 신청이 불가능합니다!!");
-      return;
+    	const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.err;
+		modalBody.innerText = window.lang[user_lang].message.info_selfblock_err;
+		infoModal.style.display = 'block';
+		// location.href = "/#";
+    	return;
     }
     apply_user = temp_data[0].username;
 
@@ -347,11 +409,16 @@ export async function info_js() {
     });
 
     if (block_response.ok) {
-      alert("채팅 차단 성공!");
-      location.href = "/#";
+      	// alert("채팅 차단 성공!");
+		const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.notify;
+		modalBody.innerText = window.lang[user_lang].message.info_block_noti;
+		infoModal.style.display = 'block';
     } else {
-      const error = await block_response.json();
-      console.log(error);
+		const error = await block_response.json();
+		console.log(error);
     }
   });
 
@@ -381,8 +448,14 @@ export async function info_js() {
       console.error("API 요청 실패", error);
     }
     if (temp_data[0].username === accept_user) {
-      alert("자기 자신에게는 차단 해제가 불가능합니다!!");
-      return;
+    //   alert("자기 자신에게는 차단 해제가 불가능합니다!!");
+		const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.err;
+		modalBody.innerText = window.lang[user_lang].message.info_selfunblock_err;
+		infoModal.style.display = 'block';
+    	return;
     }
     apply_user = temp_data[0].username;
 
@@ -402,10 +475,22 @@ export async function info_js() {
     });
 
     if (block_release_response.ok) {
-      alert("차단 해제 성공!");
+    //   alert("차단 해제 성공!");
+		const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.notify;
+		modalBody.innerText = window.lang[user_lang].message.info_unblock_noti;
+		infoModal.style.display = 'block';
     } else {
-      const error = await block_release_response.json();
-      console.log(error);
+		const error = await block_release_response.json();
+		console.log(error);
+		const infoModal = document.getElementById('infoModal');
+		const modalTitle = document.querySelector('#infoModal .modal-title');
+		const modalBody = document.querySelector('#infoModal .modal-body p');
+		modalTitle.innerText = window.lang[user_lang].message.err;
+		modalBody.innerText = window.lang[user_lang].message.info_unblock_err;
+		infoModal.style.display = 'block';
     }
   });
 }

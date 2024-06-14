@@ -37,3 +37,24 @@ export function change_date(matchDateStr) {
 
   return `${year}.${month}.${day} ${hour}:${minute}`;
 }
+
+export async function check_language() {
+	if (await check_login() === true) {
+		let data;
+		const csrftoken = Cookies.get('csrftoken');
+		const lang_res = await fetch(`user/language`, {
+			method : 'GET',
+			headers : {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken,
+			},
+			credentials: 'include',
+		});
+
+		if (lang_res.ok) {
+			data = await lang_res.json();
+			return data[0].language;
+		}
+	}
+	return document.getElementById('languageSelector').value;
+}
