@@ -377,7 +377,7 @@ class UserBlockRequest(APIView):
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
         
         if Block.objects.filter(blocker=apply_user, blocked=accept_user).exists():
-            return Response({'message': 'User already in block list'}, status=status.HTTP_200_OK)
+            return Response({'message': 'User already in block list'}, status=status.HTTP_400_BAD_REQUEST)
         
         Block.objects.create(blocker=apply_user, blocked=accept_user)
         return Response({'message': 'User added to block list'}, status=status.HTTP_200_OK)
