@@ -97,6 +97,14 @@ export async function tournament_view(hash) {
     const apply_button = document.getElementById('tournament_button');
     apply_button.addEventListener("click", async (event) => {
         event.preventDefault();
+        const nicknameInput = document.getElementById('nickname_input');
+        const nickname = nicknameInput.value;
+
+        if (nickname.length === 0) {
+            alert("닉네임을 입력해주세요.");
+            nicknameInput.value = '';
+            return;
+        }
         const game_csrftoken = Cookies.get('csrftoken');
         const game_check = await fetch(`match/t_list/${tournament_id}`, {
             method: 'GET',
@@ -113,7 +121,6 @@ export async function tournament_view(hash) {
                 return ;
             }
         }
-        const nickname = document.getElementById('nickname_input').value;
         try {
             if (player.length >= 8) {
                 alert("최대 인원(8명)을 초과했습니다.");
