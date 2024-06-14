@@ -242,9 +242,6 @@ export async function info_js() {
 
   const applyChat = document.getElementById("chat_button");
   applyChat.addEventListener("click", async (event) => {
-    event.preventDefault();
-	applyChat.removeAttribute('data-bs-toggle');
-	applyChat.removeAttribute('data-bs-target');
     try {
       csrftoken = Cookies.get("csrftoken");
       response = await fetch(`user/info`, {
@@ -266,19 +263,7 @@ export async function info_js() {
     }
 
     if (temp_data[0].username === accept_user) {
-		applyChat.setAttribute('data-bs-toggle', 'modal');
-		applyChat.setAttribute('data-bs-target', '#infoModal');
-		const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.err;
-		modalBody.innerText = window.lang[user_lang].message.info_selfchat_err;
-		infoModal.style.display = 'block';
-		// const test_button = document.getElementById("test_button");
-		// test_button.addEventListener("click",(event) => {
-		// 	event.preventDefault();
-		// 	location.href = '/#';
-		// })
+		showModal(window.lang[user_lang].message.err, window.lang[user_lang].message.info_selfchat_err);
 		return ;
     }
 
@@ -316,12 +301,8 @@ export async function info_js() {
         });
 
         if (response.status === 200) {
-			const infoModal = document.getElementById('infoModal');
-		  infoModal.style.display = 'none';
-		  
           console.log("already private chatting exists");
           data = await response.json();
-
           const slug = data.slug;
           location.href = "/#chatprivate/" + slug;
         } // 404 - no private room
@@ -339,7 +320,6 @@ export async function info_js() {
 
           data = await response.json();
 
-
           const slug = data.slug;
           location.href = "/#chatprivate/" + slug;
         }
@@ -347,14 +327,7 @@ export async function info_js() {
         console.error("API failed : ", error);
       }
     } else {
-    	applyChat.setAttribute('data-bs-toggle', 'modal');
-		applyChat.setAttribute('data-bs-target', '#infoModal');
-		const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.notify;
-		modalBody.innerText = window.lang[user_lang].message.info_is_blocked;
-		infoModal.style.display = 'block';
+      showModal(window.lang[user_lang].message.notify, window.lang[user_lang].message.info_is_blocked);
     }
   });
 
@@ -540,3 +513,13 @@ async function updateOnlineStatus() {
 
 // 매 초마다 profile_form의 존재를 확인하고 함수 실행
 // setInterval(checkProfileFormAndRun, 5000); // 31초마다 확인
+
+
+function showModal(title, body) {
+  const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
+  const modalTitle = document.querySelector('#infoModal .modal-title');
+  const modalBody = document.querySelector('#infoModal .modal-body p');
+  modalTitle.innerText = title;
+  modalBody.innerText = body;
+  infoModal.show();
+}
