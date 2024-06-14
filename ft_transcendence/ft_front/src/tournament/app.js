@@ -186,6 +186,10 @@ async function startTournament(tournament_id) {
             alert('토너먼트 참가자가 부족합니다.');
             return;
         }
+        if (data.is_active === false) {
+            alert('토너먼트가 이미 시작되었습니다.');
+            return;
+        }
 
         // 부전승 처리, 짝수여도 부전승 필요함
         const result = await handleByePlayer(players);
@@ -325,7 +329,7 @@ async function handleByePlayer(players) {
             console.error('부전승 처리 실패:', error);
         }
 
-        return 4;
+        return 4; // player 6일때만 호출됨, 8강 경기는 처음 4명만 진행
     }
 
     return players.length - 1; // return 2, 4, 6
