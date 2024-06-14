@@ -82,17 +82,30 @@ export function info_html() {
 	</div>
     <div class="button-container">
         <div>
-            <button class="btn custom-yellow-btn flex-grow-1 me-2 hover:bg-teal-700" id="match_button" data-translate="match_request">매치 신청</button>
+            <button class="btn custom-yellow-btn flex-grow-1 me-2 hover:bg-teal-700" id="match_button" data-translate="match_request" data-bs-toggle="modal" data-bs-target="#infoModal">매치 신청</button>
         </div>
         <div>
-            <button class="btn custom-yellow-btn flex-grow-1 me-2 hover:bg-teal-700" id="chat_button" data-translate="chat">1:1 채팅</button>
+            <button class="btn custom-yellow-btn flex-grow-1 me-2 hover:bg-teal-700" id="chat_button" data-translate="chat" data-bs-toggle="modal" data-bs-target="#infoModal">1:1 채팅</button>
         </div>
         <div>
-            <button class="btn custom-yellow-btn flex-grow-1 me-2 hover:bg-teal-700" id="block_button" data-translate="chat_block">1:1 채팅 차단</button>
+            <button class="btn custom-yellow-btn flex-grow-1 me-2 hover:bg-teal-700" id="block_button" data-translate="chat_block" data-bs-toggle="modal" data-bs-target="#infoModal">1:1 채팅 차단</button>
         </div>
         <div>
-            <button class="btn custom-yellow-btn flex-grow-1 me-2 hover:bg-teal-700" id="block_release_button" data-translate="chat_unblock">1:1 채팅 차단 해제</button>
+            <button class="btn custom-yellow-btn flex-grow-1 me-2 hover:bg-teal-700" id="block_release_button" data-translate="chat_unblock" data-bs-toggle="modal" data-bs-target="#infoModal">1:1 채팅 차단 해제</button>
         </div>
     </div>
+	<div class="modal" tabindex="-1" id="infoModal" style="display: none">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title"></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
+				</div>
+				<div class="modal-body">
+					<p></p>
+				</div>
+			</div>
+		</div>
+	</div>
     `
 }

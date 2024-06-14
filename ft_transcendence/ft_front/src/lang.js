@@ -90,8 +90,25 @@ window.lang = {
 			nick_input: "별칭을 입력하세요",
 			apply: "토너먼트 신청",
 			start: "토너먼트 시작",
+		},
+		message: {
+			match_complete: "매칭 완료: ",
+			accept: "수락",
+			err: "경고",
+			notify: "알림",
+			info_nouser_err: "해당 유저가 없습니다",
+			info_selfmatch_err: "자기 자신에게는 매치 신청이 불가능합니다",
+			info_selfchat_err: "자기 자신에게는 채팅 신청이 불가능합니다",
+			info_selfblock_err: "자기 자신을 차단할 수 없습니다",
+			info_selfunblock_err: "자기 자신을 차단 해제할 수 없습니다",
+			info_match_req: "매치 신청 성공",
+			info_match_req_err: "이미 매치를 신청했습니다",
+			info_unblock_err: "차단되지 않은 상대입니다",
+			info_block_err: "이미 차단된 상대입니다",
+			info_block_noti: "채팅 차단 성공",
+			info_unblock_noti: "채팅 차단 해제 성공",
+			info_is_blocked: "채팅 차단 상태입니다",
 		}
-
 	},
 	en: {
 		home: {
@@ -182,6 +199,13 @@ window.lang = {
 			nick_input: "Wirte nickname here",
 			apply: "Tournament Apply",
 			start: "Tournament Start",
+		},
+		message: {
+			match_complete: "Matching Completed: ",
+			accept: "Accept",
+			err: "ERROR",
+			info_selfmatch_err: "en) 자기 자신에게는 매치 신청이 불가능합니다!",
+			info_selfchat_err: "en) 자기 자신에게는 채팅 신청이 불가능합니다!",
 		}
 	},
 	ja: {
@@ -273,6 +297,13 @@ window.lang = {
 			nick_input: "エイリアスを入力してください",
 			apply: "トーナメント申込",
 			start: "トーナメント開始",
+		},
+		message: {
+			match_complete: "マッチング完了: ",
+			accept: "受諾",
+			err: "エラー",
+			info_selfmatch_err: "ja) 자기 자신에게는 매치 신청이 불가능합니다!",
+			info_selfchat_err: "ja) 자기 자신에게는 채팅 신청이 불가능합니다!",
 		}
 	}
 };

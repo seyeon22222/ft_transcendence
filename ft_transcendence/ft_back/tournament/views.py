@@ -293,7 +293,7 @@ class MatchmakingView(APIView):
             f'user_{str_player1}',
             {
                 'type': 'message',
-                'message': f'Invite to match {player1.username} vs {player2.username}.',
+                'message': f'{player1.username} vs {player2.username}.',
                 'player1' : str_player1,
                 'player2' : str_player2,
                 'g_type' : 'm',
@@ -305,7 +305,7 @@ class MatchmakingView(APIView):
             f'user_{str_player2}',
             {
                 'type': 'message',
-                'message': f'Invite to match {player1.username} vs {player2.username}.',
+                'message': f'{player1.username} vs {player2.username}.',
                 'player1' : str_player1,
                 'player2' : str_player2,
                 'g_type' : 'm',
