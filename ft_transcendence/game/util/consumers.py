@@ -260,7 +260,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 1,
-                    'is_active': False,
+                    'player1': list(self.room_name.split('_'))[0],
+                    'player2': list(self.room_name.split('_'))[1]
                 }
                 response = requests.post(backend_url, json=game_results)
                 # print(response.status_code)
@@ -271,7 +272,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 2,
-                    'is_active': False,
+                    'player1': list(self.room_name.split('_'))[0],
+                    'player2': list(self.room_name.split('_'))[1]
                 }
                 response = requests.post(backend_url, json=game_results)
                 # print(response.status_code)
