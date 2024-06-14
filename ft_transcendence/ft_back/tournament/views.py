@@ -12,6 +12,7 @@ import requests
 from ft_user.utils import validate_input
 from datetime import datetime
 import hashlib
+from .utils import handle_tournamentMatch_result
 
 class tournamentCreateView(APIView):
 
@@ -120,6 +121,33 @@ class matchDetailView(APIView):
         serializer = matchSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+# chanwopa, API for tournamentMatch
+class tournamentMatchView(APIView):
+
+    def get(self, request):
+        tournament_matches = tournamentMatch.objects.all()
+        serializer = tournamentMatchSerializer(tournament_matches, many=True)
+        return Response(serializer.data)
+
+# chanwopa, API for specific tournamentMatch
+class tournamentMatchDetailView(APIView):
+    
+    def get(self, request, player1, player2, tournament_id):
+        try:
+            player1 = MyUser.objects.get(user_id=player1)
+            player2 = MyUser.objects.get(user_id=player2)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            tournament_instance = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        serializer = tournamentMatchSerializer(tournament_match)
+        return Response(serializer.data)
+
 class matchView(APIView):
     
     def get(self, request):
@@ -127,36 +155,6 @@ class matchView(APIView):
         matches = Match.objects.filter(player1=user).union(Match.objects.filter(player2=user))
         serializer = matchSerializer(matches, many=True)
         return Response(serializer.data)
-
-
-    # def post(self, request):
-    #     apply_user_id = request.data.get('apply_user')
-    #     accept_user_id = request.data.get('accept_user')
-    #     start_date = request.data.get('start_date')
-    #     end_date = request.data.get('end_date')
-
-    #     try:
-    #         apply_user = MyUser.objects.get(username=apply_user_id)
-    #         accept_user = MyUser.objects.get(username=accept_user_id)
-    #     except MyUser.DoesNotExist:
-    #         return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
-
-    #     match_name = f"{apply_user.username} vs {accept_user.username}"
-
-    #     if Match.objects.filter(player1=apply_user.user_id, player2=accept_user.user_id, is_active=True).exists() or \
-    #        Match.objects.filter(player1=accept_user.user_id, player2=apply_user.user_id, is_active=True).exists():
-    #         return Response({'error': '해당 매치는 이미 존재합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-    #     match = Match.objects.create(
-    #         name = match_name,
-    #         player1=apply_user,
-    #         player2=accept_user,
-    #         is_active = True
-    #     )
-
-    #     serializer = matchSerializer(match)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 class MatchRequestView(APIView):
     def post(self, request):
@@ -185,6 +183,42 @@ class MatchRequestView(APIView):
         )
 
         return Response({'message': 'Match request sent'}, status=status.HTTP_201_CREATED)
+
+# chanwopa, create tournament Match object with given info
+class TournamentMatchRequestView(APIView):
+    def post(self, request):
+        apply_user_id = request.data.get('apply_user')
+        accept_user_id = request.data.get('accept_user')
+        tournament_id = request.data.get('tournament_id')
+
+        try:
+            apply_user = MyUser.objects.get(user_id=apply_user_id)
+            accept_user = MyUser.objects.get(user_id=accept_user_id)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            tournament_instance = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        tournament_match = tournamentMatch.objects.create(
+            tournament=tournament_instance,
+            player1=apply_user,
+            player2=accept_user,
+        )
+
+        # 웹소켓을 통해 업데이트 정보 전송 - 토너먼트 참여중이지 않지만 방에 들어온 유저의 화면 업데이트를 위함
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'tournament_{tournament_id}',
+            {
+                'type': 'tournament_message',
+                'message': f'tournament match created between {apply_user.username} and {accept_user.username}.'
+            }
+        )
+
+        return Response({'message': 'Tournament match created'}, status=status.HTTP_201_CREATED)
 
 class MatchResponseView(APIView):
     def post(self, request, match_id):
@@ -312,7 +346,7 @@ class multiMatchmakingView(APIView):
                 pending_matchmaking.await_player3 = user
                 pending_matchmaking.save()
                 match = MultiMatch.objects.create(
-                    name=f'2:2 Match {pending_matchmaking.id}',
+                    # name=f'2:2 Match {pending_matchmaking.id}',
                     player1=pending_matchmaking.pending_player,
                     player2=pending_matchmaking.await_player1,
                     player3=pending_matchmaking.await_player2,
@@ -320,6 +354,8 @@ class multiMatchmakingView(APIView):
                     is_active=True,
                     match_date=startDate,  # 또는 다른 매칭 날짜 설정
                 )
+                match.name = f'2:2 Match {match.id}'
+                match.save()
                 pending_matchmaking.delete()
                 self.multimatchmakingInvite(match.name, match.id, match.player1, match.player2, match.player3, match.player4)
                 return Response({'message': "new 2:2 match created!"}, status=201)
@@ -366,6 +402,9 @@ class tournamentInviteView(APIView):
         intournament = get_object_or_404(tournament, pk=tournament_id)
         player1 = request.data.get("player1")
         player2 = request.data.get("player2")
+
+        # debug
+        print(f'player1: {player1}, player2: {player2}')
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
@@ -435,7 +474,7 @@ class matchGetHash(APIView):
             match = get_object_or_404(Match, id=match_id)
             player1 = match.player1
             player2 = match.player2
-            combined_string = f"m/{match.player1.user_id}_{match.player2.user_id}_{match_id}"
+            combined_string = f"{match.player1.user_id}_{match.player2.user_id}_{match_id}"
 
             return Response({'hash': combined_string}, status=status.HTTP_200_OK)
         except Match.DoesNotExist:
@@ -452,7 +491,7 @@ class tournamentHash(APIView):
             player1_id = player1
             player2_id = player2
             
-            hash_url = f"t/{player1_id}_{player2_id}_{tournament_id}"
+            hash_url = f"{player1_id}_{player2_id}_{tournament_id}"
             # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
             return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -469,7 +508,7 @@ class multiMatchHash(APIView):
             player3_id = player3
             player4_id = player4
             
-            hash_url = f"mul_{player1_id}_{player2_id}_{player3_id}_{player4_id}_{match_id}"
+            hash_url = f"{player1_id}_{player2_id}_{player3_id}_{player4_id}_{match_id}"
             # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
             return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -602,24 +641,24 @@ class multimatchResultView(APIView):
 
         if match_result == 1:
             player1_stat.win_count += 1
-            player2_stat.win_count += 1
-            player3_stat.defeat_count += 1
+            player3_stat.win_count += 1
+            player2_stat.defeat_count += 1
             player4_stat.defeat_count += 1
 
             player1_matchInfo.match_result = "Win"
-            player2_matchInfo.match_result = "Win"
-            player3_matchInfo.match_result = "Lose"
+            player3_matchInfo.match_result = "Win"
+            player2_matchInfo.match_result = "Lose"
             player4_matchInfo.match_result = "Lose"
 
         elif match_result == 2:
-            player3_stat.win_count += 1
+            player2_stat.win_count += 1
             player4_stat.win_count += 1
             player1_stat.defeat_count += 1
-            player2_stat.defeat_count += 1
-            player3_matchInfo.match_result = "Win"
+            player3_stat.defeat_count += 1
+            player2_matchInfo.match_result = "Win"
             player4_matchInfo.match_result = "Win"
             player1_matchInfo.match_result = "Lose"
-            player2_matchInfo.match_result = "Lose"
+            player3_matchInfo.match_result = "Lose"
 
         # 승률 업데이트
         player1_stat.win_rate = (player1_stat.win_count / (player1_stat.win_count + player1_stat.defeat_count)) * 100
@@ -731,57 +770,53 @@ class tournamentDetailView(APIView):
         match = get_object_or_404(tournamentMatch, id=tournament_id)
         serializer = tournamentMatchSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
+class tournamentMatchResultView(APIView):
+    def post(self, request, tournament_id):
+        tournament_instance = get_object_or_404(tournament, pk=tournament_id)
+        match_date = request.data.get('match_date')
+        match_result = request.data.get('match_result')
+        player1_uuid = request.data.get('player1')
+        player2_uuid = request.data.get('player2')
 
-# class MultiMatchListView(APIView):
+        try:
+            player1 = MyUser.objects.get(user_id=player1_uuid)
+            player2 = MyUser.objects.get(user_id=player2_uuid)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
 
-#     def get(self, request):
-#         multiMatch = MultiMatch.objects.all()
-#         serializer = MultiSerializer(multiMatch, many=True)
-#         return Response(serializer.data)
-    
-#     def post(self, request):
-#         multimatch_name = request.data.get('multimatch_name')
-#         player1_id = request.data.get('player1_id')
-#         player2_id = request.data.get('player2_id')
-#         player3_id = request.data.get('player3_id')
-#         player4_id = request.data.get('player4_id')
-#         requester_id = request.data.get('requester_id')
+        if match_result == 1:
+            winner = tournamentParticipant.objects.get(tournament=tournament_instance, player=player1)
+            loser = tournamentParticipant.objects.get(tournament=tournament_instance, player=player2)
+        elif match_result == 2:
+            winner = tournamentParticipant.objects.get(tournament=tournament_instance, player=player2)
+            loser = tournamentParticipant.objects.get(tournament=tournament_instance, player=player1)
+        else:
+            return Response({'error': 'Invalid match result'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 2. participant level_choice update, completed_match + 1, check tournament complete, create and invite new match
+        tournament_participants_count = tournament_instance.participants.count()
+        tournament_completed_matches = tournament_instance.completed_matches
 
-#         # check if all fields are provided
-#         if not multimatch_name or not player1_id or not player2_id or not player3_id or not player4_id or not requester_id:
-#             return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
+        result = handle_tournamentMatch_result(tournament_participants_count, tournament_completed_matches, tournament_instance, winner, loser, match_date)
+        if result == -1:
+            return Response({'error': 'Error while handling tournament result'}, status=status.HTTP_400_BAD_REQUEST)
 
-#         # input validation for multimatch_name
-#         valid, message = validate_input(multimatch_name)
-#         if not valid:
-#             return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
+        # 3. tournament match data change
+        tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        tournament_match.match_date = match_date
+        tournament_match.match_result = match_result
+        tournament_match.save()
 
-#         # get user objects from user_id
-#         try:
-#             player1 = MyUser.objects.get(username=player1_id)
-#             player2 = MyUser.objects.get(username=player2_id)
-#             player3 = MyUser.objects.get(username=player3_id)
-#             player4 = MyUser.objects.get(username=player4_id)
-#             requester = MyUser.objects.get(username=requester_id)
-#         except MyUser.DoesNotExist:
-#             return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+        # 4. (선택) GameStat, MatchInfo, Player 승률 업데이트
 
-#         if MultiMatch.objects.filter(player1 = player1, player2 = player2, player3 = player3, player4 = player4, name = multimatch_name, is_active=True).exists():
-#             return Response({'error': '해당 매치는 이미 존재합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        # 7. (선택) tournament websocket에 메시지 전송해서 onmessage 호출로 대진표 update
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'tournament_{tournament_id}',
+            {
+                'type': 'tournament_message',
+                'message': f'Tournament match result updated between {player1.username} and {player2.username}.'
+            }
+        )
 
-#         # create multimatch
-#         try:
-#             created_match = MultiMatch.objects.create(
-#                 name=multimatch_name,
-#                 player1 = player1,
-#                 player2 = player2,
-#                 player3 = player3,
-#                 player4 = player4,
-#                 requester = requester,
-#                 is_active = True,
-#             )
-#         except Exception as e:
-#             return Response({'error': f'MultiMatch 생성 중 오류 발생 :  {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-#         serializer = MultiSerializer(created_match)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'message': 'Tournament match result updated'}, status=status.HTTP_200_OK)

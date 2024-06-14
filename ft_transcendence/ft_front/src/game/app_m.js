@@ -2,9 +2,9 @@ import { Buffer } from "../../static/graphics/Buffer.js";
 import { DefaultFramebuffer } from "../../static/graphics/DefaultFramebuffer.js";
 import { Geometry } from "../../static/graphics/Geometry.js";
 import {
-  Mat4x4,
-  crossProduct,
-  normalizeVec,
+	Mat4x4,
+	crossProduct,
+	normalizeVec,
 } from "../../static/graphics/Mat4x4.js";
 import { Mesh } from "../../static/graphics/Mesh.js";
 import { Program } from "../../static/graphics/Program.js";
@@ -70,20 +70,20 @@ class Main {
       window.removeEventListener("keydown", handleKeyDown);
     });
 
-    const handleResize = () => {
-      canvas.height = window.innerHeight - 50;
-      canvas.width = window.innerWidth - 50;
-    };
+		const handleResize = () => {
+			canvas.height = window.innerHeight - 50;
+			canvas.width = window.innerWidth - 50;
+		};
 
     const handleKeyUp = (event) => {
-      let message = { message: event.key, players: Main.players, uuid: "" };
+      let message = { message: event.key, players: window.players};
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "upstop", players: Main.players, uuid: "" };
+        message = { message: "upstop", players: window.players};
         flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "downstop", players: Main.players, uuid: "" };
+        message = { message: "downstop", players: window.players};
         flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -92,15 +92,15 @@ class Main {
     };
 
     const handleKeyDown = (event) => {
-      let message = { message: event.key, players: Main.players };
+      let message = { message: event.key, players: window.players };
       let flag = 0;
 
       if (event.code === "KeyQ") {
-        message = { message: "up", players: Main.players, uuid: "" };
+        message = { message: "up", players: window.players};
         flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "down", players: Main.players, uuid: "" };
+        message = { message: "down", players: window.players};
         flag = 1;
       }
       if (event.code === "ArrowRight")
@@ -115,13 +115,13 @@ class Main {
     window.addEventListener("keydown", handleKeyDown);
 
     ws.onopen = () => {
-      let message = { message: "", players: window.players, uuid: ""};
+      let message = { message: "", players: window.players};
       ws.send(JSON.stringify(message));
     }
 
-    ws.onclose = () => {
-      console.log("ws close : " + get_hash);
-    };
+		ws.onclose = () => {
+			console.log("ws close : " + get_hash);
+		};
 
     ws.onmessage = async function (e) {
       let data = JSON.parse(e.data);
@@ -158,9 +158,7 @@ class Main {
         }
 
         }
-        console.log("밖 is_active : " + is_active);
       if (is_active == 0) {
-        console.log("안 is_active : " + is_active);
         let get_list_hash = get_hash.split("_");
         location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
       }
@@ -173,15 +171,15 @@ class Main {
     console.log(canvas.height);
     console.log(canvas.width);
 
-    const gl = canvas.getContext("webgl2");
-    if (!gl) {
-      alert("Webgl2 not supported!");
-    }
+		const gl = canvas.getContext("webgl2");
+		if (!gl) {
+			alert("Webgl2 not supported!");
+		}
 
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    const vs = new Shader(gl, gl.VERTEX_SHADER);
-    const fs = new Shader(gl, gl.FRAGMENT_SHADER);
-    vs.shaderSource(`#version 300 es
+		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+		const vs = new Shader(gl, gl.VERTEX_SHADER);
+		const fs = new Shader(gl, gl.FRAGMENT_SHADER);
+		vs.shaderSource(`#version 300 es
         in vec4	position;
         in vec4 color;
 
@@ -195,7 +193,7 @@ class Main {
             gl_Position = vp * model * position;
             col = color;
         }`);
-    fs.shaderSource(`#version 300 es
+		fs.shaderSource(`#version 300 es
         precision mediump float; // float의 바이트를 정함
 
         in vec4	col;
@@ -205,112 +203,112 @@ class Main {
         void	main() {
             fragColor = col;
         }`);
-    vs.compile();
-    fs.compile();
-    const program = new Program(gl);
-    program.attach(vs);
-    program.attach(fs);
-    program.link();
+		vs.compile();
+		fs.compile();
+		const program = new Program(gl);
+		program.attach(vs);
+		program.attach(fs);
+		program.link();
 
-    // sphere
-    let sphere = new Geometry();
-    sphere.createSphere();
-    const data = new Float32Array(sphere.vertices);
-    const vertex_buffer = new Buffer(
-      gl,
-      gl.ARRAY_BUFFER,
-      sphere.vertices.length * 4,
-      gl.STATIC_DRAW
-    ); // 버퍼 생성
-    vertex_buffer.setData(0, data, 0, sphere.vertices.length * 4); // 버퍼 정보 입력
-    const position_view = new VertexBuffer(
-      gl,
-      vertex_buffer,
-      3,
-      gl.FLOAT,
-      false
-    ); // 버택스 버퍼(포지션) 읽는 형식 설정
-    let tmpArr = [1, 1, 1, 1];
-    let color = [];
-    for (let i = 0; i < 21 * 21; i++) {
-      for (let j = 0; j < 4; j++) color.push(tmpArr[j]);
-    }
-    color = new Float32Array(color);
-    const color_buffer = new Buffer(
-      gl,
-      gl.ARRAY_BUFFER,
-      color.length * 4,
-      gl.STATIC_DRAW
-    );
-    color_buffer.setData(0, color, 0, color.length * 4);
-    const color_view = new VertexBuffer(gl, color_buffer, 4, gl.FLOAT, false);
-    const buffer_view = {
-      // 쉐이더와 데이터 형식 일치
-      position: position_view,
-      color: color_view,
-    };
-    const mesh = Mesh.from(gl, buffer_view, sphere.indices); // 메쉬 생성
+		// sphere
+		let sphere = new Geometry();
+		sphere.createSphere();
+		const data = new Float32Array(sphere.vertices);
+		const vertex_buffer = new Buffer(
+			gl,
+			gl.ARRAY_BUFFER,
+			sphere.vertices.length * 4,
+			gl.STATIC_DRAW
+		); // 버퍼 생성
+		vertex_buffer.setData(0, data, 0, sphere.vertices.length * 4); // 버퍼 정보 입력
+		const position_view = new VertexBuffer(
+			gl,
+			vertex_buffer,
+			3,
+			gl.FLOAT,
+			false
+		); // 버택스 버퍼(포지션) 읽는 형식 설정
+		let tmpArr = [1, 1, 1, 1];
+		let color = [];
+		for (let i = 0; i < 21 * 21; i++) {
+			for (let j = 0; j < 4; j++) color.push(tmpArr[j]);
+		}
+		color = new Float32Array(color);
+		const color_buffer = new Buffer(
+			gl,
+			gl.ARRAY_BUFFER,
+			color.length * 4,
+			gl.STATIC_DRAW
+		);
+		color_buffer.setData(0, color, 0, color.length * 4);
+		const color_view = new VertexBuffer(gl, color_buffer, 4, gl.FLOAT, false);
+		const buffer_view = {
+			// 쉐이더와 데이터 형식 일치
+			position: position_view,
+			color: color_view,
+		};
+		const mesh = Mesh.from(gl, buffer_view, sphere.indices); // 메쉬 생성
 
-    // stick1
-    let box1 = new Geometry();
-    box1.createBox(0.5, 3);
-    const v_buffer = new Buffer(gl, gl.ARRAY_BUFFER, 72 * 4, gl.STATIC_DRAW);
-    v_buffer.setData(0, new Float32Array(box1.vertices), 0, 72 * 4);
-    const pos_view = new VertexBuffer(gl, v_buffer, 3, gl.FLOAT, false);
-    let color_data = [];
-    let tmp = [0, 1, 0, 1];
-    for (let i = 0; i < 24; i++) {
-      for (let j = 0; j < 4; j++) color_data.push(tmp[j]);
-    }
-    color_data = new Float32Array(color_data);
-    const color_box = new Buffer(
-      gl,
-      gl.ARRAY_BUFFER,
-      color_data.length * 4,
-      gl.STATIC_DRAW
-    );
-    color_box.setData(0, color_data, 0, color_data.length * 4);
-    const color_box_view = new VertexBuffer(gl, color_box, 4, gl.FLOAT, false);
+		// stick1
+		let box1 = new Geometry();
+		box1.createBox(0.5, 3);
+		const v_buffer = new Buffer(gl, gl.ARRAY_BUFFER, 72 * 4, gl.STATIC_DRAW);
+		v_buffer.setData(0, new Float32Array(box1.vertices), 0, 72 * 4);
+		const pos_view = new VertexBuffer(gl, v_buffer, 3, gl.FLOAT, false);
+		let color_data = [];
+		let tmp = [0, 1, 0, 1];
+		for (let i = 0; i < 24; i++) {
+			for (let j = 0; j < 4; j++) color_data.push(tmp[j]);
+		}
+		color_data = new Float32Array(color_data);
+		const color_box = new Buffer(
+			gl,
+			gl.ARRAY_BUFFER,
+			color_data.length * 4,
+			gl.STATIC_DRAW
+		);
+		color_box.setData(0, color_data, 0, color_data.length * 4);
+		const color_box_view = new VertexBuffer(gl, color_box, 4, gl.FLOAT, false);
 
-    // wall
-    let box2 = new Geometry();
-    box2.createBox(30, 0.5);
-    const box2_buffer = new Buffer(
-      gl,
-      gl.ARRAY_BUFFER,
-      box2.vertices.length * 4,
-      gl.STATIC_DRAW
-    );
-    box2_buffer.setData(
-      0,
-      new Float32Array(box2.vertices),
-      0,
-      box2.vertices.length * 4
-    );
-    const box2_view = new VertexBuffer(gl, box2_buffer, 3, gl.FLOAT, false);
-    buffer_view["position"] = box2_view;
-    buffer_view["color"] = color_view;
-    const mesh3 = Mesh.from(gl, buffer_view, box2.indices);
+		// wall
+		let box2 = new Geometry();
+		box2.createBox(30, 0.5);
+		const box2_buffer = new Buffer(
+			gl,
+			gl.ARRAY_BUFFER,
+			box2.vertices.length * 4,
+			gl.STATIC_DRAW
+		);
+		box2_buffer.setData(
+			0,
+			new Float32Array(box2.vertices),
+			0,
+			box2.vertices.length * 4
+		);
+		const box2_view = new VertexBuffer(gl, box2_buffer, 3, gl.FLOAT, false);
+		buffer_view["position"] = box2_view;
+		buffer_view["color"] = color_view;
+		const mesh3 = Mesh.from(gl, buffer_view, box2.indices);
 
-    // view 행렬 설정
-    let camMatrix = Mat4x4.camMatrix([0, 0, 1], [0, 1, 0], [0, 0, 20]);
-    Main.camMat4 = camMatrix;
+		// view 행렬 설정
+		let camMatrix = Mat4x4.camMatrix([0, 0, 1], [0, 1, 0], [0, 0, 20]);
+		Main.camMat4 = camMatrix;
 
-    // 투영 행렬 설정
-    let projectionMatrix = Mat4x4.projectionMatrix(
-      Math.PI / 3,
-      0.1,
-      1000,
-      canvas.width / canvas.height
-    );
-    Main.projMat4 = projectionMatrix;
-    let vpLocation = gl.getUniformLocation(program.id, "vp");
-    Main.vpLoc = vpLocation;
+		// 투영 행렬 설정
+		let projectionMatrix = Mat4x4.projectionMatrix(
+			Math.PI / 3,
+			0.1,
+			1000,
+			canvas.width / canvas.height
+		);
+		Main.projMat4 = projectionMatrix;
+		let vpLocation = gl.getUniformLocation(program.id, "vp");
+		Main.vpLoc = vpLocation;
 
-    program.use();
+		program.use();
 
-    Main.gl = gl;
-    Main.program = program;
+		Main.gl = gl;
+		Main.program = program;
 
     let mesh2, mesh4;
     console.log("players: " + Main.players);
@@ -320,19 +318,16 @@ class Main {
       Main.mesh2 = Mesh.from(gl, buffer_view, box1.indices);
       buffer_view["color"] = color_view;
       Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
-      Main.mesh5 = Main.mesh4;
-      Main.mesh6 = Main.mesh4;
     } 
     else {
       console.log("player: ", 2);
         buffer_view["position"] = pos_view;
         buffer_view["color"] = color_view;
-        Main.mesh6 = Mesh.from(gl, buffer_view, box1.indices);
+        Main.mesh2 = Mesh.from(gl, buffer_view, box1.indices);
         buffer_view["color"] = color_box_view;
         Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
-        Main.mesh2 = Main.mesh4;
-        Main.mesh5 = Main.mesh4;
     }
+
 
     Main.mesh = mesh;
     Main.mesh3 = mesh3;
@@ -345,13 +340,13 @@ class Main {
     Main.gl.cullFace(Main.gl.BACK);
     DefaultFramebuffer.clearColor(Main.gl);
 
-    let modelLocation = Main.gl.getUniformLocation(Main.program.id, "model");
-    let viewMatrix = Mat4x4.viewMatrix(
-      Mat4x4.multipleMat4(Mat4x4.rotMatAxisY(Main.camDegree), Main.camMat4)
-    );
-    let vpMatirx = Mat4x4.multipleMat4(Main.projMat4, viewMatrix);
-    Main.program.use();
-    Main.gl.uniformMatrix4fv(Main.vpLoc, true, vpMatirx);
+		let modelLocation = Main.gl.getUniformLocation(Main.program.id, "model");
+		let viewMatrix = Mat4x4.viewMatrix(
+			Mat4x4.multipleMat4(Mat4x4.rotMatAxisY(Main.camDegree), Main.camMat4)
+		);
+		let vpMatirx = Mat4x4.multipleMat4(Main.projMat4, viewMatrix);
+		Main.program.use();
+		Main.gl.uniformMatrix4fv(Main.vpLoc, true, vpMatirx);
 
     // ball
     Main.gl.uniformMatrix4fv(
@@ -418,12 +413,12 @@ export async function game_m_js(hash) {
   });
   if (response.ok) {
     let data = await response.json();
-    console.log(data.player1_uuid, "===", get_list_hash[1]);
-    console.log(data.player2_uuid, "===", get_list_hash[2]);
+    console.log(data.player1_uuid, "===", get_list_hash[0]);
+    console.log(data.player2_uuid, "===", get_list_hash[1]);
     console.log(data.winner_username, "===", "null");
     if (
-      data.player1_uuid === get_list_hash[1] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
-      data.player2_uuid === get_list_hash[2] &&
+      data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
+      data.player2_uuid === get_list_hash[1] &&
       data.winner_username === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
     ) {
       console.log("abc");
@@ -439,14 +434,11 @@ export async function game_m_js(hash) {
         //url에 해당 uuid값이 있는지
         let data = await response_name.json();
         let get_list_hash = get_hash.split("_");
-        for (let i = 1; i < get_list_hash.length - 1; i++) {
+        window.players = 0;
+        for (let i = 0; i < get_list_hash.length - 1; i++) {
           if (get_list_hash[i] == data[0].user_id) {
             window.uuid = data[0].user_id;
-            if (window.uuid == get_list_hash[1]) {
-              window.players = 1;
-            } else {
-              window.players = 2;
-            }
+            window.players = i + 1;
             flag = 1;
           }
         }

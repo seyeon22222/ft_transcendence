@@ -39,9 +39,9 @@ const routes = {
   "/match": [match_html, match_view],
   "/tournament": [tournament_html, tournament_view],
   "/chatprivate": [chatPrivate_html, chatPrivate_js],
-  "/game/m": [game_html, game_m_js],
-  "/game/t": [game_html, game_t_js],
-  "/game/multi": [game_html, game_multi_js],
+  "/gamem": [game_html, game_m_js],
+  "/gamet": [game_html, game_t_js],
+  "/gamemulti": [game_html, game_multi_js],
   "/multi": [multiMatch_html, multiMatch_js],
 };
 

@@ -76,14 +76,14 @@ class Main {
     };
 
     const handleKeyUp = (event) => {
-      let message = { message: event.key, players: Main.players, uuid: "" };
+      let message = { message: event.key, players: Main.players };
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "upstop", players: Main.players, uuid: "" };
+        message = { message: "upstop", players: Main.players };
         flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "downstop", players: Main.players, uuid: "" };
+        message = { message: "downstop", players: Main.players };
         flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -96,11 +96,11 @@ class Main {
       let flag = 0;
 
       if (event.code === "KeyQ") {
-        message = { message: "up", players: Main.players, uuid: "" };
+        message = { message: "up", players: Main.players };
         flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "down", players: Main.players, uuid: "" };
+        message = { message: "down", players: Main.players };
         flag = 1;
       }
       if (event.code === "ArrowRight")
@@ -115,7 +115,7 @@ class Main {
     window.addEventListener("keydown", handleKeyDown);
 
     ws.onopen = () => {
-      let message = { message: "", players: window.players, uuid: ""};
+      let message = { message: "", players: window.players};
       ws.send(JSON.stringify(message));
     }
 
@@ -137,7 +137,7 @@ class Main {
         // is_active = 0;
         console.log(
           "===========href=========",
-          `/#match/${get_list_hash[get_list_hash.length - 1]}`
+          `/#tournament/${get_list_hash[get_list_hash.length - 1]}`
         );
       } 
       else {
@@ -158,12 +158,24 @@ class Main {
         }
 
         }
-        console.log("밖 is_active : " + is_active);
       if (is_active == 0) {
-        console.log("안 is_active : " + is_active);
         let get_list_hash = get_hash.split("_");
-        location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
+        const csrftoken_t = Cookies.get("csrftoken");
+        const response_t = await fetch(`/match/tornamentview/${get_list_hash[get_list_hash.length - 1]}`, {
+          //match serializer 반환값 가져옴
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken_t,
+          },
+          credentials: "include",
+        });
+        if (response_t.ok) {
+        let data = await response_t.json();
+        let name_t = data.tournament.name;
+        location.href = `/#tournament/${name_t}`;
       }
+    }
     };
   }
   static entry() {
@@ -320,18 +332,14 @@ class Main {
       Main.mesh2 = Mesh.from(gl, buffer_view, box1.indices);
       buffer_view["color"] = color_view;
       Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
-      Main.mesh5 = Main.mesh4;
-      Main.mesh6 = Main.mesh4;
     } 
     else {
       console.log("player: ", 2);
         buffer_view["position"] = pos_view;
         buffer_view["color"] = color_view;
-        Main.mesh6 = Mesh.from(gl, buffer_view, box1.indices);
+        Main.mesh2 = Mesh.from(gl, buffer_view, box1.indices);
         buffer_view["color"] = color_box_view;
         Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
-        Main.mesh2 = Main.mesh4;
-        Main.mesh5 = Main.mesh4;
     }
 
     Main.mesh = mesh;
@@ -406,8 +414,8 @@ export async function game_t_js(hash) {
   let match_id = get_list_hash[get_list_hash.length - 1]; //
 
   const csrftoken = Cookies.get("csrftoken");
-  console.log("matchvie/${match_id}", `/matchview/${match_id}`);
-  const response = await fetch(`/match/matchview/${match_id}`, {
+  console.log("tournamentview/${match_id}", `/tournamentview/${match_id}`);
+  const response = await fetch(`/match/tournamentview/${match_id}`, {
     //match serializer 반환값 가져옴
     method: "GET",
     headers: {
@@ -418,13 +426,13 @@ export async function game_t_js(hash) {
   });
   if (response.ok) {
     let data = await response.json();
-    console.log(data.player1_uuid, "===", get_list_hash[1]);
-    console.log(data.player2_uuid, "===", get_list_hash[2]);
-    console.log(data.winner_username, "===", "null");
+    console.log(data.player1_uuid, "===", get_list_hash[0]);
+    console.log(data.player2_uuid, "===", get_list_hash[1]);
+    console.log(data.match_result, "===", "null");
     if (
-      data.player1_uuid === get_list_hash[1] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
-      data.player2_uuid === get_list_hash[2] &&
-      data.winner_username === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
+      data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
+      data.player2_uuid === get_list_hash[1] &&
+      data.match_result == '' //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
     ) {
       console.log("abc");
       const response_name = await fetch("user/info", {
@@ -439,14 +447,10 @@ export async function game_t_js(hash) {
         //url에 해당 uuid값이 있는지
         let data = await response_name.json();
         let get_list_hash = get_hash.split("_");
-        for (let i = 1; i < get_list_hash.length - 1; i++) {
+        for (let i = 0; i < get_list_hash.length - 1; i++) {
           if (get_list_hash[i] == data[0].user_id) {
             window.uuid = data[0].user_id;
-            if (window.uuid == get_list_hash[1]) {
-              window.players = 1;
-            } else {
-              window.players = 2;
-            }
+            window.players = i + 1;
             flag = 1;
           }
         }

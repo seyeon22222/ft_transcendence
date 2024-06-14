@@ -80,14 +80,14 @@ class Main {
     };
 
     const handleKeyUp = (event) => {
-      let message = { message: event.key, players: Main.players, uuid: "" };
+      let message = { message: event.key, pid: window.players};
       let flag = 0;
       if (event.code === "KeyQ") {
-        message = { message: "upstop", players: Main.players, uuid: "" };
+        message = { message: "upstop", pid: window.players};
         flag = 1;
       }
       if (event.code == "KeyA") {
-        message = { message: "downstop", players: Main.players, uuid: "" };
+        message = { message: "downstop", pid: window.players};
         flag = 1;
       }
       if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -96,15 +96,14 @@ class Main {
     };
 
     const handleKeyDown = (event) => {
-      let message = { message: event.key, players: Main.players };
+      let message = { message: event.key, pid: window.players};
       let flag = 0;
-
       if (event.code === "KeyQ") {
-        message = { message: "up", players: Main.players, uuid: "" };
+        message = { message: "up", pid: window.players};
         flag = 1;
       }
       if (event.code === "KeyA") {
-        message = { message: "down", players: Main.players, uuid: "" };
+        message = { message: "down", pid: window.players};
         flag = 1;
       }
       if (event.code === "ArrowRight")
@@ -119,7 +118,7 @@ class Main {
     window.addEventListener("keydown", handleKeyDown);
 
     ws.onopen = () => {
-      let message = { message: "", players: window.players, uuid: ""};
+      let message = { message: "", pid: window.players};
       ws.send(JSON.stringify(message));
     }
 
@@ -137,13 +136,13 @@ class Main {
       let score1 = data["score1"];
       let score2 = data["score2"];
       let is_active = data["is_active"];
-
+  
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
         // is_active = 0;
         console.log(
           "===========href=========",
-          `/#match/${get_list_hash[get_list_hash.length - 1]}`
+          `/#multi/${get_list_hash[get_list_hash.length - 1]}`
         );
       } 
       else {
@@ -166,11 +165,9 @@ class Main {
         }
 
         }
-        console.log("밖 is_active : " + is_active);
       if (is_active == 0) {
-        console.log("안 is_active : " + is_active);
         let get_list_hash = get_hash.split("_");
-        location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
+        location.href = `/#multi/2:2 Match ${get_list_hash[get_list_hash.length - 1]}`;
       }
     };
   }
@@ -342,9 +339,9 @@ class Main {
     }
     else if (Main.players == 3) {
         buffer_view["position"] = pos_view;
-        buffer_view["color"] = color_view;
-        Main.mesh5 = Mesh.from(gl, buffer_view, box1.indices);
         buffer_view["color"] = color_box_view;
+        Main.mesh5 = Mesh.from(gl, buffer_view, box1.indices);
+        buffer_view["color"] = color_view;
         Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
         Main.mesh2 = Main.mesh4;
         Main.mesh6 = Main.mesh4;
@@ -352,9 +349,9 @@ class Main {
     else {
       console.log("player: ", 4);
         buffer_view["position"] = pos_view;
-        buffer_view["color"] = color_view;
-        Main.mesh6 = Mesh.from(gl, buffer_view, box1.indices);
         buffer_view["color"] = color_box_view;
+        Main.mesh6 = Mesh.from(gl, buffer_view, box1.indices);
+        buffer_view["color"] = color_view;
         Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
         Main.mesh2 = Main.mesh4;
         Main.mesh5 = Main.mesh4;
@@ -447,8 +444,8 @@ export async function game_multi_js(hash) {
   let match_id = get_list_hash[get_list_hash.length - 1]; //
 
   const csrftoken = Cookies.get("csrftoken");
-  console.log("matchvie/${match_id}", `/matchview/${match_id}`);
-  const response = await fetch(`/match/matchview/${match_id}`, {
+  console.log("matchview/${match_id}", `/multimatchview/${match_id}`);
+  const response = await fetch(`/match/multimatchview/${match_id}`, {
     //match serializer 반환값 가져옴
     method: "GET",
     headers: {
@@ -459,13 +456,17 @@ export async function game_multi_js(hash) {
   });
   if (response.ok) {
     let data = await response.json();
-    console.log(data.player1_uuid, "===", get_list_hash[1]);
-    console.log(data.player2_uuid, "===", get_list_hash[2]);
+    console.log(data.player1_uuid, "===", get_list_hash[0]);
+    console.log(data.player2_uuid, "===", get_list_hash[1]);
+    console.log(data.player3_uuid, "===", get_list_hash[2]);
+    console.log(data.player4_uuid, "===", get_list_hash[3]);
     console.log(data.winner_username, "===", "null");
     if (
-      data.player1_uuid === get_list_hash[1] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
-      data.player2_uuid === get_list_hash[2] &&
-      data.winner_username === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
+      data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
+      data.player2_uuid === get_list_hash[1] &&
+      data.player3_uuid === get_list_hash[2] &&
+      data.player4_uuid === get_list_hash[3] &&
+      data.match_result === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
     ) {
       console.log("abc");
       const response_name = await fetch("user/info", {
@@ -480,14 +481,11 @@ export async function game_multi_js(hash) {
         //url에 해당 uuid값이 있는지
         let data = await response_name.json();
         let get_list_hash = get_hash.split("_");
-        for (let i = 1; i < get_list_hash.length - 1; i++) {
+        window.players = 0;
+        for (let i = 0; i < get_list_hash.length - 1; i++) {
           if (get_list_hash[i] == data[0].user_id) {
             window.uuid = data[0].user_id;
-            if (window.uuid == get_list_hash[1]) {
-              window.players = 1;
-            } else {
-              window.players = 2;
-            }
+            window.players = i + 1;
             flag = 1;
           }
         }

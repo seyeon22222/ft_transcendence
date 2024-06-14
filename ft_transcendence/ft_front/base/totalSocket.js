@@ -144,7 +144,7 @@ async function m_accept(invitePopup, player1, player2, g_id) {
         const data = await response.json();
         url = data.hash;
         console.log(url);
-        window.location.href = `/#game/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#gamem/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
@@ -155,7 +155,7 @@ async function m_accept(invitePopup, player1, player2, g_id) {
 async function t_accept(invitePopup, player1, player2, g_id) {
     let url;
     const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch(`match/multiMatchHash/${player1}${player2}${g_id}`,  {
+    const response = await fetch(`match/tournamenthash/${player1}${player2}${g_id}`,  {
         method : 'GET',
         headers : {
             'Content-Type': 'application/json',
@@ -167,7 +167,7 @@ async function t_accept(invitePopup, player1, player2, g_id) {
         const data = await response.json();
         url = data.hash;
         console.log(url);
-        window.location.href = `/#game/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#gamet/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
@@ -192,7 +192,7 @@ async function mul_accept(invitePopup, player1, player2, player3, player4, g_id)
         const data = await response.json();
         url = data.hash;
         console.log(url);
-        window.location.href = `/#game/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#gamemulti/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();

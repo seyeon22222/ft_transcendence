@@ -9,6 +9,7 @@ class tournament(models.Model):
     is_active = models.BooleanField(default=False)
     participant = models.ManyToManyField(MyUser, through='TournamentParticipant', related_name='tournaments')
     operator = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='operator')
+    completed_matches = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name

@@ -56,7 +56,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             }))
 
     async def disconnect(self, close_code):
-        
         self.task.cancel()
         print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
         if self.players == 1:
@@ -64,14 +63,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             match_result = 2
         elif self.players == 2:
             match_result = 1
-        self.b.is_active = 0
-        backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
-        game_results = {
-            'match_date': datetime.now().isoformat(),
-            'match_result': match_result,
-            'is_active': False,
-        }
-        response = requests.post(backend_url, json=game_results)
+        if self.b.is_active == 1:
+            self.b.is_active = 0
+            backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+            game_results = {
+                'match_date': datetime.now().isoformat(),
+                'match_result': match_result,
+                'is_active': False,
+            }
+            response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
         while True:
@@ -88,13 +88,12 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while True:
+        while self.b.is_active:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
-            map_length = self.obtacles[0].bot1[1] - self.obtacles[1].top1[1]
-            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
-            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
+            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
+            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
             self.b.pos[2] = 1
             self.b.update(self.paddles, self.obtacles, self.dt * 20)
             self.b.pos[2] = 0
@@ -135,7 +134,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         player = text_data_json['players']
-        uuid = text_data_json['uuid']
 
         if self.players == None:
             if (player == 1 or player == 2):
@@ -203,7 +201,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
             self.obtacles.append(ball.Box(30, 0.5))
             self.obtacles[1].movePos([0, -8, 0])
             self.task = self.loop.create_task(self.game_update())
-
+        
         await self.send(text_data=json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -222,14 +220,15 @@ class TGameConsumer(AsyncWebsocketConsumer):
             match_result = 2
         elif self.players == 2:
             match_result = 1
-        self.b.is_active = 0
-        backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
-        game_results = {
-            'match_date': datetime.now().isoformat(),
-            'match_result': match_result,
-            'is_active': False,
-        }
-        response = requests.post(backend_url, json=game_results)
+        if self.b.is_active == 1:
+            self.b.is_active = 0
+            backend_url = 'http://backend:8000/match/t_matchresult/' + list(self.room_name.split('_'))[-1]
+            game_results = {
+                'match_date': datetime.now().isoformat(),
+                'match_result': match_result,
+                'is_active': False,
+            }
+            response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
         while True:
@@ -246,19 +245,18 @@ class TGameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while True:
+        while self.b.is_active:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
-            map_length = self.obtacles[0].bot1[1] - self.obtacles[1].top1[1]
-            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
-            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
+            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
+            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
             self.b.pos[2] = 1
             self.b.update(self.paddles, self.obtacles, self.dt * 20)
             self.b.pos[2] = 0
             if self.b.point1 == 5 :
                 self.b.is_active = 0
-                backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+                backend_url = 'http://backend:8000/match/t_matchresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 1,
@@ -269,7 +267,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 # print(response.text)
             elif self.b.point2 == 5:
                 self.b.is_active = 0
-                backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+                backend_url = 'http://backend:8000/match/t_matchresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 2,
@@ -293,7 +291,6 @@ class TGameConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         player = text_data_json['players']
-        uuid = text_data_json['uuid']
 
         if self.players == None:
             if (player == 1 or player == 2):
@@ -367,7 +364,8 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.obtacles.append(ball.Box(30, 0.5))
             self.obtacles[1].movePos([0, -8, 0])
             self.task = self.loop.create_task(self.game_update())
-
+        
+        
         await self.send(text_data=json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -380,22 +378,22 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             }))
 
     async def disconnect(self, close_code):
-        
         self.task.cancel()
         print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
-        if self.players == 1:
+        if self.players == 1 or self.players == 3:
             del self.consumers[self.room_group_name]
             match_result = 2
-        elif self.players == 2:
+        elif self.players == 2 or self.players == 4:
             match_result = 1
-        self.b.is_active = 0
-        backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
-        game_results = {
-            'match_date': datetime.now().isoformat(),
-            'match_result': match_result,
-            'is_active': False,
-        }
-        response = requests.post(backend_url, json=game_results)
+        if self.b.is_active == 1 :
+            self.b.is_active = 0
+            backend_url = 'http://backend:8000/match/multimatchresult/' + list(self.room_name.split('_'))[-1]
+            game_results = {
+                'match_date': datetime.now().isoformat(),
+                'match_result': match_result,
+                'is_active': False,
+            }
+            response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
         while True:
@@ -414,7 +412,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while True:
+        while self.b.is_active:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -428,7 +426,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.b.pos[2] = 0
             if self.b.point1 == 5 :
                 self.b.is_active = 0
-                backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+                backend_url = 'http://backend:8000/match/multimatchresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 1,
@@ -439,7 +437,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
                 # print(response.text)
             elif self.b.point2 == 5:
                 self.b.is_active = 0
-                backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+                backend_url = 'http://backend:8000/match/multimatchresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 2,
@@ -456,7 +454,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             'paddle4_pos': self.p4.pos,
             'score1': self.b.point1,
             'score2': self.b.point2,
-            'is_active' :self.b.is_active
+            'is_active' : self.b.is_active
             }))
             # 초 대기
             await asyncio.sleep(0.001)
@@ -464,11 +462,10 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        player = text_data_json['players']
-        uuid = text_data_json['uuid']
+        player = text_data_json['pid']
 
         if self.players == None:
-            if (player == 1 or player == 2):
+            if (player == 1 or player == 2 or player == 3 or player == 4):
                self.players = player
             # else:
             #     if (uuid == (self.room_name.split('_'))[1]):

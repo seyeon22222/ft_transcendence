@@ -34,8 +34,8 @@ export async function multiMatch_js(hash) {
 function multimatch_render(data) {
 	document.getElementById("match_name").innerHTML = data.name;
 	const player1_name = data.player1_username;
-	const player2_name = data.player2_username;
-	const player3_name = data.player3_username;
+	const player2_name = data.player3_username;
+	const player3_name = data.player2_username;
 	const player4_name = data.player4_username;
 
 	const player1 = document.getElementById("semi_final1");
@@ -57,8 +57,7 @@ function multimatch_render(data) {
 	if (player4) {
 		player4.innerHTML = player4_name;
 	}
-
-	if (data.match_result !== "") {
+	if (data.match_result !== null) {
 		const winner1 = document.getElementById("final1");
 		const winner2 = document.getElementById("final2");
 		if (winner1 && winner2) {
