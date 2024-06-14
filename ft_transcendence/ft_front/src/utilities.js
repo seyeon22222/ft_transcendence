@@ -69,3 +69,12 @@ export function delete_back_show() {
   bodyElement.style.overflow = '';
   bodyElement.style.paddingRight = '';
 }
+
+export function showModal(element, title, body) {
+	const infoModal = new bootstrap.Modal(document.getElementById(element));
+	const modalTitle = document.querySelector(`#${element} .modal-title`);
+	const modalBody = document.querySelector(`#${element} .modal-body p`);
+	modalTitle.innerText = title;
+	modalBody.innerText = body;
+	infoModal.show();
+}
