@@ -265,7 +265,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 # print(response.text)
             elif self.b.point2 == 5:
                 self.b.is_active = 0
-                backend_url = 'http://backend:8000/match/tournamentresult/ + list(self.room_name.split('_'))[-1]
+                backend_url = 'http://backend:8000/match/tournamentresult/' + list(self.room_name.split('_'))[-1]
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 2,
