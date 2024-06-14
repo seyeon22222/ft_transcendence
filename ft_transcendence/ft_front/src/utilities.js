@@ -58,3 +58,14 @@ export async function check_language() {
 	}
 	return document.getElementById('languageSelector').value;
 }
+
+export function delete_back_show() {
+  const modalBack = document.querySelector('.modal-backdrop');
+  if (modalBack) {
+    modalBack.classList.remove('modal-backdrop');
+  }
+  const bodyElement = document.querySelector('body');
+  bodyElement.classList.remove('modal-open');
+  bodyElement.style.overflow = '';
+  bodyElement.style.paddingRight = '';
+}

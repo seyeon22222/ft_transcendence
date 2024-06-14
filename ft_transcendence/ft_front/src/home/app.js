@@ -2,6 +2,7 @@ import router from '../../base/router.js'
 import { check_login } from '../utilities.js'
 import { formatDateTime } from "../info/info_func.js";
 import { check_socket } from '../../base/totalSocket.js';
+import { delete_back_show } from '../utilities.js';
 
 let i_socket;
 
@@ -10,6 +11,7 @@ export async function home_js() {
         i_socket.close();
         i_socket = null;
     }
+    delete_back_show();
     try {
         // set css style
         const style = document.getElementById("style");
