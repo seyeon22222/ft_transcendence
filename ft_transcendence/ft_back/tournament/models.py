@@ -1,6 +1,19 @@
 from django.db import models
 from ft_user.models import MyUser
 
+class custom():
+    r = models.IntegerField(default=0)
+    g = models.IntegerField(default=0)
+    b = models.IntegerField(default=0)
+    x = models.FloatField(default=0.0)
+    y = models.FloatField(default=0.0)
+    z = models.FloatField(default=0.0)
+    w = models.FloatField(default=0.0)
+    h = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return f"게임 내의 장애물이 생성되었습니다"
+
 class tournament(models.Model):
 
     name = models.CharField(max_length=100)
@@ -39,6 +52,7 @@ class tournamentMatch(models.Model):
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1_a')
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2_a')
     match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
+    custom = models.ManyToManyField(custom, related_name='t_cutom')
 
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.tournament.name}"
@@ -59,7 +73,8 @@ class Match(models.Model):
     is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requester')
-
+    custom = models.ManyToManyField(custom, related_name='m_custom')
+    
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.name}"
 
@@ -88,7 +103,9 @@ class MultiMatch(models.Model):
     player4 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player4_matches', null=True, blank=True)
     match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
     is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
+    custom = models.ManyToManyField(custom, related_name='mul_custom')
     # requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requested_matches')
 
     def __str__(self):
         return f"{self.player1.username}, {self.player2.username}, {self.player3.username}, {self.player4.username} in {self.name}"
+
