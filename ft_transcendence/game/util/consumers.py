@@ -92,9 +92,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
-            self.p1.update(self.p1.dir[1] * 10 * self.dt)
-            self.p2.update(self.p2.dir[1] * 10 * self.dt)
-            self.b.update(self.p1, self.p2, self.dt * 20)
+            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
+            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
+            self.b.pos[2] = 1
+            self.b.update(self.paddles, self.obtacles, self.dt * 20)
+            self.b.pos[2] = 0
             if self.b.point1 == 5 :
                 self.b.is_active = 0
                 backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
