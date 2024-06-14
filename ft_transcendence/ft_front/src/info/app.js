@@ -4,7 +4,8 @@ import {
   select_match_info_view,
   formatDateTime,
 } from "./info_func.js";
-import { check_login } from "../utilities.js";
+
+import { check_login, showModal } from "../utilities.js";
 
 export async function info_js() {
   let apply_user;
@@ -263,7 +264,7 @@ export async function info_js() {
     }
 
     if (temp_data[0].username === accept_user) {
-		showModal(window.lang[user_lang].message.err, window.lang[user_lang].message.info_selfchat_err);
+		showModal('infoModal', window.lang[user_lang].message.err, window.lang[user_lang].message.info_selfchat_err);
 		return ;
     }
 
@@ -327,7 +328,7 @@ export async function info_js() {
         console.error("API failed : ", error);
       }
     } else {
-      showModal(window.lang[user_lang].message.notify, window.lang[user_lang].message.info_is_blocked);
+      showModal('infoModal', window.lang[user_lang].message.notify, window.lang[user_lang].message.info_is_blocked);
     }
   });
 
@@ -515,11 +516,11 @@ async function updateOnlineStatus() {
 // setInterval(checkProfileFormAndRun, 5000); // 31초마다 확인
 
 
-function showModal(title, body) {
-  const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
-  const modalTitle = document.querySelector('#infoModal .modal-title');
-  const modalBody = document.querySelector('#infoModal .modal-body p');
-  modalTitle.innerText = title;
-  modalBody.innerText = body;
-  infoModal.show();
-}
+// function showModal(title, body) {
+//   const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
+//   const modalTitle = document.querySelector('#infoModal .modal-title');
+//   const modalBody = document.querySelector('#infoModal .modal-body p');
+//   modalTitle.innerText = title;
+//   modalBody.innerText = body;
+//   infoModal.show();
+// }
