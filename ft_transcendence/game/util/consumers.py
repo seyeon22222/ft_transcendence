@@ -88,7 +88,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while self.end:
+        while self.b.is_active:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
