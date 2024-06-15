@@ -456,9 +456,8 @@ async function updateTournamentInfo(arr) {
         }
 
         // 모든 참가자가 level 0인 경우 (default) true
-        if (player_check(player) === true) {
-            tour_view(player);
-        } else {
+        tour_view(player);
+        if (player_check(player) === false) {
             tourstart_view(player);
         }
     } else {
@@ -490,7 +489,24 @@ function player_check(player) {
 */
 function tour_view(player) {
     console.log("tour_view", player);
-    if (player.length > 4 && player.length <= 8) {
+
+    // clear previous info
+    const final = document.getElementById(`final`);
+    final.innerHTML = '';
+    for (let i = 1; i <= 2; ++i) {
+        const semi_final = document.getElementById(`semi_final${i}`);
+        semi_final.innerHTML = '';
+    }
+    for (let i = 1; i <= 4; ++i) {
+        const quarter_final = document.getElementById(`quarter_final${i}`);
+        quarter_final.innerHTML = '';
+    }
+    for (let i = 1; i <= 8; ++i) {
+        const round_16 = document.getElementById(`Round_8_${i}`);
+        round_16.innerHTML = '';
+    }
+
+    if (player.length > 4 && player.length <= 8) { // 5~8
         for (let i = 1; i <= 4; ++i) {
             const quarter_final = document.getElementById(`quarter_final${i}`);
             quarter_final.innerHTML = '';
@@ -500,7 +516,7 @@ function tour_view(player) {
             round_16.innerHTML = player[i - 1].nickname;
         }
 
-    } else if (player.length > 2 && player.length <= 4) {
+    } else if (player.length > 2 && player.length <= 4) { // 3~4
         for (let i = 1; i <= 2; ++i) {
             const semi_final = document.getElementById(`semi_final${i}`);
             semi_final.innerHTML = '';
@@ -510,7 +526,7 @@ function tour_view(player) {
             quarter_final.innerHTML = player[i - 1].nickname;
         }
     } else {
-        for (let i = 1; i <= player.length; ++i) {
+        for (let i = 1; i <= player.length; ++i) { // 1~2
             const semi_final = document.getElementById(`semi_final${i}`);
             semi_final.innerHTML = player[i - 1].nickname;
         }
@@ -521,12 +537,39 @@ function tourstart_view(player) {
     console.log("tourstart_view");
     tour_view(player);
     
-    if (player.length <= 2) {
-        player_2(player);
-    } else if (player.length <= 4) {
-        player_4(player);
-    } else if (player.length <= 8) {
-        player_8(player);
+    // if (player.length <= 2) {
+    //     player_2(player);
+    // } else if (player.length <= 4) {
+    //     player_4(player);
+    // } else if (player.length <= 8) {
+    //     player_8(player);
+    // }
+
+
+    /* 
+        어차피 player는 index 순서대로 정렬되어 있음
+        index를 알면 플레이어 level에 따라 어디어디에 삽입되어야 하는지 간단한 수식으로 계산 가능 
+    */
+    for (let i = 1; i <= player.length; ++i) {
+        if (player[i - 1].level === 1) {
+            const final_html = document.getElementById(`final`);
+            final_html.innerHTML = player[i - 1].nickname;
+
+            const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
+            semifinal_html.innerHTML = player[i - 1].nickname;
+
+            const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
+            quarterfinal_html.innerHTML = player[i - 1].nickname;
+        } else if (player[i - 1].level === 2) {
+            const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
+            semifinal_html.innerHTML = player[i - 1].nickname;
+
+            const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
+            quarterfinal_html.innerHTML = player[i - 1].nickname;
+        } else if (player[i - 1].level === 3) {
+            const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
+            quarterfinal_html.innerHTML = player[i - 1].nickname;
+        }
     }
 }
 
