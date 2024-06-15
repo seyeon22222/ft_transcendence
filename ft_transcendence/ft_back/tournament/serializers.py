@@ -22,6 +22,7 @@ class tournamentMatchSerializer(serializers.ModelSerializer):
     winner_username = serializers.SerializerMethodField()
     player1_uuid = serializers.SerializerMethodField()
     player2_uuid = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
 
     class Meta:
         model = tournamentMatch
@@ -45,6 +46,9 @@ class tournamentMatchSerializer(serializers.ModelSerializer):
     
     def get_player2_uuid(self,obj):
         return obj.player2.user_id
+    
+    def get_name(self, obj):
+        return obj.tournament.name
 
 class matchSerializer(serializers.ModelSerializer):
     player1_username = serializers.SerializerMethodField()

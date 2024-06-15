@@ -160,8 +160,10 @@ class Main {
         }
       if (is_active == 0) {
         let get_list_hash = get_hash.split("_");
+        console.log(`/match/tornamentview/${get_list_hash[get_list_hash.length - 1]}`);
+        let match_id = get_list_hash[get_list_hash.length - 1];
         const csrftoken_t = Cookies.get("csrftoken");
-        const response_t = await fetch(`/match/tornamentview/${get_list_hash[get_list_hash.length - 1]}`, {
+        const response_t = await fetch(`/match/tournamentview/${match_id}`, {
           //match serializer 반환값 가져옴
           method: "GET",
           headers: {
@@ -172,7 +174,7 @@ class Main {
         });
         if (response_t.ok) {
         let data = await response_t.json();
-        let name_t = data.tournament.name;
+        let name_t = data.name;
         location.href = `/#tournament/${name_t}`;
       }
     }
