@@ -175,6 +175,7 @@ class Main {
         if (response_t.ok) {
         let data = await response_t.json();
         let name_t = data.name;
+        console.log("name_t", name_t);
         location.href = `/#tournament/${name_t}`;
       }
     }
