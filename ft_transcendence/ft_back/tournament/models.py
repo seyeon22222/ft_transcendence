@@ -107,4 +107,3 @@ class MultiMatch(models.Model):
 
     def __str__(self):
         return f"{self.player1.username}, {self.player2.username}, {self.player3.username}, {self.player4.username} in {self.name}"
-
