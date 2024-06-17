@@ -1,3 +1,5 @@
+import { showModal } from "../utilities.js";
+
 export function signup_js() {
     // set style
     const style = document.getElementById("style");
@@ -18,6 +20,10 @@ export function signup_js() {
     .spacing {
         margin-top: 3rem; /* Adjust the value as needed for desired spacing */
     }
+	.modal {
+		color: black;
+		display: none;
+	}
     `;
 
     const signupForm = document.getElementById("signup_form");
@@ -30,6 +36,7 @@ export function signup_js() {
         const email = document.getElementById("email_input").value;
         const image = document.getElementById("image_input").files[0];
         const csrftoken = Cookies.get('csrftoken');
+		const langNow = document.getElementById('languageSelector').value;
         
         try {
             const formData = new FormData();
@@ -49,14 +56,20 @@ export function signup_js() {
             });
 
             if (response.ok) {
-                const data = await response.json();
-                alert(data.message);
-                location.href = '/#';
-            }
+				// const data = await response.json();
+				const modal = document.querySelector('.modal');
+				showModal('signup', 'noti');
+				modal.addEventListener('hidden.bs.modal', function () {
+					location.href = '/#';
+				});
+				// alert(data.message);
+				// location.href = '/#';
+			}
             else {
-                const error = await response.json();
-                alert(error.message);
-            }
+				showModal('signup', 'err');
+                // const error = await response.json();
+				// alert(error.message);
+			}
         } catch (error) {
             console.error('회원가입 요청 중 오류 발생 : ', error);
         }
