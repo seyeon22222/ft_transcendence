@@ -557,8 +557,13 @@ function tourstart_view(player) {
             final_html.innerHTML = player[i - 1].nickname;
 
             if (player.length > 2) {
-                const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
-                semifinal_html.innerHTML = player[i - 1].nickname;
+                if (player.length > 4) {
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
+                    semifinal_html.innerHTML = player[i - 1].nickname;
+                } else {
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 2)}`); // player[1,2] -> semi_final1, player[3,4] -> semi_final2
+                    semifinal_html.innerHTML = player[i - 1].nickname;
+                }
             }
 
             if (player.length > 4) {
@@ -567,8 +572,13 @@ function tourstart_view(player) {
             }
         } else if (player[i - 1].level === 2) {
             if (player.length > 2) {
-                const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
-                semifinal_html.innerHTML = player[i - 1].nickname;
+                if (player.length > 4) {
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
+                    semifinal_html.innerHTML = player[i - 1].nickname;
+                } else {
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 2)}`); // player[1,2] -> semi_final1, player[3,4] -> semi_final2
+                    semifinal_html.innerHTML = player[i - 1].nickname;
+                }
             }
             
             if (player.length > 4) {
