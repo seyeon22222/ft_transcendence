@@ -1,5 +1,5 @@
 import { formatDateTime } from "../info/info_func.js";
-import { check_login } from "../utilities.js"
+import { check_login, showModal } from "../utilities.js"
 
 export async function tournament_view(hash) {
     // set style
@@ -87,7 +87,7 @@ export async function tournament_view(hash) {
             console.error('API 요청 실패', error);
         }
     } catch (error) {
-        alert(error);
+        // alert(error);
     }
     const tournament_start = document.getElementById("tournament_start");
     if (tournament_start !== null)
@@ -101,7 +101,8 @@ export async function tournament_view(hash) {
         const nickname = nicknameInput.value;
 
         if (nickname.length === 0) {
-            alert("닉네임을 입력해주세요.");
+            // alert("닉네임을 입력해주세요.");
+			showModal('tournament', 'nick_noti');
             nicknameInput.value = '';
             return;
         }
@@ -117,13 +118,13 @@ export async function tournament_view(hash) {
         if (game_check.ok) {
             const game_data = await game_check.json();
             if (game_data.is_active === false) {
-                alert('해당 토너먼트는 이미 시작되었습니다.');
+				showModal('tournament', 'already_noti');
                 return ;
             }
         }
         try {
             if (player.length >= 8) {
-                alert("최대 인원(8명)을 초과했습니다.");
+				showModal('tournament', 'over_noti');
                 return;
             }
             const formData = {
@@ -143,14 +144,23 @@ export async function tournament_view(hash) {
             });
             if (response.ok) {
                 const data = await response.json();
-                document.getElementById('nickname_input').value = '';
-                location.href = `/#tournament/${tournament_name}`;
+                const modal = document.querySelector('.modal');
+				document.getElementById('nickname_input').value = '';
+				if (data.message !== null)
+					showModal('tournament', 'ready_noti');
+				modal.addEventListener('hidden.bs.modal', function () {
+					location.href = `/#tournament/${tournament_name}`;
+				});
             } else {
                 const error = await response.json();
-                console.log(error);
+				// message = Invalid user_id
+				// message = 중복 신청 할 수 없습니다
+				// alert(error.message)
+                // console.log(error);
+				showModal('tournament', 'dupready_noti');
             }
         } catch (error) {
-            alert(error);
+            // alert(error);
         }
     });
 }
@@ -190,11 +200,11 @@ async function startTournament(tournament_id) {
         const players = data.participants;
 
         if (players.length < 2) {
-            alert('토너먼트 참가자가 부족합니다.');
+			showModal('tournament', 'under_noti');
             return;
         }
         if (data.is_active === false) {
-            alert('토너먼트가 이미 시작되었습니다.');
+			showModal('tournament', 'already_noti');
             return;
         }
 
@@ -233,7 +243,7 @@ async function startTournament(tournament_id) {
         //     }
         // }
     } else {
-        alert('토너먼트 정보를 불러오는 데 실패했습니다.');
+		showModal('tournament', 'loading_err');
     }
 }
 
@@ -308,7 +318,7 @@ async function handleByePlayer(players) {
         console.log(`${nickname}는 부전승 처리되었습니다.`);
     } else {
         const error = await response.json();
-        console.error('부전승 처리 실패:', error);
+        // console.error('부전승 처리 실패:', error);
     }
 
     // 2명의 부전승 처리가 필요한 경우를 처리
@@ -359,7 +369,7 @@ async function sendGameInvitation(tournament_id, player1, player2) {
     if (response.ok) {
         // alert(`${player1.nickname}와 ${player2.nickname}에게 게임 초대가 전송되었습니다.`);
     } else {
-        alert('게임 초대 전송에 실패했습니다.');
+        // alert('게임 초대 전송에 실패했습니다.');
     }
 }
 
@@ -384,27 +394,27 @@ async function createTournamentMatch(tournament_id, player1, player2) {
 }
 
 // 게임 결과 처리 함수
-async function handleGameResult(player1, player2, result) {
- const csrftoken = Cookies.get('csrftoken');
- const response = await fetch(`match/result`, {
-     method: 'POST',
-     headers: {
-         'Content-Type': 'application/json',
-         'X-CSRFToken': csrftoken,
-     },
-     credentials: 'include',
-     body: JSON.stringify({ player1: player1.id, player2: player2.id, result }),
- });
+// async function handleGameResult(player1, player2, result) {
+//  const csrftoken = Cookies.get('csrftoken');
+//  const response = await fetch(`match/result`, {
+//      method: 'POST',
+//      headers: {
+//          'Content-Type': 'application/json',
+//          'X-CSRFToken': csrftoken,
+//      },
+//      credentials: 'include',
+//      body: JSON.stringify({ player1: player1.id, player2: player2.id, result }),
+//  });
 
- if (response.ok) {
-     const data = await response.json();
-     alert(`${data.winner.nickname}가 승리하였습니다.`);
-     // 다음 게임 시작 로직 추가
-     await startNextRound();
- } else {
-     alert('게임 결과 처리에 실패했습니다.');
- }
-}
+//  if (response.ok) {
+//      const data = await response.json();
+//      alert(`${data.winner.nickname}가 승리하였습니다.`);
+//      // 다음 게임 시작 로직 추가
+//      await startNextRound();
+//  } else {
+//      alert('게임 결과 처리에 실패했습니다.');
+//  }
+// }
 
 // 다음 라운드 게임 시작 함수
 async function startNextRound() {
@@ -462,7 +472,7 @@ async function updateTournamentInfo(arr) {
                 tournament_start.innerHTML = '';
             }
         } else {
-            alert("API error");
+            // alert("API error");
             location.href = '/#';
         }
 
@@ -473,7 +483,7 @@ async function updateTournamentInfo(arr) {
         }
     } else {
         const error = await response.json();
-        alert(error);
+        // alert(error);
     }
 
     return { player, tournament_id };

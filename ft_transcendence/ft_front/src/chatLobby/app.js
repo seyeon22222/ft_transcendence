@@ -1,8 +1,8 @@
 import router from "../../base/router.js"
-import { check_login } from "../utilities.js"
+import { check_login, delete_back_show, showModal } from "../utilities.js"
 
 export async function chatLobby_js() {
-
+    delete_back_show();
     // set style
     const style = document.getElementById("style");
     style.innerHTML = set_style();
@@ -88,16 +88,18 @@ export async function chatLobby_js() {
 
             if (res.ok) {
                 const data = await res.json();
-                alert(`Room ${data.name} is created!`);
-                // location.href = '/#chatLobby';
-                router();
+				const modal = document.querySelector('.modal');
+				const newModal = new bootstrap.Modal(modal);
+				const modalBody = document.querySelector('.modal .modal-body p');
+				modalBody.innerHTML = `<span>'${data.name}' </span><span data-translate="noti">${window.lang[langNow].chatlobby.noti}</span>`;
+				newModal.show();
+				modal.addEventListener('hidden.bs.modal', function () {
+					router();
+				});
             } else {
-                const data = await res.json();
-                alert(data.error);
+				showModal('chatlobby', 'err');
             }
         })
-		// setLanguage(document.getElementById("languageSelector").value, "chatlobby");
-
     } catch(error) {
         console.error('chatLobby.app Error occurs : ', error);
     }

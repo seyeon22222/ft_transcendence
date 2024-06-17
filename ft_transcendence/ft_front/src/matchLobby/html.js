@@ -36,5 +36,21 @@ export function matchLobby_html() {
                 <!-- 여기에 각 match 추가 -->
             </div>
         </div>
+
+		<div class="modal_container" id="modal_container">
+			<div class="modal" tabindex="-1" style="display: none; color: black;">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title"></h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
+						</div>
+						<div class="modal-body">
+							<p></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
     `;
 }

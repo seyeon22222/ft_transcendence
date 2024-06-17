@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 import uuid
 
-# 유저 정보
 class MyUser(AbstractUser):
     user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(unique=True)
@@ -13,7 +12,6 @@ class MyUser(AbstractUser):
     def __str__(self):
         return str(self.username)
 
-# 유저 블록 정보
 class Block(models.Model):
     blocker = models.ForeignKey(MyUser, related_name='blocker', on_delete=models.CASCADE)
     blocked = models.ForeignKey(MyUser, related_name='blocked', on_delete=models.CASCADE)
@@ -25,7 +23,6 @@ class Block(models.Model):
     def __str__(self):
         return f'{self.blocker} blocks {self.blocked}'
     
-# 게임 스탯
 class GameStat(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='game_stat')
     win_count = models.IntegerField(default=0) 
@@ -33,7 +30,6 @@ class GameStat(models.Model):
     win_rate = models.IntegerField(default=0)
     reflect_rate = models.IntegerField(default=0)
 
-# 매치 정보  
 class MatchInfo(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='match_info')
     match_date = models.DateTimeField()

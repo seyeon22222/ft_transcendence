@@ -15,5 +15,20 @@ export function chat_html() {
                 <button type="submit" class="px-5 py-3 rounded-xl text-white bg-teal-600 hover:bg-teal-700" id="chat-message-button">Submit</button>
             </form>
         </div>
+		<div class="modal_container" id="modal_container">
+			<div class="modal" tabindex="-1" style="display: none; color: black;">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title"></h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
+						</div>
+						<div class="modal-body">
+							<p></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
     `;
 }

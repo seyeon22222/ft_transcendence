@@ -1,4 +1,4 @@
-
+import { check_language } from '../src/utilities.js'
 
 function createInvitePopup() {
     const popupContainer = document.getElementById('popupContainer');
@@ -54,8 +54,10 @@ export async function initializeWebsocket() {
 
         window.i_socket.onmessage = function (e) {
             const data = JSON.parse(e.data);
-            console.log("message", data);
-            const message = data.message;
+			const user_lang = document.getElementById('languageSelector').value;
+            // console.log("message", data);
+			// console.log(user_lang);
+			const message = `${window.lang[user_lang].message.match_complete} ${data.message}`;
             const player1 = data.player1;
             const player2 = data.player2;
             const g_type = data.g_type;
@@ -86,8 +88,9 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
     let remaintimer = 5;
     const intervalId = setInterval(() => {
         const button_text = document.getElementById('acceptBtn');
+		const user_lang = document.getElementById('languageSelector').value;
         if (remaintimer > 0) {
-            button_text.textContent = `수락(${remaintimer})`;
+            button_text.textContent = `${window.lang[user_lang].message.accept}(${remaintimer})`;
             remaintimer--;
         } else {
             clearInterval(intervalId); // 타이머 중지

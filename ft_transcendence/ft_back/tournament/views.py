@@ -1,17 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch, multimatchmaking
-from .serializers import tournamentSerializer, tournamentParticipantSerializer, tournamentMatchSerializer, matchSerializer, MultiSerializer
-from ft_user.serializers import UserSerializer
-from django.shortcuts import get_object_or_404
-from ft_user.models import MyUser, GameStat, MatchInfo
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-import requests
+from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch, multimatchmaking
+from .serializers import tournamentSerializer, tournamentMatchSerializer, matchSerializer, MultiSerializer, CustomSerializer
+from ft_user.models import MyUser, GameStat, MatchInfo
+from django.shortcuts import get_object_or_404
 from ft_user.utils import validate_input
-from datetime import datetime
-import hashlib
 from .utils import handle_tournamentMatch_result
 
 class tournamentCreateView(APIView):
@@ -72,30 +68,26 @@ class addTournamentPlayer(APIView):
         user_id = request.data.get('user_id')
         nickname = request.data.get('nickname')
         index = request.data.get('index')
-        level = request.data.get('level')  # 추가된 level 필드
+        level = request.data.get('level')
 
-        # 사용자 검증
         try:
             user = MyUser.objects.get(user_id=user_id)
         except MyUser.DoesNotExist:
-            return Response({'error': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 중복 신청 방지
         if tournamentParticipant.objects.filter(tournament=intournament, player=user).exists():
             participant = tournamentParticipant.objects.get(tournament=intournament, player=user)
             if level:
                 participant.level = level
                 participant.save()
-                return Response({'message': f'{nickname} is now at level {level} due to a bye.'}, status=status.HTTP_200_OK)
-            return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_200_OK)
+            return Response({'message': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 토너먼트 참가자 생성
         tournament_participant = tournamentParticipant(tournament=intournament, player=user, nickname=nickname, index=index)
         if level:
             tournament_participant.level = level
         tournament_participant.save()
 
-        # 웹소켓을 통해 업데이트 정보 전송
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f'tournament_{tournament_id}',
@@ -121,7 +113,6 @@ class matchDetailView(APIView):
         serializer = matchSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-# chanwopa, API for tournamentMatch
 class tournamentMatchView(APIView):
 
     def get(self, request):
@@ -129,7 +120,6 @@ class tournamentMatchView(APIView):
         serializer = tournamentMatchSerializer(tournament_matches, many=True)
         return Response(serializer.data)
 
-# chanwopa, API for specific tournamentMatch
 class tournamentMatchDetailView(APIView):
     
     def get(self, request, player1, player2, tournament_id):
@@ -184,7 +174,6 @@ class MatchRequestView(APIView):
 
         return Response({'message': 'Match request sent'}, status=status.HTTP_201_CREATED)
 
-# chanwopa, create tournament Match object with given info
 class TournamentMatchRequestView(APIView):
     def post(self, request):
         apply_user_id = request.data.get('apply_user')
@@ -208,7 +197,6 @@ class TournamentMatchRequestView(APIView):
             player2=accept_user,
         )
 
-        # 웹소켓을 통해 업데이트 정보 전송 - 토너먼트 참여중이지 않지만 방에 들어온 유저의 화면 업데이트를 위함
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f'tournament_{tournament_id}',
@@ -241,7 +229,7 @@ class MatchResponseView(APIView):
 
         if response == 'accept':
             match.status = 'accepted'
-            match.match_date = start_date  # 또는 다른 매칭 날짜를 설정
+            match.match_date = start_date
             match.save()
             return Response({'message': 'Match accepted'}, status=status.HTTP_200_OK)
         elif response == 'reject':
@@ -257,17 +245,15 @@ class MatchmakingView(APIView):
         user = get_object_or_404(MyUser, username=current_username)
         pending_matchmaking = matchmaking.objects.first()
 
-        # 이미 matchmaking 중인 user가 존재
         if pending_matchmaking:
             opponent_user = pending_matchmaking.pending_player
             opponent_username = opponent_user.username
 
             pending_matchmaking.delete()
 
-            # matchmaking 중인 유저가 현재 유저와 동일할경우, matchmaking 취소
             if opponent_username == current_username:
-                return Response({'message': "canceled matchmaking"}, status=status.HTTP_200_OK)
-            else: # 서로 다를경우, 새로운 매치 생성 (status = active, 나중에 is_active를 false로 바꿔줘야함)
+                return Response({'message': "cancel"}, status=status.HTTP_200_OK)
+            else:
                 match_name = f"{current_username} vs {opponent_username}"
                 match = Match.objects.create(
                     name=match_name,
@@ -276,14 +262,14 @@ class MatchmakingView(APIView):
                     requester=user,
                     status='accepted',
                     is_active=True,
-                    match_date=startDate, # 또는 다른 매칭 날짜 설정
+                    match_date=startDate,
                 )
                 self.matchmakingInvite(match.id, user, opponent_user)
-                return Response({'message': "new match created!"}, status=201)
-        else: # 현재 유저를 매치메이킹에 등록
+                return Response({'message': "new match created!"}, status=301)
+        else:
             new_matchmaking = matchmaking(pending_player = user)
             new_matchmaking.save()
-            return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
+            return Response({'message': "enroll"}, status=status.HTTP_200_OK)
     
     def matchmakingInvite(self, match_id, player1, player2):
         str_player1 = str(player1.user_id)
@@ -293,7 +279,7 @@ class MatchmakingView(APIView):
             f'user_{str_player1}',
             {
                 'type': 'message',
-                'message': f'Invite to match {player1.username} vs {player2.username}.',
+                'message': f'{player1.username} vs {player2.username}.',
                 'player1' : str_player1,
                 'player2' : str_player2,
                 'g_type' : 'm',
@@ -305,7 +291,7 @@ class MatchmakingView(APIView):
             f'user_{str_player2}',
             {
                 'type': 'message',
-                'message': f'Invite to match {player1.username} vs {player2.username}.',
+                'message': f'{player1.username} vs {player2.username}.',
                 'player1' : str_player1,
                 'player2' : str_player2,
                 'g_type' : 'm',
@@ -324,46 +310,42 @@ class multiMatchmakingView(APIView):
         if pending_matchmaking:
             opponent_user = pending_matchmaking.pending_player
 
-            # 방 생성자가 다시 누를 경우 매치메이킹 종료
             if opponent_user == user:
                 pending_matchmaking.delete()
-                return Response({'message': "canceled multimatchmaking"}, status=status.HTTP_200_OK)
+                return Response({'message': "cancel"}, status=status.HTTP_200_OK)
 
-            # 해당 플레이어가 이미 대기 중인 경우 매치메이킹 종료
             if self._remove_player_if_exists(pending_matchmaking, user):
-                return Response({'message': "player removed from matchmaking"}, status=status.HTTP_200_OK)
+                return Response({'message': "leave"}, status=status.HTTP_200_OK)
 
-            # 대기 중인 슬롯에 플레이어 등록
             if not pending_matchmaking.await_player1:
                 pending_matchmaking.await_player1 = user
                 pending_matchmaking.save()
-                return Response({'message': 'player2 enrolled'}, status=status.HTTP_200_OK)
+                return Response({'message': 'player2'}, status=status.HTTP_200_OK)
             elif not pending_matchmaking.await_player2:
                 pending_matchmaking.await_player2 = user
                 pending_matchmaking.save()
-                return Response({'message': 'player3 enrolled'}, status=status.HTTP_200_OK)
+                return Response({'message': 'player3'}, status=status.HTTP_200_OK)
             elif not pending_matchmaking.await_player3:
                 pending_matchmaking.await_player3 = user
                 pending_matchmaking.save()
                 match = MultiMatch.objects.create(
-                    # name=f'2:2 Match {pending_matchmaking.id}',
                     player1=pending_matchmaking.pending_player,
                     player2=pending_matchmaking.await_player1,
                     player3=pending_matchmaking.await_player2,
                     player4=pending_matchmaking.await_player3,
                     is_active=True,
-                    match_date=startDate,  # 또는 다른 매칭 날짜 설정
+                    match_date=startDate,
                 )
                 match.name = f'2:2 Match {match.id}'
                 match.save()
                 pending_matchmaking.delete()
                 self.multimatchmakingInvite(match.name, match.id, match.player1, match.player2, match.player3, match.player4)
-                return Response({'message': "new 2:2 match created!"}, status=201)
+                return Response({'message': "new 2:2 match created!"}, status=301)
 
         else:
             new_matchmaking = multimatchmaking(pending_player=user)
             new_matchmaking.save()
-            return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
+            return Response({'message': "make"}, status=status.HTTP_200_OK)
 
     def _remove_player_if_exists(self, pending_matchmaking, user):
         if pending_matchmaking.await_player1 == user:
@@ -402,9 +384,6 @@ class tournamentInviteView(APIView):
         intournament = get_object_or_404(tournament, pk=tournament_id)
         player1 = request.data.get("player1")
         player2 = request.data.get("player2")
-
-        # debug
-        print(f'player1: {player1}, player2: {player2}')
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
@@ -492,7 +471,6 @@ class tournamentHash(APIView):
             player2_id = player2
             
             hash_url = f"{player1_id}_{player2_id}_{tournament_id}"
-            # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
             return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error in matchGetHash: {e}")
@@ -509,7 +487,6 @@ class multiMatchHash(APIView):
             player4_id = player4
             
             hash_url = f"{player1_id}_{player2_id}_{player3_id}_{player4_id}_{match_id}"
-            # TODO 토너먼트 안에다가 hash값이 어떤 인덱스인지 저장하는 로직
             return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error in matchGetHash: {e}")
@@ -530,7 +507,6 @@ class matchResultView(APIView):
         match.is_active = is_active
         match.save()
 
-        # 플레이어1과 플레이어2의 GameStat 가져오기 또는 생성하기
         try:
             player1_stat = GameStat.objects.get(user=match.player1)
         except GameStat.DoesNotExist:
@@ -541,7 +517,6 @@ class matchResultView(APIView):
         except GameStat.DoesNotExist:
             player2_stat = GameStat.objects.create(user=match.player2)
 
-        # 플레이어1과 플레이어2의 MatchInfo 가져오기 또는 생성하기
         try:
             player1_matchInfo = MatchInfo.objects.get(user=match.player1)
         except MatchInfo.DoesNotExist:
@@ -566,19 +541,15 @@ class matchResultView(APIView):
             player2_matchInfo.match_result = "Win"
             player1_matchInfo.match_result = "Lose"
 
-        # 승률 업데이트
         player1_stat.win_rate = (player1_stat.win_count / (player1_stat.win_count + player1_stat.defeat_count)) * 100
         player2_stat.win_rate = (player2_stat.win_count / (player2_stat.win_count + player2_stat.defeat_count)) * 100
 
-        # 반영된 정보 저장
         player1_stat.save()
         player2_stat.save()
         player1_matchInfo.save()
         player2_matchInfo.save()
 
         return Response(status=status.HTTP_200_OK)
-    
-
 
 class multimatchResultView(APIView):
 
@@ -613,7 +584,6 @@ class multimatchResultView(APIView):
         except GameStat.DoesNotExist:
             player4_stat = GameStat.objects.create(user=match.player4)
 
-        # 플레이어1과 플레이어2의 MatchInfo 가져오기 또는 생성하기
         try:
             player1_matchInfo = MatchInfo.objects.get(user=match.player1)
         except MatchInfo.DoesNotExist:
@@ -660,13 +630,11 @@ class multimatchResultView(APIView):
             player1_matchInfo.match_result = "Lose"
             player3_matchInfo.match_result = "Lose"
 
-        # 승률 업데이트
         player1_stat.win_rate = (player1_stat.win_count / (player1_stat.win_count + player1_stat.defeat_count)) * 100
         player2_stat.win_rate = (player2_stat.win_count / (player2_stat.win_count + player2_stat.defeat_count)) * 100
         player3_stat.win_rate = (player3_stat.win_count / (player3_stat.win_count + player3_stat.defeat_count)) * 100
         player4_stat.win_rate = (player4_stat.win_count / (player4_stat.win_count + player4_stat.defeat_count)) * 100
 
-        # 반영된 정보 저장
         player1_stat.save()
         player2_stat.save()
         player3_stat.save()
@@ -677,99 +645,26 @@ class multimatchResultView(APIView):
         player4_matchInfo.save()
 
         return Response(status=status.HTTP_200_OK)
-    
-
-class MultiMatchApplyView(APIView):
-
-    def post(self, request, multimatch_id):
-        match = get_object_or_404(MultiMatch, pk=multimatch_id)
-        user_id = request.data.get('user_id')
-        nickname = request.data.get('nickname')
-
-        # 사용자 검증
-        try:
-            user = MyUser.objects.get(user_id=user_id)
-        except MyUser.DoesNotExist:
-            return Response({'error': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # 중복 신청 확인
-        if match.player1 == user or match.player2 == user or match.player3 == user or match.player4 == user:
-            return Response({'message': '중복 신청이 불가능합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # 인원 꽉 찼는지 확인
-        if all([match.player1, match.player2, match.player3, match.player4]):
-            return Response({'message': '인원이 꽉 찼습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # 첫 번째 빈 슬롯에 사용자 추가
-        if match.player1 is None:
-            match.player1 = user
-        elif match.player2 is None:
-            match.player2 = user
-        elif match.player3 is None:
-            match.player3 = user
-        elif match.player4 is None:
-            match.player4 = user
-
-        # 변경사항 저장
-        match.save()
-
-        return Response({'message': '참가 신청 완료'}, status=status.HTTP_200_OK)
-    
+        
 class MultiMatchListView(APIView):
 
     def get(self, request):
         multiMatch = MultiMatch.objects.all()
         serializer = MultiSerializer(multiMatch, many=True)
         return Response(serializer.data)
-    
 
-    # 필요가 없을 것 같음
-    def post(self, request):
-        multiMatch = request.data.get('multiMatch')
-        username = request.data.get('username')
-        # apply_user = request.data.get('apply_user')
-        print(request.data)
-        print(username)
-        if not multiMatch or not username:
-            return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-        valid, message = validate_input(multiMatch)
-        if not valid:
-            return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            apply_user = MyUser.objects.get(user_id=username)
-        except MyUser.DoesNotExist:
-            return Response({'error': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if MultiMatch.objects.filter(name=multiMatch).exists():
-            return Response({'error': '중복된 방이 있습니다'}, status=status.HTTP_400_BAD_REQUEST)
-
-        match = MultiMatch.objects.create(
-            name=multiMatch,
-            requester = apply_user,
-            player1 = None,
-            player2 = None,
-            player3 = None,
-            player4 = None,
-        )
-
-        serializer = MultiSerializer(match)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    
 class MultiMatchDetailView(APIView):
     def get(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
         serializer = MultiSerializer(match)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
+        return Response(serializer.data, status=status.HTTP_200_OK)    
 
 class tournamentDetailView(APIView):
     def get(self, request, tournament_id):
         match = get_object_or_404(tournamentMatch, id=tournament_id)
         serializer = tournamentMatchSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
 class tournamentMatchResultView(APIView):
     def post(self, request, tournament_id):
         tournament_instance = get_object_or_404(tournament, pk=tournament_id)
@@ -793,7 +688,6 @@ class tournamentMatchResultView(APIView):
         else:
             return Response({'error': 'Invalid match result'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # 2. participant level_choice update, completed_match + 1, check tournament complete, create and invite new match
         tournament_participants_count = tournament_instance.participants.count()
         tournament_completed_matches = tournament_instance.completed_matches
 
@@ -801,15 +695,11 @@ class tournamentMatchResultView(APIView):
         if result == -1:
             return Response({'error': 'Error while handling tournament result'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 3. tournament match data change
         tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
         tournament_match.match_date = match_date
         tournament_match.match_result = match_result
         tournament_match.save()
 
-        # 4. (선택) GameStat, MatchInfo, Player 승률 업데이트
-
-        # 7. (선택) tournament websocket에 메시지 전송해서 onmessage 호출로 대진표 update
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f'tournament_{tournament_id}',
@@ -820,3 +710,108 @@ class tournamentMatchResultView(APIView):
         )
 
         return Response({'message': 'Tournament match result updated'}, status=status.HTTP_200_OK)
+
+
+class updateMatchCustom(APIView):
+     def get(self, request, match_id):
+        # match_id를 사용하여 해당 Match 객체 가져오기
+        match = get_object_or_404(Match, id=match_id)
+
+        # match.custom.all()을 통해 연결된 모든 custom 객체 가져오기
+        custom_objects = match.custom.all()
+        
+        # Serializer를 사용하여 JSON 형식으로 직렬화
+        serializer = CustomSerializer(custom_objects, many=True)
+        
+        # 직렬화된 데이터를 Response로 반환
+        return Response(serializer.data, status=status.HTTP_200_OK)
+     
+     def post(self, request, match_id):
+        # match_id를 사용하여 해당 Match 객체 가져오기
+        match = get_object_or_404(Match, id=match_id)
+        match.r = request.data.get('r', match.r)
+        match.g = request.data.get('g', match.g)  
+        match.b = request.data.get('b', match.b)
+        match.x = request.data.get('x', match.x) 
+        match.y = request.data.get('y', match.y)
+        match.z = request.data.get('z', match.z) 
+        match.w = request.data.get('w', match.w)
+        match.h = request.data.get('h', match.h)  
+        # 다른 필드들도 필요에 따라 추가로 업데이트
+        
+        # 변경된 내용 저장
+        match.save()
+        return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
+
+class updateTournamentCustom(APIView):
+   def get(self, request, player1, player2, tournament_id):
+        try:
+            player1 = MyUser.objects.get(user_id=player1)
+            player2 = MyUser.objects.get(user_id=player2)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            match = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        # match.custom.all()을 통해 연결된 모든 custom 객체 가져오기
+        custom_objects = match.custom.all()
+        
+        # Serializer를 사용하여 JSON 형식으로 직렬화
+        serializer = CustomSerializer(custom_objects, many=True)
+        
+        # 직렬화된 데이터를 Response로 반환
+        return Response(serializer.data, status=status.HTTP_200_OK)
+   
+
+   def post(self, request, player1, player2, tournament_id):
+        try:
+            player1 = MyUser.objects.get(user_id=player1)
+            player2 = MyUser.objects.get(user_id=player2)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            match = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        match.r = request.data.get('r', match.r)
+        match.g = request.data.get('g', match.g)  
+        match.b = request.data.get('b', match.b)
+        match.x = request.data.get('x', match.x) 
+        match.y = request.data.get('y', match.y)
+        match.z = request.data.get('z', match.z) 
+        match.w = request.data.get('w', match.w)
+        match.h = request.data.get('h', match.h)  
+    
+        # 변경된 내용 저장
+        match.save()
+        return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
+
+class updateMultiCustom(APIView):
+    def get(self, request, multimatch_id):
+        match = get_object_or_404(MultiMatch, id=multimatch_id)
+        custom_objects = match.custom.all()
+        
+        # Serializer를 사용하여 JSON 형식으로 직렬화
+        serializer = CustomSerializer(custom_objects, many=True)
+        
+        # 직렬화된 데이터를 Response로 반환
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, multimatch_id):
+        match = get_object_or_404(MultiMatch, id=multimatch_id)
+        match.r = request.data.get('r', match.r)
+        match.g = request.data.get('g', match.g)  
+        match.b = request.data.get('b', match.b)
+        match.x = request.data.get('x', match.x) 
+        match.y = request.data.get('y', match.y)
+        match.z = request.data.get('z', match.z) 
+        match.w = request.data.get('w', match.w)
+        match.h = request.data.get('h', match.h)  
+    
+        # 변경된 내용 저장
+        match.save()
+        return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)

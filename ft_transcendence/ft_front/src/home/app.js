@@ -2,14 +2,17 @@ import router from '../../base/router.js'
 import { check_login } from '../utilities.js'
 import { formatDateTime } from "../info/info_func.js";
 import { check_socket } from '../../base/totalSocket.js';
+import { delete_back_show, showModal } from '../utilities.js';
 
 let i_socket;
+let user_lang;
 
 export async function home_js() {
     if (i_socket) {
         i_socket.close();
         i_socket = null;
     }
+    delete_back_show();
     try {
         // set css style
         const style = document.getElementById("style");
@@ -69,8 +72,8 @@ function matchmaking_button_eventhandler(button) {
                 });
                 if (matchmaking_response.ok) {
                     const result = await matchmaking_response.json();
-                    console.log(result.message);
-                }
+					showModal('home', `matchmaking_${result.message}_noti`);
+				}
             }
         } catch (error) {
             console.error(error);
@@ -108,7 +111,7 @@ function mulmatchmaking_button_eventhandler(button) {
                 });
                 if (matchmaking_response.ok) {
                     const result = await matchmaking_response.json();
-                    console.log(result.message);
+					showModal('home', `multi_${result.message}_noti`);
                 }
             }
         } catch (error) {
@@ -132,14 +135,15 @@ function logout_button_eventhandler(button) {
             });
 
             if (response.ok) {
-                const data = await response.json();
-                alert(data.message);
-                check_socket();
-                router();
+				const modal = document.querySelector('.modal');
+				showModal('home', 'logout_noti');
+				modal.addEventListener('hidden.bs.modal', function () {
+					check_socket();
+                	router();
+				})
             } else {
-                const error = await response.json();
-                alert(error.message);
-            }
+				showModal('home', 'logout_err');
+			}
 
         } catch (error) {
             console.error('로그아웃 중 오류 발생 : ', error);
@@ -208,5 +212,9 @@ function home_style_html() {
     .buttons-container button:hover {
         background-color: #555; /* Slightly lighter gray on hover */
     }
+	.modal {
+		color: black;
+		display: none;
+	}
     `;
 }

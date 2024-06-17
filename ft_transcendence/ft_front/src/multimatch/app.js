@@ -26,7 +26,7 @@ export async function multiMatch_js(hash) {
 		multimatch_render(data);
 	} else {
 		const error = await response.json();
-		alert(error);
+		// alert(error);
 	}
 
 }

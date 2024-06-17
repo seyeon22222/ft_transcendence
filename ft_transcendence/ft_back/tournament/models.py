@@ -38,7 +38,7 @@ class tournamentParticipant(models.Model):
 
     tournament = models.ForeignKey(tournament, on_delete=models.CASCADE, related_name='participants')
     player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player')
-    nickname = models.CharField(max_length=100)  # 별칭 필드 추가
+    nickname = models.CharField(max_length=100)
     level = models.IntegerField(choices=level_choice, default=0)
     index = models.IntegerField(default=0)
 
@@ -51,7 +51,7 @@ class tournamentMatch(models.Model):
     match_date = models.DateTimeField(null=True)
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1_a')
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2_a')
-    match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
+    match_result = models.CharField(default='', max_length=1)
     custom = models.ManyToManyField(custom, related_name='t_cutom')
 
     def __str__(self):
@@ -69,8 +69,8 @@ class Match(models.Model):
     match_date = models.DateTimeField(null=True)
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1')
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2')
-    match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
-    is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
+    match_result = models.CharField(default='', max_length=1)
+    is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requester')
     custom = models.ManyToManyField(custom, related_name='m_custom')
@@ -101,11 +101,9 @@ class MultiMatch(models.Model):
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2_matches', null=True, blank=True)
     player3 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player3_matches', null=True, blank=True)
     player4 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player4_matches', null=True, blank=True)
-    match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
-    is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
+    match_result = models.CharField(default='', max_length=1)
+    is_active = models.BooleanField(default=True)
     custom = models.ManyToManyField(custom, related_name='mul_custom')
-    # requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requested_matches')
 
     def __str__(self):
         return f"{self.player1.username}, {self.player2.username}, {self.player3.username}, {self.player4.username} in {self.name}"
-

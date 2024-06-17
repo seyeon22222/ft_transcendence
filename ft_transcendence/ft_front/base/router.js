@@ -26,6 +26,8 @@ import { game_t_js } from "../src/game/app_t.js";
 import { game_multi_js } from "../src/game/app_multi.js";
 import { multiMatch_js } from "../src/multimatch/app.js";
 import { multiMatch_html } from "../src/multimatch/html.js";
+import { custom_html } from "../src/custom/html.js"
+import { custom_view } from "../src/custom/app.js" 
 
 const routes = {
   "/": [home_html, home_js],
@@ -43,6 +45,7 @@ const routes = {
   "/gamet": [game_html, game_t_js],
   "/gamemulti": [game_html, game_multi_js],
   "/multi": [multiMatch_html, multiMatch_js],
+  "/custom" :[custom_html, custom_view],
 };
 
 // 의미: 현재 URL 해시(location.hash)를 분석하여 적절한 페이지를 렌더링하는 함수입니다.
