@@ -81,7 +81,7 @@ function match_render(data) {
   if (data.match_result !== null) {
     const winner = document.getElementById("final");
     if (winner) {
-      let winner_name;
+      let winner_name = data.match_result;
       if (data.match_result == 1)
         winner_name = player1_name;
       else if (data.match_result == 2)
