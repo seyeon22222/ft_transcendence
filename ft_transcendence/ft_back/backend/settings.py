@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv("S_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [os.getenv("GUEST_HOST")]
 
 
 # Application definition
@@ -147,7 +147,7 @@ CHANNEL_LAYERS = {
     }
 }
 
-CSRF_TRUSTED_ORIGINS = ['https://127.0.0.1:8000', 'https://10.18.223.53:8000', "https://10.19.212.14:8000"]
+CSRF_TRUSTED_ORIGINS = [os.getenv("LOCAL_HOST"),os.getenv("TAEHYEON_42SEOUL"),os.getenv("TAEHYEON_42GUEST")]
 # CORS_ALLOWED_ORIGINS = ['https://127.0.0.1:8000']
 CORS_ORIGIN_ALLOW_ALL = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

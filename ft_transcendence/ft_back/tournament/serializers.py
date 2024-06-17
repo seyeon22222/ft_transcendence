@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import tournament, tournamentMatch, tournamentParticipant, Match, MultiMatch
+from .models import tournament, tournamentMatch, tournamentParticipant, Match, MultiMatch, custom
 
 class tournamentParticipantSerializer(serializers.ModelSerializer):
 
@@ -153,3 +153,8 @@ class MultiSerializer(serializers.ModelSerializer):
             return obj.match_result
         else:
             return None
+        
+class CustomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = custom
+        fields = ('id', 'r', 'g', 'b', 'x', 'y', 'z', 'w', 'h')

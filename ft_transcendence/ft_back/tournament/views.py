@@ -4,7 +4,7 @@ from rest_framework import status
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch, multimatchmaking
-from .serializers import tournamentSerializer, tournamentMatchSerializer, matchSerializer, MultiSerializer
+from .serializers import tournamentSerializer, tournamentMatchSerializer, matchSerializer, MultiSerializer, CustomSerializer
 from ft_user.models import MyUser, GameStat, MatchInfo
 from django.shortcuts import get_object_or_404
 from ft_user.utils import validate_input
@@ -710,3 +710,108 @@ class tournamentMatchResultView(APIView):
         )
 
         return Response({'message': 'Tournament match result updated'}, status=status.HTTP_200_OK)
+
+
+class updateMatchCustom(APIView):
+     def get(self, request, match_id):
+        # match_id를 사용하여 해당 Match 객체 가져오기
+        match = get_object_or_404(Match, id=match_id)
+
+        # match.custom.all()을 통해 연결된 모든 custom 객체 가져오기
+        custom_objects = match.custom.all()
+        
+        # Serializer를 사용하여 JSON 형식으로 직렬화
+        serializer = CustomSerializer(custom_objects, many=True)
+        
+        # 직렬화된 데이터를 Response로 반환
+        return Response(serializer.data, status=status.HTTP_200_OK)
+     
+     def post(self, request, match_id):
+        # match_id를 사용하여 해당 Match 객체 가져오기
+        match = get_object_or_404(Match, id=match_id)
+        match.r = request.data.get('r', match.r)
+        match.g = request.data.get('g', match.g)  
+        match.b = request.data.get('b', match.b)
+        match.x = request.data.get('x', match.x) 
+        match.y = request.data.get('y', match.y)
+        match.z = request.data.get('z', match.z) 
+        match.w = request.data.get('w', match.w)
+        match.h = request.data.get('h', match.h)  
+        # 다른 필드들도 필요에 따라 추가로 업데이트
+        
+        # 변경된 내용 저장
+        match.save()
+        return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
+
+class updateTournamentCustom(APIView):
+   def get(self, request, player1, player2, tournament_id):
+        try:
+            player1 = MyUser.objects.get(user_id=player1)
+            player2 = MyUser.objects.get(user_id=player2)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            match = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        # match.custom.all()을 통해 연결된 모든 custom 객체 가져오기
+        custom_objects = match.custom.all()
+        
+        # Serializer를 사용하여 JSON 형식으로 직렬화
+        serializer = CustomSerializer(custom_objects, many=True)
+        
+        # 직렬화된 데이터를 Response로 반환
+        return Response(serializer.data, status=status.HTTP_200_OK)
+   
+
+   def post(self, request, player1, player2, tournament_id):
+        try:
+            player1 = MyUser.objects.get(user_id=player1)
+            player2 = MyUser.objects.get(user_id=player2)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            match = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        match.r = request.data.get('r', match.r)
+        match.g = request.data.get('g', match.g)  
+        match.b = request.data.get('b', match.b)
+        match.x = request.data.get('x', match.x) 
+        match.y = request.data.get('y', match.y)
+        match.z = request.data.get('z', match.z) 
+        match.w = request.data.get('w', match.w)
+        match.h = request.data.get('h', match.h)  
+    
+        # 변경된 내용 저장
+        match.save()
+        return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
+
+class updateMultiCustom(APIView):
+    def get(self, request, multimatch_id):
+        match = get_object_or_404(MultiMatch, id=multimatch_id)
+        custom_objects = match.custom.all()
+        
+        # Serializer를 사용하여 JSON 형식으로 직렬화
+        serializer = CustomSerializer(custom_objects, many=True)
+        
+        # 직렬화된 데이터를 Response로 반환
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, multimatch_id):
+        match = get_object_or_404(MultiMatch, id=multimatch_id)
+        match.r = request.data.get('r', match.r)
+        match.g = request.data.get('g', match.g)  
+        match.b = request.data.get('b', match.b)
+        match.x = request.data.get('x', match.x) 
+        match.y = request.data.get('y', match.y)
+        match.z = request.data.get('z', match.z) 
+        match.w = request.data.get('w', match.w)
+        match.h = request.data.get('h', match.h)  
+    
+        # 변경된 내용 저장
+        match.save()
+        return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
