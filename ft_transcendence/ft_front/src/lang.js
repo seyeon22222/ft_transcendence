@@ -275,6 +275,13 @@ window.lang = {
 			nick_input: "Wirte nickname here",
 			apply: "Tournament Apply",
 			start: "Tournament Start",
+			nick_noti: "Please enter your nickname",
+            already_noti: "This tournament has already started",
+            over_noti: "The maximum number of players(8) has been exceeded",
+            ready_noti: "Your registration is complete",
+            dupready_noti: "You can't make a duplicate application",
+            under_noti: "There are not enough participants in the tournament",
+            loading_err: "Failed to load tournament information",
 		},
 		message: {
 			match_complete: "Matching Completed: ",
