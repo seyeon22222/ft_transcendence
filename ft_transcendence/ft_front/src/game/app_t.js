@@ -134,7 +134,7 @@ class Main {
 
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
-        // is_active = 0;
+        is_active = 0;
         console.log(
           "===========href=========",
           `/#tournament/${get_list_hash[get_list_hash.length - 1]}`
@@ -160,10 +160,10 @@ class Main {
         }
       if (is_active == 0) {
         let get_list_hash = get_hash.split("_");
-        console.log(`/match/tornamentview/${get_list_hash[get_list_hash.length - 1]}`);
         let match_id = get_list_hash[get_list_hash.length - 1];
+        console.log(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`);
         const csrftoken_t = Cookies.get("csrftoken");
-        const response_t = await fetch(`/match/tournamentview/${match_id}`, {
+        const response_t = await fetch(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
           //match serializer 반환값 가져옴
           method: "GET",
           headers: {
@@ -417,8 +417,8 @@ export async function game_t_js(hash) {
   let match_id = get_list_hash[get_list_hash.length - 1]; //
 
   const csrftoken = Cookies.get("csrftoken");
-  console.log("tournamentview/${match_id}", `/tournamentview/${match_id}`);
-  const response = await fetch(`/match/tournamentview/${match_id}`, {
+  console.log("t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}", `/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`);
+  const response = await fetch(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
     //match serializer 반환값 가져옴
     method: "GET",
     headers: {
