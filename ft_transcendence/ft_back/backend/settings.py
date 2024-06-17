@@ -128,12 +128,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-	'static/',	
-]
-
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -146,9 +140,10 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     }
 }
-
-CSRF_TRUSTED_ORIGINS = [os.getenv("LOCAL_HOST"),os.getenv("TAEHYEON_42SEOUL"),os.getenv("TAEHYEON_42GUEST")]
-# CORS_ALLOWED_ORIGINS = ['https://127.0.0.1:8000']
+LOCAL_HOST = os.getenv("LOCAL_HOST")
+TAEHYEON_42SEOUL = os.getenv("TAEHYEON_42SEOUL")
+TAEHYEON_42GUEST = os.getenv("TAEHYEON_42GUEST")
+CSRF_TRUSTED_ORIGINS = ["https://127.0.0.1:8000", TAEHYEON_42SEOUL, TAEHYEON_42GUEST]
 CORS_ORIGIN_ALLOW_ALL = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

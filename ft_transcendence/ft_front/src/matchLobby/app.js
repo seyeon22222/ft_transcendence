@@ -149,7 +149,7 @@ export async function matchLobby_view() {
 				});
             } else {
                 const data = await res.json();
-                // alert(data.error);
+                alert(data.error);
             }
         })
     } catch(error) {

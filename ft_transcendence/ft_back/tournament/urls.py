@@ -51,5 +51,5 @@ urlpatterns = [
     
     path('updatematchcustom/<int:match_id>',updateMatchCustom.as_view(), name="match_custom"),
     path('updatetournamentcustom/<uuid:player1><uuid:player2><int:tournament_id>', updateTournamentCustom.as_view(), name="tournament_custom"),
-    path('updatemulticustom/<int:multimatch_id>',updateMultiCustom.as_view(),match='multi_custom')
+    path('updatemulticustom/<int:multimatch_id>',updateMultiCustom.as_view(),name='multi_custom')
 ]
