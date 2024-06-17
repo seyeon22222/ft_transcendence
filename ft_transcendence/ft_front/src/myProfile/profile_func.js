@@ -1,5 +1,5 @@
 import { formatDateTime } from "../info/info_func.js";
-import { change_date } from "../utilities.js";
+import { change_date, showModal } from "../utilities.js";
 
 // 유저 프로필에서 변경사항 저장 버튼 이벤트 핸들러 등록
 export async function dataChange(changeData, csrftoken) {
@@ -38,12 +38,13 @@ export async function dataChange(changeData, csrftoken) {
 
       // 변경 성공시, 홈 화면으로 이동
       if (response.ok) {
-        const data = await response.json();
-        alert(data.message);
-        location.href = "/#";
+		const modal = document.querySelector('.modal');
+		showModal('profile', 'change_noti');
+		modal.addEventListener('hidden.bs.modal', function () {
+			location.href = "/#";
+		});
       } else {
-        const error = await response.json();
-        alert(error.message);
+		showModal('profile', 'change_err');
       }
     } catch (error) {
       console.log("Profile 변경 중 오류 발생 : ", error);

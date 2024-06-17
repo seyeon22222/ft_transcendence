@@ -78,7 +78,7 @@ class addTournamentPlayer(APIView):
         try:
             user = MyUser.objects.get(user_id=user_id)
         except MyUser.DoesNotExist:
-            return Response({'error': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 중복 신청 방지
         if tournamentParticipant.objects.filter(tournament=intournament, player=user).exists():
@@ -86,8 +86,8 @@ class addTournamentPlayer(APIView):
             if level:
                 participant.level = level
                 participant.save()
-                return Response({'message': f'{nickname} is now at level {level} due to a bye.'}, status=status.HTTP_200_OK)
-            return Response({'error': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_200_OK)
+            return Response({'message': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 토너먼트 참가자 생성
         tournament_participant = tournamentParticipant(tournament=intournament, player=user, nickname=nickname, index=index)
@@ -266,7 +266,7 @@ class MatchmakingView(APIView):
 
             # matchmaking 중인 유저가 현재 유저와 동일할경우, matchmaking 취소
             if opponent_username == current_username:
-                return Response({'message': "canceled matchmaking"}, status=status.HTTP_200_OK)
+                return Response({'message': "cancel"}, status=status.HTTP_200_OK)
             else: # 서로 다를경우, 새로운 매치 생성 (status = active, 나중에 is_active를 false로 바꿔줘야함)
                 match_name = f"{current_username} vs {opponent_username}"
                 match = Match.objects.create(
@@ -279,11 +279,11 @@ class MatchmakingView(APIView):
                     match_date=startDate, # 또는 다른 매칭 날짜 설정
                 )
                 self.matchmakingInvite(match.id, user, opponent_user)
-                return Response({'message': "new match created!"}, status=201)
+                return Response({'message': "new match created!"}, status=301)
         else: # 현재 유저를 매치메이킹에 등록
             new_matchmaking = matchmaking(pending_player = user)
             new_matchmaking.save()
-            return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
+            return Response({'message': "enroll"}, status=status.HTTP_200_OK)
     
     def matchmakingInvite(self, match_id, player1, player2):
         str_player1 = str(player1.user_id)
@@ -327,21 +327,21 @@ class multiMatchmakingView(APIView):
             # 방 생성자가 다시 누를 경우 매치메이킹 종료
             if opponent_user == user:
                 pending_matchmaking.delete()
-                return Response({'message': "canceled multimatchmaking"}, status=status.HTTP_200_OK)
+                return Response({'message': "cancel"}, status=status.HTTP_200_OK)
 
             # 해당 플레이어가 이미 대기 중인 경우 매치메이킹 종료
             if self._remove_player_if_exists(pending_matchmaking, user):
-                return Response({'message': "player removed from matchmaking"}, status=status.HTTP_200_OK)
+                return Response({'message': "leave"}, status=status.HTTP_200_OK)
 
             # 대기 중인 슬롯에 플레이어 등록
             if not pending_matchmaking.await_player1:
                 pending_matchmaking.await_player1 = user
                 pending_matchmaking.save()
-                return Response({'message': 'player2 enrolled'}, status=status.HTTP_200_OK)
+                return Response({'message': 'player2'}, status=status.HTTP_200_OK)
             elif not pending_matchmaking.await_player2:
                 pending_matchmaking.await_player2 = user
                 pending_matchmaking.save()
-                return Response({'message': 'player3 enrolled'}, status=status.HTTP_200_OK)
+                return Response({'message': 'player3'}, status=status.HTTP_200_OK)
             elif not pending_matchmaking.await_player3:
                 pending_matchmaking.await_player3 = user
                 pending_matchmaking.save()
@@ -358,12 +358,12 @@ class multiMatchmakingView(APIView):
                 match.save()
                 pending_matchmaking.delete()
                 self.multimatchmakingInvite(match.name, match.id, match.player1, match.player2, match.player3, match.player4)
-                return Response({'message': "new 2:2 match created!"}, status=201)
+                return Response({'message': "new 2:2 match created!"}, status=301)
 
         else:
             new_matchmaking = multimatchmaking(pending_player=user)
             new_matchmaking.save()
-            return Response({'message': "successfully enrolled in matchmaking"}, status=status.HTTP_200_OK)
+            return Response({'message': "make"}, status=status.HTTP_200_OK)
 
     def _remove_player_if_exists(self, pending_matchmaking, user):
         if pending_matchmaking.await_player1 == user:

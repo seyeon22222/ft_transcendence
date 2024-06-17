@@ -62,13 +62,9 @@ export function signup_js() {
 				modal.addEventListener('hidden.bs.modal', function () {
 					location.href = '/#';
 				});
-				// alert(data.message);
-				// location.href = '/#';
 			}
             else {
 				showModal('signup', 'err');
-                // const error = await response.json();
-				// alert(error.message);
 			}
         } catch (error) {
             console.error('회원가입 요청 중 오류 발생 : ', error);

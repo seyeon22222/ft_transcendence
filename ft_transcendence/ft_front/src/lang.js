@@ -13,6 +13,14 @@ window.lang = {
 			logout: "로그아웃",
 			logout_noti: "로그아웃 성공",
 			logout_err: "로그아웃 실패",
+			matchmaking_enroll_noti: "매치메이킹에 성공적으로 등록되었습니다",
+			matchmaking_cancel_noti: "매치메이킹을 취소했습니다",
+			multi_make_noti: "2:2 멀티매치를 생성했습니다(플레이어 대기중...)",
+			multi_cancel_noti: "멀티매치를 취소했습니다",
+			multi_leave_noti: "멀티매치를 나갔습니다",
+			multi_player2_noti: "멀티매치 플레이어2에 등록되었습니다",
+			multi_player3_noti: "멀티매치 플레이어3에 등록되었습니다",
+			multi_complete_noti: "2:2 멅티매칭 완료!",
 		},
 		login: {
 			login: "로그인",
@@ -49,9 +57,12 @@ window.lang = {
 			recent_match_res: "최근 매치 결과",
 			win: "승리",
 			lose: "패배",
+			none: "-",
 			match_list: "1:1 매치 초대",
 			accept: "승인",
 			reject: "거절",
+			change_noti: "유저 정보 변경 성공",
+			change_err: "유저 정보 변경 실패! 다시 시도해주세요",
 		},
 		info: {
 			title: "유저 프로필",
@@ -69,6 +80,7 @@ window.lang = {
 			recent_match_res: "최근 매치 결과",
 			win: "승리",
 			lose: "패배",
+			none: "-",
 			nouser_err: "해당 유저가 없습니다",
 			selfmatch_err: "자기 자신에게는 매치 신청이 불가능합니다",
 			selfchat_err: "자기 자신에게는 채팅 신청이 불가능합니다",
@@ -110,11 +122,19 @@ window.lang = {
 			create_btn: "생성",
 			two_match_list: "2:2 매치",
 			one_match_list: "1:1 매치",
+			tournament_create: "토너먼트 생성 완료",
 		},
 		tournament: {
 			nick_input: "별칭을 입력하세요",
 			apply: "토너먼트 신청",
 			start: "토너먼트 시작",
+			nick_noti: "닉네임을 입력해주세요",
+			already_noti: "해당 토너먼트는 이미 시작되었습니다",
+			over_noti: "최대 인원(8명)을 초과했습니다",
+			ready_noti: "참가 신청 완료",
+			dupready_noti: "중복 신청 할 수 없습니다",
+			under_noti: "토너먼트 참가자가 부족합니다",
+			loading_err: "토너먼트 정보를 불러오는데 실패했습니다",
 		},
 		message: {
 			match_complete: "매칭 완료: ",
@@ -181,6 +201,7 @@ window.lang = {
 			recent_match_res: "Recent Match Result",
 			win: "Win",
 			lose: "Lose",
+			none: "-",
 			match_list: "1:1 Match Invite List",
 			accept: "accept",
 			reject: "reject",
@@ -201,6 +222,7 @@ window.lang = {
 			recent_match_res: "Recent Match Results",
 			win: "Win",
 			lose: "Lose",
+			none: "-",
 		},
 		chat: {
 			msg: "Write Message Here"
@@ -279,6 +301,7 @@ window.lang = {
 			recent_match_res: "最近の試合結果",
 			win: "勝利",
 			lose: "負け",
+			none: "-",
 			match_list: "1:1試合招待リスト",
 			accept: "受諾",
 			reject: "拒否",
@@ -299,6 +322,7 @@ window.lang = {
 			recent_match_res: "最近の試合結果",
 			win: "勝利",
 			lose: "負け",
+			none: "-",
 		},
 		chat: {
 			msg: "メッセージを入力してください"
@@ -373,7 +397,6 @@ async function setLanguage(category) {
 		
 		if (response.ok) {
 			const data = await response.json();
-			console.log("setLanguage", data);
 			langNow = data[0].language;
 			document.getElementById("languageSelector").value = langNow;
 		}
