@@ -106,8 +106,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'is_active': False,
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
+
             elif self.b.point2 == 5:
                 self.b.is_active = 0
                 backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
@@ -117,8 +116,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'is_active': False,
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
+
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -226,7 +224,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
             game_results = {
                 'match_date': datetime.now().isoformat(),
                 'match_result': match_result,
-                'is_active': False,
+                'player1': list(self.room_name.split('_'))[0],
+                'player2': list(self.room_name.split('_'))[1]
             }
             response = requests.post(backend_url, json=game_results)
 
@@ -260,7 +259,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 1,
-                    'is_active': False,
+                    'player1': list(self.room_name.split('_'))[0],
+                    'player2': list(self.room_name.split('_'))[1]
                 }
                 response = requests.post(backend_url, json=game_results)
                 # print(response.status_code)
@@ -271,7 +271,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 game_results = {
                     'match_date': datetime.now().isoformat(),
                     'match_result': 2,
-                    'is_active': False,
+                    'player1': list(self.room_name.split('_'))[0],
+                    'player2': list(self.room_name.split('_'))[1]
                 }
                 response = requests.post(backend_url, json=game_results)
                 # print(response.status_code)
