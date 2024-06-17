@@ -11,6 +11,8 @@ window.lang = {
 			matchmaking: "매치메이킹",
 			multimatchmaking: "2:2 매치",
 			logout: "로그아웃",
+			logout_noti: "로그아웃 성공",
+			logout_err: "로그아웃 실패",
 		},
 		login: {
 			login: "로그인",
@@ -18,6 +20,8 @@ window.lang = {
 			home: "홈으로",
 			id: "아이디",
 			password: "비밀번호",
+			noti: "로그인 성공!\n환영합니다!",
+			err: "로그인 실패!\n다시 시도해주세요.",
 		},
 		signup: {
 			login: "로그인",
@@ -26,6 +30,8 @@ window.lang = {
 			id: "아이디",
 			password: "비밀번호",
 			email: "이메일",
+			noti: "회원가입 성공\n메인화면에서 로그인 해주세요.",
+			err: "회원가입 실패\n양식을 다시 확인해 주세요",
 		},
 		profile: {
 			title: "유저 프로필",
@@ -63,13 +69,30 @@ window.lang = {
 			recent_match_res: "최근 매치 결과",
 			win: "승리",
 			lose: "패배",
+			nouser_err: "해당 유저가 없습니다",
+			selfmatch_err: "자기 자신에게는 매치 신청이 불가능합니다",
+			selfchat_err: "자기 자신에게는 채팅 신청이 불가능합니다",
+			selfblock_err: "자기 자신을 차단할 수 없습니다",
+			selfunblock_err: "자기 자신을 차단 해제할 수 없습니다",
+			match_req: "매치 신청 성공",
+			match_req_err: "이미 매치를 신청했습니다",
+			unblock_err: "차단되지 않은 상대입니다",
+			block_err: "이미 차단된 상대입니다",
+			block_noti: "채팅 차단 성공",
+			unblock_noti: "채팅 차단 해제 성공",
+			is_blocked: "채팅 차단 상태입니다",
 		},
 		chat: {
-			msg: "메세지를 입력하세요"
+			msg: "메세지를 입력하세요",
+			nomsg_err: "메세지를 입력하세요!",
 		},
 		chatprivate: {
 			msg: "메세지를 입력하세요",
 			submit: "전송",
+			isblock_err: "상대방이 차단한 사용자입니다",
+			nomsg_err: "메세지를 입력하세요!",
+			notallow_err: "이 비공개 메세지 채널을 볼 수 없습니다.",
+			wrongconnect_err: "채팅방에 대한 잘못된 접근입니다.",
 		},
 		chatlobby: {
 			room_list: "채팅방 목록",
@@ -77,6 +100,8 @@ window.lang = {
 			create_room: "채팅방 만들기",
 			room_name: "새 채팅방 이름",
 			create_btn: "생성",
+			noti: "채팅방 생성 완료",
+			err: "채팅방 생성 실패",
 		},
 		matchlobby: {
 			tournament_list: "토너먼트 매치",
@@ -95,7 +120,7 @@ window.lang = {
 			match_complete: "매칭 완료: ",
 			accept: "수락",
 			err: "경고",
-			notify: "알림",
+			noti: "알림",
 			info_nouser_err: "해당 유저가 없습니다",
 			info_selfmatch_err: "자기 자신에게는 매치 신청이 불가능합니다",
 			info_selfchat_err: "자기 자신에게는 채팅 신청이 불가능합니다",
@@ -108,6 +133,10 @@ window.lang = {
 			info_block_noti: "채팅 차단 성공",
 			info_unblock_noti: "채팅 차단 해제 성공",
 			info_is_blocked: "채팅 차단 상태입니다",
+			login_noti: "로그인 성공!\n환영합니다!",
+			login_err: "로그인 실패!\n다시 시도해주세요.",
+			signup_noti: "회원가입 성공\n메인화면에서 로그인 해주세요.",
+			signup_err: "회원가입 실패\n양식을 다시 확인해 주세요",
 		}
 	},
 	en: {
@@ -310,6 +339,27 @@ window.lang = {
 
 let langNow = 'ko';
 
+// export async function getNowLang() {
+// 	if (await check_login() === true) {
+// 		const csrftoken = Cookies.get('csrftoken');
+// 		const response = await fetch('user/info', {
+// 			method: 'GET',
+// 			headers: {
+// 				'Content-Type': 'application/json',
+// 				'X-CSRFToken': csrftoken,
+// 			},
+// 		});
+		
+// 		if (response.ok) {
+// 			const data = await response.json();
+// 			console.log("setLanguage", data);
+// 			return data[0].language;
+// 		}
+// 	}
+// 	else
+// 		return document.getElementById("languageSelector").value;
+// }
+
 async function setLanguage(category) {
 	if (await check_login() === true) {
 		const csrftoken = Cookies.get('csrftoken');
@@ -345,7 +395,6 @@ function updateTexts(langNow, category) {
 		element.setAttribute('placeholder', lang[langNow][category][key]);
     });
 }
-
 
 async function check_login() {
 	try {

@@ -60,21 +60,32 @@ export async function check_language() {
 }
 
 export function delete_back_show() {
-  const modalBack = document.querySelector('.modal-backdrop');
-  if (modalBack) {
-    modalBack.classList.remove('modal-backdrop');
-  }
-  const bodyElement = document.querySelector('body');
-  bodyElement.classList.remove('modal-open');
-  bodyElement.style.overflow = '';
-  bodyElement.style.paddingRight = '';
+	const modalBack = document.querySelector('.modal-backdrop');
+	if (modalBack) {
+		modalBack.classList.remove('modal-backdrop');
+	}
+	const bodyElement = document.querySelector('body');
+	bodyElement.classList.remove('modal-open');
+	bodyElement.style.overflow = '';
+	bodyElement.style.paddingRight = '';
 }
 
-export function showModal(element, title, body) {
-	const infoModal = new bootstrap.Modal(document.getElementById(element));
-	const modalTitle = document.querySelector(`#${element} .modal-title`);
-	const modalBody = document.querySelector(`#${element} .modal-body p`);
-	modalTitle.innerText = title;
-	modalBody.innerText = body;
-	infoModal.show();
+// export function showModal(title, body) {
+// 	const modal = new bootstrap.Modal(document.querySelector('.modal'));
+// 	const modalTitle = document.querySelector('.modal .modal-title');
+// 	const modalBody = document.querySelector('.modal .modal-body p');
+// 	modalTitle.innerText = title;
+// 	modalBody.innerText = body;
+// 	modal.show();
+// }
+
+export function showModal(category, body) {
+	const langNow = document.getElementById("languageSelector").value;
+	const modal = new bootstrap.Modal(document.querySelector('.modal'));
+	const modalBody = document.querySelector('.modal .modal-body p');
+	modalBody.innerText = window.lang[langNow][category][body];
+	modalBody.setAttribute('data-translate', body);
+	// console.log(window.lang[langNow][category][body]);
+	modal.show();
 }
+

@@ -95,11 +95,11 @@ export function info_html() {
         </div>
     </div>
 		<div class="modal_container" id="modal_container">
-			<div class="modal" tabindex="-1" id="infoModal" style="display: none">
+			<div class="modal" tabindex="-1" style="display: none">
 				<div class="modal-dialog">
-					<div class="modal-content" id="test1">
+					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title id="test2""></h5>
+							<h5 class="modal-title"></h5>
 							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
 					</div>
 					<div class="modal-body">

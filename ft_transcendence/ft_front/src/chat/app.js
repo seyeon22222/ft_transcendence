@@ -1,5 +1,5 @@
 import { recordMessage } from "./chat_func.js";
-import { check_login } from "../utilities.js"
+import { check_login, showModal } from "../utilities.js"
 
 let chatSocket; // 기존 WebSocket 연결을 추적할 변수
 export async function chat_js(hash) {
@@ -124,7 +124,7 @@ export async function chat_js(hash) {
           messages_div.appendChild(messageWrapper);
           messages_div.scrollTop = messages_div.scrollHeight;
         } else {
-          alert("메시지를 입력하세요");
+		  showModal('chat', 'nomsg_err');
         }
       }
     }; //seycheon_block
@@ -137,7 +137,7 @@ export async function chat_js(hash) {
       const message = messageInputDOM.value;
 
       if (message === "") {
-        alert("메시지를 입력하세요");
+		showModal('chat', 'nomsg_err');
       } else {
         chatSocket.send(
           JSON.stringify({

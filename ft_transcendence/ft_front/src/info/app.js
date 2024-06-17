@@ -104,6 +104,8 @@ export async function info_js() {
 		display: none;
 	}
   `;
+
+	// delete_back_show();
 	setLanguage("info");
 
     // check login status
@@ -151,15 +153,11 @@ export async function info_js() {
 	  setLanguage('info');
     });
     if (!flag) {
-    	alert("해당 유저가 없습니다");
-		// 모달 띄우는걸로 하면 모달 확인할 새도 없이 바로 홈화면으로 가버림
-		// const infoModal = document.getElementById('infoModal');
-		// const modalTitle = document.querySelector('#infoModal .modal-title');
-		// const modalBody = document.querySelector('#infoModal .modal-body p');
-		// modalTitle.innerText = window.lang[user_lang].message.err;
-		// modalBody.innerText = window.lang[user_lang].message.info_nouser_err;
-		// infoModal.style.display = 'block';
-    	location.href = "/#";
+		const infoModal = document.querySelector('.modal');
+		showModal('info', 'nouser_err');
+		infoModal.addEventListener('hidden.bs.modal', function () {
+			location.href = '/#';
+		});
     }
   }
 
@@ -189,13 +187,8 @@ export async function info_js() {
       console.error("API 요청 실패", error);
     }
     if (temp_data[0].username === accept_user) {
-		const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.err;
-		modalBody.innerText = window.lang[user_lang].message.info_selfmatch_err;
-		infoModal.style.display = 'block';
-    	return;
+    	showModal('info', 'selfmatch_err');
+		return;
     }
     apply_user = temp_data[0].username;
     const match_name = apply_user + " vs " + accept_user;
@@ -221,24 +214,13 @@ export async function info_js() {
     });
 
     if (mat_response.ok) {
-    //   alert("매치 신청 성공!");
-		const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.notify;
-		modalBody.innerText = window.lang[user_lang].message.info_match_req;
-		infoModal.style.display = 'block';
 		// location.href = "/#";
+		showModal('info', 'match_req');
     } else {
     	const error = await mat_response.json();
     	console.log(error);
-		const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.err;
-		modalBody.innerText = window.lang[user_lang].message.info_match_req_err;
-		infoModal.style.display = 'block';
-    }
+		showModal('info', 'match_req_err');
+	}
   });
 
   const applyChat = document.getElementById("chat_button");
@@ -264,7 +246,7 @@ export async function info_js() {
     }
 
     if (temp_data[0].username === accept_user) {
-		showModal('infoModal', window.lang[user_lang].message.err, window.lang[user_lang].message.info_selfchat_err);
+		showModal('info', 'selfchat_err');
 		return ;
     }
 
@@ -328,7 +310,7 @@ export async function info_js() {
         console.error("API failed : ", error);
       }
     } else {
-      showModal('infoModal', window.lang[user_lang].message.notify, window.lang[user_lang].message.info_is_blocked);
+		showModal('info', 'is_blocked');
     }
   });
 
@@ -356,13 +338,8 @@ export async function info_js() {
       console.error("API 요청 실패", error);
     }
     if (temp_data[0].username === accept_user) {
-    	const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.err;
-		modalBody.innerText = window.lang[user_lang].message.info_selfblock_err;
-		infoModal.style.display = 'block';
 		// location.href = "/#";
+		showModal('info', 'selfblock_err');
     	return;
     }
     apply_user = temp_data[0].username;
@@ -383,16 +360,11 @@ export async function info_js() {
     });
 
     if (block_response.ok) {
-      	// alert("채팅 차단 성공!");
-		const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.notify;
-		modalBody.innerText = window.lang[user_lang].message.info_block_noti;
-		infoModal.style.display = 'block';
+		showModal('info', 'block_noti');
     } else {
 		const error = await block_response.json();
 		console.log(error);
+		showModal('info', 'block_err');
     }
   });
 
@@ -422,13 +394,7 @@ export async function info_js() {
       console.error("API 요청 실패", error);
     }
     if (temp_data[0].username === accept_user) {
-    //   alert("자기 자신에게는 차단 해제가 불가능합니다!!");
-		const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.err;
-		modalBody.innerText = window.lang[user_lang].message.info_selfunblock_err;
-		infoModal.style.display = 'block';
+		showModal('info', 'selfunblock_err');
     	return;
     }
     apply_user = temp_data[0].username;
@@ -449,22 +415,11 @@ export async function info_js() {
     });
 
     if (block_release_response.ok) {
-    //   alert("차단 해제 성공!");
-		const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.notify;
-		modalBody.innerText = window.lang[user_lang].message.info_unblock_noti;
-		infoModal.style.display = 'block';
+		showModal('info', 'unblock_noti');
     } else {
 		const error = await block_release_response.json();
 		console.log(error);
-		const infoModal = document.getElementById('infoModal');
-		const modalTitle = document.querySelector('#infoModal .modal-title');
-		const modalBody = document.querySelector('#infoModal .modal-body p');
-		modalTitle.innerText = window.lang[user_lang].message.err;
-		modalBody.innerText = window.lang[user_lang].message.info_unblock_err;
-		infoModal.style.display = 'block';
+		showModal('info', 'unblock_err');
     }
   });
 }
@@ -514,13 +469,3 @@ async function updateOnlineStatus() {
 
 // 매 초마다 profile_form의 존재를 확인하고 함수 실행
 // setInterval(checkProfileFormAndRun, 5000); // 31초마다 확인
-
-
-// function showModal(title, body) {
-//   const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
-//   const modalTitle = document.querySelector('#infoModal .modal-title');
-//   const modalBody = document.querySelector('#infoModal .modal-body p');
-//   modalTitle.innerText = title;
-//   modalBody.innerText = body;
-//   infoModal.show();
-// }
