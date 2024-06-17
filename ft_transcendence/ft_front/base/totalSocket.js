@@ -1,7 +1,5 @@
 import { check_language } from '../src/utilities.js'
 
-let user_lang;
-
 function createInvitePopup() {
     const popupContainer = document.getElementById('popupContainer');
 
@@ -40,7 +38,6 @@ export async function initializeWebsocket() {
     if (response.ok) {
         const data = await response.json();
         const user_id = data[0].user_id;
-		user_lang = data[0].language;
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
         window.i_socket = new WebSocket(
             protocol + "//" + window.location.host + "/ws/message/" + user_id + "/"
@@ -57,8 +54,9 @@ export async function initializeWebsocket() {
 
         window.i_socket.onmessage = function (e) {
             const data = JSON.parse(e.data);
-            console.log("message", data);
-			console.log(user_lang);
+			const user_lang = document.getElementById('languageSelector').value;
+            // console.log("message", data);
+			// console.log(user_lang);
 			const message = `${window.lang[user_lang].message.match_complete} ${data.message}`;
             const player1 = data.player1;
             const player2 = data.player2;
@@ -90,6 +88,7 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
     let remaintimer = 5;
     const intervalId = setInterval(() => {
         const button_text = document.getElementById('acceptBtn');
+		const user_lang = document.getElementById('languageSelector').value;
         if (remaintimer > 0) {
             button_text.textContent = `${window.lang[user_lang].message.accept}(${remaintimer})`;
             remaintimer--;
