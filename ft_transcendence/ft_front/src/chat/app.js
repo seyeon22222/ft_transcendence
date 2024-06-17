@@ -85,6 +85,14 @@ export async function chat_js(hash) {
           data.username,
           csrftoken
         );
+
+        const current_hash = window.location.hash;
+        if (current_hash.split("/")[0] !== "#chat" && chatSocket) {
+          chatSocket.close();
+          chatSocket = null;
+          return;
+        }
+
         if (!isBlocked) {
           //-----------------------
           const messages_div = document.getElementById("chat-messages");
