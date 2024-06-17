@@ -109,6 +109,15 @@ export async function chatPrivate_js(hash) {
     chatSocket.onmessage = function (e) {
       const data = JSON.parse(e.data);
       if (data.message) {
+
+        // if current hash is not chatprivate, close websocket
+        const current_hash = window.location.hash;
+        if (current_hash.split("/")[0] !== "#chatprivate" && chatSocket) {
+          chatSocket.close();
+          chatSocket = null;
+          return;
+        }
+
         const messages_div = document.getElementById("chat-messages");
         const messageWrapper = document.createElement("div");
         messageWrapper.classList.add(
