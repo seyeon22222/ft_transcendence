@@ -6,6 +6,7 @@ export async function profile_js() {
 		// set css style
 		const style = document.getElementById("style");
 		style.innerHTML = profile_style_html();
+		// setLanguage("profile");
 
 		// check login status
 		const check = await check_login();
@@ -28,7 +29,7 @@ export async function profile_js() {
 		});
 		if (response.ok) {
 			data = await response.json();
-			console.log("In profile", data);
+			// console.log("In profile", data);
 			if (data) {
 				// set current user's info as placeholder
 				const name = document.getElementById("username_input");

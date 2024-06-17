@@ -11,7 +11,7 @@ export function signup_html() {
                     </div>
                     <div class="mb-3">
                         <label for="emain_input" class="form-label">Email</label>
-                        <input type="text" class="form-control" name="email" id="email_input" data-translate-placeholder="email" placeholder="이메일">
+                        <input type="email" class="form-control" name="email" id="email_input" data-translate-placeholder="email" placeholder="이메일" required>
                     </div>
                     <div class="mb-3">
                         <label for="password_input" class="form-label">Password</label>

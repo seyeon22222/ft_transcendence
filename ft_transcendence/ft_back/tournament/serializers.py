@@ -11,7 +11,7 @@ class tournamentParticipantSerializer(serializers.ModelSerializer):
 
 class tournamentSerializer(serializers.ModelSerializer):
     participants = tournamentParticipantSerializer(many=True, read_only=True)
-
+    
     class Meta:
         model = tournament
         fields = '__all__'
@@ -22,6 +22,7 @@ class tournamentMatchSerializer(serializers.ModelSerializer):
     winner_username = serializers.SerializerMethodField()
     player1_uuid = serializers.SerializerMethodField()
     player2_uuid = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
 
     class Meta:
         model = tournamentMatch
@@ -45,6 +46,9 @@ class tournamentMatchSerializer(serializers.ModelSerializer):
     
     def get_player2_uuid(self,obj):
         return obj.player2.user_id
+    
+    def get_name(self, obj):
+        return obj.tournament.name
 
 class matchSerializer(serializers.ModelSerializer):
     player1_username = serializers.SerializerMethodField()
@@ -52,6 +56,7 @@ class matchSerializer(serializers.ModelSerializer):
     winner_username = serializers.SerializerMethodField()
     player1_uuid = serializers.SerializerMethodField()
     player2_uuid = serializers.SerializerMethodField()
+    match_result = serializers.SerializerMethodField()
 
     class Meta:
         model = Match
@@ -75,6 +80,9 @@ class matchSerializer(serializers.ModelSerializer):
     
     def get_player2_uuid(self,obj):
         return obj.player2.user_id
+    
+    def get_match_result(self, obj):
+        return obj.match_result
         
 
 class MultiSerializer(serializers.ModelSerializer):
@@ -82,7 +90,13 @@ class MultiSerializer(serializers.ModelSerializer):
     player2_username = serializers.SerializerMethodField()
     player3_username = serializers.SerializerMethodField()
     player4_username = serializers.SerializerMethodField()
-    requester_username = serializers.SerializerMethodField()
+    
+    player1_uuid  = serializers.SerializerMethodField()
+    player2_uuid  = serializers.SerializerMethodField()
+    player3_uuid  = serializers.SerializerMethodField()
+    player4_uuid  = serializers.SerializerMethodField()
+
+    match_result = serializers.SerializerMethodField()
 
     class Meta:
             model = MultiMatch
@@ -112,5 +126,32 @@ class MultiSerializer(serializers.ModelSerializer):
         else:
             return None
 
-    def get_requester_username(self, obj):
-        return obj.requester.username
+    def get_player1_uuid(self, obj):
+        if obj.player1:
+            return obj.player1.user_id
+        else:
+            return None
+        
+    def get_player2_uuid(self, obj):
+        if obj.player2:
+            return obj.player2.user_id
+        else:
+            return None
+    
+    def get_player3_uuid(self, obj):
+        if obj.player3:
+            return obj.player3.user_id
+        else:
+            return None
+    
+    def get_player4_uuid(self, obj):
+        if obj.player4:
+            return obj.player4.user_id
+        else:
+            return None
+    
+    def get_match_result(self, obj):
+        if obj.match_result:
+            return obj.match_result
+        else:
+            return None

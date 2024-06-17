@@ -1,4 +1,3 @@
-
 import { home_html } from "../src/home/html.js";
 import { home_js } from "../src/home/app.js";
 import { login_html } from "../src/login/html.js";
@@ -22,7 +21,9 @@ import { tournament_view } from "../src/tournament/app.js";
 import { chatPrivate_html } from "../src/chatPrivate/html.js";
 import { chatPrivate_js } from "../src/chatPrivate/app.js";
 import { game_html } from "../src/game/html.js";
-import { game_js } from "../src/game/app.js";
+import { game_m_js } from "../src/game/app_m.js";
+import { game_t_js } from "../src/game/app_t.js";
+import { game_multi_js } from "../src/game/app_multi.js";
 import { multiMatch_js } from "../src/multimatch/app.js";
 import { multiMatch_html } from "../src/multimatch/html.js";
 
@@ -38,10 +39,11 @@ const routes = {
   "/match": [match_html, match_view],
   "/tournament": [tournament_html, tournament_view],
   "/chatprivate": [chatPrivate_html, chatPrivate_js],
-  "/game" : [game_html, game_js],
-  "/multi" : [multiMatch_html, multiMatch_js],
+  "/gamem": [game_html, game_m_js],
+  "/gamet": [game_html, game_t_js],
+  "/gamemulti": [game_html, game_multi_js],
+  "/multi": [multiMatch_html, multiMatch_js],
 };
-
 
 // 의미: 현재 URL 해시(location.hash)를 분석하여 적절한 페이지를 렌더링하는 함수입니다.
 // 동작 과정:

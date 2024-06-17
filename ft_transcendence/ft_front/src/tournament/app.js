@@ -186,6 +186,10 @@ async function startTournament(tournament_id) {
             alert('토너먼트 참가자가 부족합니다.');
             return;
         }
+        if (data.is_active === false) {
+            alert('토너먼트가 이미 시작되었습니다.');
+            return;
+        }
 
         // 부전승 처리, 짝수여도 부전승 필요함
         const result = await handleByePlayer(players);

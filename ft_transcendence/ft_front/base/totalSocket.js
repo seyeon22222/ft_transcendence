@@ -60,7 +60,7 @@ export async function initializeWebsocket() {
             const player2 = data.player2;
             const g_type = data.g_type;
             const g_id = data.g_id;
-            openInvitePopup(message, player1, player2, g_type, g_id);
+            openInvitePopup(message, player1, player2, g_type, g_id, data);
         }
     } else {
         const error = await response.json();
@@ -76,7 +76,7 @@ export async function check_socket() {
     }
 }
 
-function openInvitePopup(message, player1, player2, g_type, g_id) {
+function openInvitePopup(message, player1, player2, g_type, g_id, data) {
     const popupMessage = document.getElementById('popupMessage');
     popupMessage.textContent = message;
 
@@ -92,7 +92,17 @@ function openInvitePopup(message, player1, player2, g_type, g_id) {
         } else {
             clearInterval(intervalId); // 타이머 중지
             button_text.textContent = ``;
-            g_type === 'm' ? m_accept(invitePopup, player1, player2, g_id) : t_accept(invitePopup, player1, player2, g_id);
+            if (g_type === 'm')
+                m_accept(invitePopup, player1, player2, g_id);
+            else if (g_type === 't')
+                t_accept(invitePopup, player1, player2, g_id);
+            else if (g_type === 'mul') {
+                const player3 = data.player3;
+                const player4 = data.player4;
+                console.log("in socket",player3);
+                console.log("in socket",player4);
+                mul_accept(invitePopup, player1, player2, player3, player4, g_id);
+            }
         }
     }, 1000); // 1초 간격으로 실행
 
@@ -103,7 +113,15 @@ function openInvitePopup(message, player1, player2, g_type, g_id) {
         console.log("게임 초대 수락");
         acceptBtn.textContent = ``;
         clearInterval(intervalId); // 수락 시 타이머 중지
-        g_type === 'm' ? m_accept(invitePopup, player1, player2, g_id) : t_accept(invitePopup, player1, player2, g_id);
+        if (g_type === 'm')
+            m_accept(invitePopup, player1, player2, g_id);
+        else if (g_type === 't')
+            t_accept(invitePopup, player1, player2, g_id);
+        else if (g_type === 'mul') {
+            const player3 = data.player3;
+            const player4 = data.player4;
+            mul_accept(invitePopup, player1, player2, player3, player4, g_id);
+        }
     }
 }
 
@@ -122,7 +140,7 @@ async function m_accept(invitePopup, player1, player2, g_id) {
         const data = await response.json();
         url = data.hash;
         console.log(url);
-        window.location.href = `/#game/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#gamem/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
@@ -145,13 +163,41 @@ async function t_accept(invitePopup, player1, player2, g_id) {
         const data = await response.json();
         url = data.hash;
         console.log(url);
-        window.location.href = `/#game/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#gamet/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
         console.log(error);
     }
 }
+
+async function mul_accept(invitePopup, player1, player2, player3, player4, g_id) {
+    console.log("mul", player3);
+    console.log("mul", player4);
+    let url;
+    const csrftoken = Cookies.get('csrftoken');
+    const response = await fetch(`match/multimatchhash/${player1}${player2}${player3}${player4}${g_id}`,  {
+        method : 'GET',
+        headers : {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        credentials : "include",
+    })
+    if (response.ok) {
+        const data = await response.json();
+        url = data.hash;
+        console.log(url);
+        window.location.href = `/#gamemulti/${url}`; // 게임 페이지로 이동
+        invitePopup.style.display = 'none';
+    } else {
+        const error = await response.error();
+        console.log(error);
+    }
+}
+
+
+
 
 createInvitePopup();
 check_socket();
