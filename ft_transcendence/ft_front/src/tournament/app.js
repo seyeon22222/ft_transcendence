@@ -466,8 +466,8 @@ async function updateTournamentInfo(arr) {
             location.href = '/#';
         }
 
-        // 모든 참가자가 level 0인 경우 (default) true
         tour_view(player);
+        // 모든 참가자가 level 0인 경우 (default) true
         if (player_check(player) === false) {
             tourstart_view(player);
         }
@@ -518,20 +518,11 @@ function tour_view(player) {
     }
 
     if (player.length > 4 && player.length <= 8) { // 5~8
-        for (let i = 1; i <= 4; ++i) {
-            const quarter_final = document.getElementById(`quarter_final${i}`);
-            quarter_final.innerHTML = '';
-        }
         for (let i = 1; i <= player.length; ++i) {
             const round_16 = document.getElementById(`Round_8_${i}`);
             round_16.innerHTML = player[i - 1].nickname;
         }
-
     } else if (player.length > 2 && player.length <= 4) { // 3~4
-        for (let i = 1; i <= 2; ++i) {
-            const semi_final = document.getElementById(`semi_final${i}`);
-            semi_final.innerHTML = '';
-        }
         for (let i = 1; i <= player.length; ++i) {
             const quarter_final = document.getElementById(`quarter_final${i}`);
             quarter_final.innerHTML = player[i - 1].nickname;
@@ -546,17 +537,6 @@ function tour_view(player) {
 
 function tourstart_view(player) {
     console.log("tourstart_view");
-    tour_view(player);
-    
-    // if (player.length <= 2) {
-    //     player_2(player);
-    // } else if (player.length <= 4) {
-    //     player_4(player);
-    // } else if (player.length <= 8) {
-    //     player_8(player);
-    // }
-
-
     /* 
         어차피 player는 index 순서대로 정렬되어 있음
         index를 알면 플레이어 level에 따라 어디어디에 삽입되어야 하는지 간단한 수식으로 계산 가능 
@@ -619,7 +599,6 @@ function player_4(player) {
         }
     }
 }
-
 
 function player_8(player) {
     for (let i = 1; i <= player.length; ++i) {
