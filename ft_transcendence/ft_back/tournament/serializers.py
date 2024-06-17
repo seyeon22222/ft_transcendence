@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from django.db.models import Q
 from .models import tournament, tournamentMatch, tournamentParticipant, Match, MultiMatch
-from ft_user.models import MyUser
 
 class tournamentParticipantSerializer(serializers.ModelSerializer):
 

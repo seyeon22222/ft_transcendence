@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Room, Message, PrivateRoom, PrivateMessage
-from ft_user.models import MyUser
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:

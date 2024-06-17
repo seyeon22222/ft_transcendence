@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from django.db.models import Q
 from .models import MyUser, GameStat, MatchInfo
-from django.db.models import Q
-from .models import MyUser, GameStat, MatchInfo
 
 class GameStatSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
