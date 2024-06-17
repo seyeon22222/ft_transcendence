@@ -61,10 +61,14 @@ export function select_match_info_view(data) {
 	const match_info = document.getElementById("match_info");
 
 	const createInfoElement = (label, value) => {
-		const keyword = { "최근 매치": "recent_match", "최근 매치 결과": "recent_match_res"};
+		const keyword = { "최근 매치": "recent_match", "최근 매치 결과": "recent_match_res",
+							"Win": "win", "Lose": "lose", "-": "none"};
 
 		const element = document.createElement("h4");
-		element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: ${value}</span>`;
+		if (label === "최근 매치")
+			element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: ${value}</span>`;
+		else
+			element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: </span><span data-translate=${keyword[value]}>${value}</span>`;
 		return element;
 	};
 

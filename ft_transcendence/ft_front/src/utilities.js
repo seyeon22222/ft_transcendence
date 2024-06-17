@@ -88,4 +88,3 @@ export function showModal(category, body) {
 	// console.log(window.lang[langNow][category][body]);
 	modal.show();
 }
-

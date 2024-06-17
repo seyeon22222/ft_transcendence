@@ -151,13 +151,14 @@ export async function chatLobby_js() {
             if (res.ok) {
                 const data = await res.json();
 				const modal = document.querySelector('.modal');
-				showModal('chatlobby', 'noti'); //room name
-                // location.href = '/#chatLobby';
+				const newModal = new bootstrap.Modal(modal);
+				const modalBody = document.querySelector('.modal .modal-body p');
+				modalBody.innerHTML = `<span>'${data.name}' </span><span data-translate="noti">${window.lang[langNow].chatlobby.noti}</span>`;
+				newModal.show();
 				modal.addEventListener('hidden.bs.modal', function () {
 					router();
 				});
             } else {
-				// bad request
 				showModal('chatlobby', 'err');
             }
         })

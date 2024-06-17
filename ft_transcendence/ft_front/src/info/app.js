@@ -153,6 +153,7 @@ export async function info_js() {
 	  setLanguage('info');
     });
     if (!flag) {
+		console.log("Qqqq");
 		const infoModal = document.querySelector('.modal');
 		showModal('info', 'nouser_err');
 		infoModal.addEventListener('hidden.bs.modal', function () {
@@ -215,10 +216,15 @@ export async function info_js() {
 
     if (mat_response.ok) {
 		// location.href = "/#";
+		const modal = document.querySelector('.modal');
 		showModal('info', 'match_req');
+		modal.addEventListener('hidden.bs.modal', function () {
+			location.href = "/#";
+		});
+
     } else {
-    	const error = await mat_response.json();
-    	console.log(error);
+    	// const error = await mat_response.json();
+    	// console.log(error);
 		showModal('info', 'match_req_err');
 	}
   });
@@ -362,8 +368,8 @@ export async function info_js() {
     if (block_response.ok) {
 		showModal('info', 'block_noti');
     } else {
-		const error = await block_response.json();
-		console.log(error);
+		// const error = await block_response.json();
+		// console.log(error);
 		showModal('info', 'block_err');
     }
   });
@@ -417,45 +423,45 @@ export async function info_js() {
     if (block_release_response.ok) {
 		showModal('info', 'unblock_noti');
     } else {
-		const error = await block_release_response.json();
-		console.log(error);
+		// const error = await block_release_response.json();
+		// console.log(error);
 		showModal('info', 'unblock_err');
     }
   });
 }
 
 //seycheon_online_status // 온라인 상태를 주기적으로 업데이트하는 함수
-async function updateOnlineStatus() {
-  let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
-  let user_name = user_location[1];
+// async function updateOnlineStatus() {
+//   let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
+//   let user_name = user_location[1];
 
-  await fetch("/user/get_users_online_status")
-    .then((response) => response.json())
-    .then((data) => {
-      const onlineStatusDiv = document.getElementById("online_status_value");
-      if (onlineStatusDiv) {
-        // 요소가 있는 경우에만 작업을 수행합니다.
-        // API에서 반환된 사용자 목록에서 사용자 이름이 있는지 확인합니다.
-        console.log(data.online_users);
-        const isOnline = data.online_users.some((user) => {
-          const username = user;
-          console.log("11111", username);
-          if (username) {
-            console.log(username.trim(), user_name.trim());
-            return username.trim() === user_name.trim(); // 사용자 이름에서 공백 제거 후 비교
-          }
-          return false;
-        });
-        console.log(isOnline);
-        onlineStatusDiv.innerHTML = `현재 접속 상태: ${
-          isOnline ? "online" : "offline"
-        }`;
-      } else {
-        console.error("Element with ID 'online_status_value' not found.");
-      }
-    })
-    .catch((error) => console.error("Error fetching online users:", error));
-}
+//   await fetch("/user/get_users_online_status")
+//     .then((response) => response.json())
+//     .then((data) => {
+//       const onlineStatusDiv = document.getElementById("online_status_value");
+//       if (onlineStatusDiv) {
+//         // 요소가 있는 경우에만 작업을 수행합니다.
+//         // API에서 반환된 사용자 목록에서 사용자 이름이 있는지 확인합니다.
+//         console.log(data.online_users);
+//         const isOnline = data.online_users.some((user) => {
+//           const username = user;
+//           console.log("11111", username);
+//           if (username) {
+//             console.log(username.trim(), user_name.trim());
+//             return username.trim() === user_name.trim(); // 사용자 이름에서 공백 제거 후 비교
+//           }
+//           return false;
+//         });
+//         console.log(isOnline);
+//         onlineStatusDiv.innerHTML = `현재 접속 상태: ${
+//           isOnline ? "online" : "offline"
+//         }`;
+//       } else {
+//         console.error("Element with ID 'online_status_value' not found.");
+//       }
+//     })
+//     .catch((error) => console.error("Error fetching online users:", error));
+// }
 
 //seycheon_online_status 페이지 로드 시 및 주기적으로 업데이트
 // function checkProfileFormAndRun() {

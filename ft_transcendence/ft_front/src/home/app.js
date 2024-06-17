@@ -72,8 +72,8 @@ function matchmaking_button_eventhandler(button) {
                 });
                 if (matchmaking_response.ok) {
                     const result = await matchmaking_response.json();
-                    console.log(result.message);
-                }
+					showModal('home', `matchmaking_${result.message}_noti`);
+				}
             }
         } catch (error) {
             console.error(error);
@@ -111,7 +111,7 @@ function mulmatchmaking_button_eventhandler(button) {
                 });
                 if (matchmaking_response.ok) {
                     const result = await matchmaking_response.json();
-                    console.log(result.message);
+					showModal('home', `multi_${result.message}_noti`);
                 }
             }
         } catch (error) {
