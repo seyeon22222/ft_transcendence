@@ -2,16 +2,16 @@ export function login_html() {
     return `
     <div class="row justify-content-center py-5">
         <div class="col-md-4">
-            <h1 class="mb-3 fw-bold center-text">LOGIN</h1>
+            <h1 class="mb-3 fw-bold center-text" data-translate="login">로그인</h1>
             <div class="card p-4 narrow-card">
                 <form id="login_form">
                     <div class="mb-3">
-                        <label for="username_input" class="form-label">ID</label>
-                        <input type="text" class="form-control" name="username" id="username_input" data-translate-placeholder="id" placeholder="아이디">
+                        <label for="username_input" class="form-label" data-translate="id">아이디</label>
+                        <input type="text" class="form-control" name="username" id="username_input" data-translate-placeholder="id_box" placeholder="아이디를 입력하세요">
                     </div>
                     <div class="mb-3">
-                        <label for="password_input" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password_input" data-translate-placeholder="password" placeholder="비밀번호">
+                        <label for="password_input" class="form-label" data-translate="password">비밀번호</label>
+                        <input type="password" class="form-control" id="password_input" data-translate-placeholder="pw_box" placeholder="비밀번호를 입력하세요">
                     </div>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-evenly spacing">
                         <button class="btn custom-yellow-btn flex-grow-1 me-2" id="login_button" data-translate="login">로그인</button>

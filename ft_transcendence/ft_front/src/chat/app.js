@@ -1,4 +1,4 @@
-import { recordMessage } from "./chat_func.js";
+import { recordMessage } from "./chat_func.js"
 import { check_login, showModal } from "../utilities.js"
 
 let chatSocket; // 기존 WebSocket 연결을 추적할 변수
@@ -9,6 +9,8 @@ export async function chat_js(hash) {
       location.href = `/#`;
       return;
   }
+
+  setLanguage('chat');
 
   //seycheon_block
   const temp_csrftoken = Cookies.get("csrftoken");

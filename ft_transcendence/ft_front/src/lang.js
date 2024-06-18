@@ -3,6 +3,8 @@
 window.lang = {
 	ko: {
 		home: {
+			homebtn: "홈",
+			langbtn: "언어",
 			login: "로그인",
 			signup: "회원가입",
 			my_profile: "내 프로필",
@@ -22,25 +24,37 @@ window.lang = {
 			multi_player3_noti: "멀티매치 플레이어3에 등록되었습니다",
 		},
 		login: {
+			homebtn: "홈",
+			langbtn: "언어",
 			login: "로그인",
 			signup: "회원가입",
 			home: "홈으로",
 			id: "아이디",
+			id_box: "아이디를 입력하세요",
 			password: "비밀번호",
+			pw_box: "비밀번호를 입력하세요",
 			noti: "로그인 성공!\n환영합니다!",
 			err: "로그인 실패!\n다시 시도해주세요",
 		},
 		signup: {
+			homebtn: "홈",
+			langbtn: "언어",
 			login: "로그인",
 			signup: "회원가입",
 			home: "홈으로",
 			id: "아이디",
+			id_box: "아이디를 입력하세요",
 			password: "비밀번호",
+			pw_box: "비밀번호를 입력하세요",
 			email: "이메일",
+			email_box: "이메일을 입력하세요",
+			image: "프로필 사진",
 			noti: "회원가입 성공\n메인화면에서 로그인 해주세요",
 			err: "회원가입 실패\n양식을 다시 확인해 주세요",
 		},
 		profile: {
+			homebtn: "홈",
+			langbtn: "언어",
 			title: "유저 프로필",
 			change_pic: "사진 변경",
 			change_id: "ID 변경",
@@ -64,6 +78,8 @@ window.lang = {
 			change_err: "유저 정보 변경 실패!\n다시 시도해주세요",
 		},
 		info: {
+			homebtn: "홈",
+			langbtn: "언어",
 			title: "유저 프로필",
 			match_request: "매치 신청",
 			chat: "1:1 채팅",
@@ -94,10 +110,15 @@ window.lang = {
 			is_blocked: "채팅 차단 상태입니다",
 		},
 		chat: {
+			homebtn: "홈",
+			langbtn: "언어",
 			msg: "메세지를 입력하세요",
+			submit: "전송",
 			nomsg_err: "메세지를 입력하세요!",
 		},
 		chatprivate: {
+			homebtn: "홈",
+			langbtn: "언어",
 			msg: "메세지를 입력하세요",
 			submit: "전송",
 			isblock_err: "상대방이 차단한 사용자입니다",
@@ -106,6 +127,8 @@ window.lang = {
 			wrongconnect_err: "채팅방에 대한 잘못된 접근입니다.",
 		},
 		chatlobby: {
+			homebtn: "홈",
+			langbtn: "언어",
 			room_list: "채팅방 목록",
 			user_list: "유저 목록",
 			create_room: "채팅방 만들기",
@@ -115,6 +138,8 @@ window.lang = {
 			err: "채팅방 생성 실패",
 		},
 		matchlobby: {
+			homebtn: "홈",
+			langbtn: "언어",
 			tournament_list: "토너먼트 매치",
 			create_tournament: "토너먼트 만들기",
 			tournament_name: "토너먼트 이름",
@@ -122,8 +147,11 @@ window.lang = {
 			two_match_list: "2:2 매치",
 			one_match_list: "1:1 매치",
 			tournament_create: "토너먼트 생성 완료",
+			create_err: "토너먼트 생성 실패",
 		},
 		tournament: {
+			homebtn: "홈",
+			langbtn: "언어",
 			nick_input: "별칭을 입력하세요",
 			apply: "토너먼트 신청",
 			start: "토너먼트 시작",
@@ -144,6 +172,8 @@ window.lang = {
 	},
 	en: {
 		home: {
+			homebtn: "Home",
+			langbtn: "Language",
 			login: "Login",
 			signup: "Sign Up",
 			my_profile: "My Profile",
@@ -163,25 +193,37 @@ window.lang = {
 			multi_player3_noti: "Enrolled for Player3 in multimatching",
 		},
 		login: {
-			login: "Login",
+			homebtn: "Home",
+			langbtn: "Language",
+			login: "LOGIN",
 			signup: "Sign Up",
 			home: "Go Home",
-			id: "Write Your ID",
-			password: "Write Your Password",
+			id: "ID",
+			id_box: "Write Your ID",
+			password: "Password",
+			pw_box: "Write Your Password",
 			noti: "Login Success!\nWelcome to our PING PONG GAME",
 			err: "Login Fail!\nPlease try again"
 		},
 		signup: {
+			homebtn: "Home",
+			langbtn: "Language",
 			login: "Login",
-			signup: "Sign Up",
+			signup: "SIGN UP",
 			home: "Go Home",
-			id: "Write Your ID",
-			password: "Write Your Password",
-			email: "Write Your Email",
+			id: "ID",
+			id_box: "Write Your ID",
+			password: "Password",
+			pw_box: "Write Your Password",
+			email: "Email",
+			email_box: "Write Your Email",
+			image: "Profile Image",
 			noti: "Signup Success!\nPlease login in home screen",
 			err: "Signup Fail!\nPlease check the form"
 		},
 		profile: {
+			homebtn: "Home",
+			langbtn: "Language",
 			title: "USER INFOMATION",
 			change_pic: "change profile image",
 			change_id: "change id",
@@ -205,6 +247,8 @@ window.lang = {
 			change_err: "Failed to change user information\nPlease try again"
 		},
 		info: {
+			homebtn: "Home",
+			langbtn: "Language",
 			title: "USER INFORMATION",
 			match_request: "Request Match",
 			chat: "1:1 Chat",
@@ -235,10 +279,15 @@ window.lang = {
 			is_blocked: "The chat is blocked",
 		},
 		chat: {
+			homebtn: "Home",
+			langbtn: "Language",
 			msg: "Write Message Here",
+			submit: "Submit",
 			nomsg_err: "Plesae enter a message!",
 		},
 		chatprivate: {
+			homebtn: "Home",
+			langbtn: "Language",
 			msg: "Write Message Here",
 			submit: "Submit",
 			isblock_err: "This user is blocked by the other party",
@@ -247,6 +296,8 @@ window.lang = {
 			wrongconnect_err: "Invalid access to the chat room",
 		},
 		chatlobby: {
+			homebtn: "Home",
+			langbtn: "Language",
 			room_list: "Room List",
 			user_list: "User List",
 			create_room: "Create a new room",
@@ -256,6 +307,8 @@ window.lang = {
 			err: "Failed to create a chat room",
 		},
 		matchlobby: {
+			homebtn: "Home",
+			langbtn: "Language",
 			tournament_list: "Tournament List",
 			create_tournament: "Create a tournament",
 			tournament_name: "Tournamennt Name",
@@ -263,6 +316,14 @@ window.lang = {
 			two_match_list: "2:2 Match List",
 			one_match_list: "1:1 Match List",
 			tournament_create: "Tournament room creation complete",
+			create_err: "Tournament room creation fail",
+		},
+		tournament: {
+			homebtn: "Home",
+			langbtn: "Language",
+			nick_input: "Wirte nickname here",
+			apply: "Tournament Apply",
+			start: "Tournament Start",
 			nick_noti: "Please enter your nickname",
 			already_noti: "This tournament has already started",
 			over_noti: "The maximum number of players(8) has been exceeded",
@@ -270,11 +331,6 @@ window.lang = {
 			dupready_noti: "You can't make a duplicate application",
 			under_noti: "There are not enough participants in the tournament",
 			loading_err: "Failed to load tournament information",
-		},
-		tournament: {
-			nick_input: "Wirte nickname here",
-			apply: "Tournament Apply",
-			start: "Tournament Start",
 		},
 		message: {
 			match_complete: "Matching Completed: ",
@@ -284,6 +340,8 @@ window.lang = {
 	},
 	ja: {
 		home: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			login: "ログイン",
 			signup: "登録する",
 			my_profile: "私のプロフィール",
@@ -303,25 +361,37 @@ window.lang = {
 			multi_player3_noti: "マルチマッチプレーヤー3に登録されました",
 		},
 		login: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			login: "ログイン",
 			signup: "登録する",
 			home: "ホームへ戻る",
-			id: "IDを書く",
-			password: "パスワードを書く",
-			noti: "ログイン成功！\n歓迎します！",
+			id: "ID",
+			id_box: "IDを書く",
+			password: "パスワード",
+			pw_box: "パスワードを書く",
+			noti: "ログイン成功！\n歓迎します!",
 			err: "ログインに失敗しました！\n再試行してください",
 		},
 		signup: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			login: "ログイン",
 			signup: "登録する",
 			home: "ホームへ戻る",
-			id: "IDを書く",
-			password: "パスワードを書く",
-			email: "メールを書く",
+			id: "ID",
+			id_box: "IDを書く",
+			password: "パスワード",
+			pw_box: "パスワードを書く",
+			email: "メール",
+			email_box: "メールを書く",
+			image: "プロフィール画像",
 			noti: "会員登録成功\nメイン画面からログインしてください",
 			err: "会員登録に失敗しました\nフォームを再確認してください",
 		},
 		profile: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			title: "ユーザー情報",
 			change_pic: "プロフィール画像を変更する",
 			change_id: "IDを変更する",
@@ -345,6 +415,8 @@ window.lang = {
 			change_err: "ユーザー情報変更失敗！\n再試行してください",
 		},
 		info: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			title: "ユーザー情報",
 			match_request: "マッチリクエスト",
 			chat: "1:1チャット",
@@ -375,10 +447,15 @@ window.lang = {
 			is_blocked: "チャットがブロックされています",
 		},
 		chat: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			msg: "メッセージを入力してください",
+			submit: "転送",
 			nomsg_err: "メッセージを入力してください！",
 		},
 		chatprivate: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			msg: "メッセージを入力してください",
 			submit: "転送",
 			isblock_err: "相手がブロックしたユーザーです",
@@ -387,6 +464,8 @@ window.lang = {
 			wrongconnect_err: "チャットルームへの誤ったアクセスです",
 		},
 		chatlobby: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			room_list: "チャットルーム一覧",
 			user_list: "ユーザー一覧",
 			create_room: "チャットルームの作成",
@@ -396,15 +475,20 @@ window.lang = {
 			err: "チャットルーム作成失敗",
 		},
 		matchlobby: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			tournament_list: "トーナメントマッチ",
 			create_tournament: "トーナメント作成",
 			tournament_name: "トーナメント名",
 			create_btn: "作成",
 			two_match_list: "2:2マッチ",
 			one_match_list: "1:1マッチ",
-			tournament_create: "トーナメントルーム作成完了"
+			tournament_create: "トーナメントルーム作成完了",
+			create_err: "トーナメントルーム作成失敗",
 		},
 		tournament: {
+			homebtn: "ホーム",
+			langbtn: "言語",
 			nick_input: "エイリアスを入力してください",
 			apply: "トーナメント申込",
 			start: "トーナメント開始",
@@ -426,26 +510,17 @@ window.lang = {
 
 let langNow = 'ko';
 
-// export async function getNowLang() {
-// 	if (await check_login() === true) {
-// 		const csrftoken = Cookies.get('csrftoken');
-// 		const response = await fetch('user/info', {
-// 			method: 'GET',
-// 			headers: {
-// 				'Content-Type': 'application/json',
-// 				'X-CSRFToken': csrftoken,
-// 			},
-// 		});
-		
-// 		if (response.ok) {
-// 			const data = await response.json();
-// 			console.log("setLanguage", data);
-// 			return data[0].language;
-// 		}
-// 	}
-// 	else
-// 		return document.getElementById("languageSelector").value;
-// }
+document.querySelectorAll('.dropdown-item').forEach(item => {
+	item.addEventListener('click', event => {
+	  event.preventDefault(); // 기본 동작(링크 이동) 방지
+	  const selectedValue = event.target.getAttribute('value');
+	  console.log(`Selected value: ${selectedValue}`);
+	  langNow = selectedValue;
+
+	  // 선택된 값을 드롭다운 버튼에 표시
+	  document.getElementById('languageSelector').textContent = event.target.textContent;
+	});
+  });
 
 async function setLanguage(category) {
 	if (await check_login() === true) {

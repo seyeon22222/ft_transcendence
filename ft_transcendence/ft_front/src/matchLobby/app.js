@@ -1,6 +1,6 @@
 import router from "../../base/router.js"
 import { formatDateTime } from "../info/info_func.js";
-import { check_login } from "../utilities.js"
+import { check_login, showModal } from "../utilities.js"
 
 export async function matchLobby_view() {
 
@@ -150,6 +150,7 @@ export async function matchLobby_view() {
             } else {
                 const data = await res.json();
                 // alert(data.error);
+				showModal('matchlobby', 'create_err');
             }
         })
     } catch(error) {
