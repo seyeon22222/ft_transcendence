@@ -113,6 +113,9 @@ class Main {
     window.addEventListener("resize", handleResize);
     window.addEventListener("keyup", handleKeyUp);
     window.addEventListener("keydown", handleKeyDown);
+    
+    let messageQueue = [];
+    let processingMessages = false;
 
     ws.onopen = () => {
       let message = { message: "", players: window.players};
@@ -124,6 +127,18 @@ class Main {
     };
 
     ws.onmessage = async function (e) {
+      messageQueue.push(e);
+      if (!processingMessages) {
+        processingMessages = true;
+        while (messageQueue.length > 0) {
+          let event = messageQueue.shift();
+          await processMessage(event);
+        }
+        processingMessages = false;
+      }
+    };
+
+    async function processMessage(e) {
       let data = JSON.parse(e.data);
       let ball_pos = data["ball_pos"];
       let paddle1_pos = data["paddle1_pos"];
@@ -131,7 +146,7 @@ class Main {
       let score1 = data["score1"];
       let score2 = data["score2"];
       let is_active = data["is_active"];
-
+    
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
         is_active = 0;
@@ -139,10 +154,9 @@ class Main {
           "===========href=========",
           `/#tournament/${get_list_hash[get_list_hash.length - 1]}`
         );
-      } 
-      else {
-        document.getElementById("game-score").innerHTML =
-          score1 + " : " + score2;
+      } else {
+        if (document.getElementById("game-score"))
+          document.getElementById("game-score").innerHTML = score1 + " : " + score2;
         for (let i = 0; i < 3; i++) {
           Main.stick1.pos[i] = paddle1_pos[i];
           Main.stick2.pos[i] = paddle2_pos[i];
@@ -156,15 +170,14 @@ class Main {
           Main.entry();
           flag = 1;
         }
-
-        }
+      }
+    
       if (is_active == 0) {
         let get_list_hash = get_hash.split("_");
         let match_id = get_list_hash[get_list_hash.length - 1];
         console.log(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`);
         const csrftoken_t = Cookies.get("csrftoken");
         const response_t = await fetch(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
-          //match serializer 반환값 가져옴
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -173,21 +186,29 @@ class Main {
           credentials: "include",
         });
         if (response_t.ok) {
-        let data = await response_t.json();
-        let name_t = data.name;
-        console.log("name_t", name_t);
-        location.href = `/#tournament/${name_t}`;
+          let data = await response_t.json();
+          let name_t = data.name;
+          console.log("name_t", name_t);
+          await closeWebSocket();
+          location.href = `/#tournament/${name_t}`;
+        }
       }
     }
-    };
+    
+    async function closeWebSocket() {
+      if (ws) {
+        ws.close();
+        ws = null;
+      }
+    }
   }
   static entry() {
+    if (!document.getElementById("canvas"))
+      return;
+    
     const canvas = document.getElementById("canvas");
-    canvas.height = window.innerHeight - 50;
-    canvas.width = window.innerWidth - 50;
-    console.log(canvas.height);
-    console.log(canvas.width);
-
+    canvas.height = 909;
+    canvas.width = 1678;
     const gl = canvas.getContext("webgl2");
     if (!gl) {
       alert("Webgl2 not supported!");

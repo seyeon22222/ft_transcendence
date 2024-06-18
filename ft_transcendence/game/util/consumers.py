@@ -19,6 +19,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.p2 = ball.Stick([15,1.5,0], 0.5, 3)
         self.paddles = []
         self.obtacles = []
+        self.isloop = True
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -88,7 +89,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while self.b.is_active:
+        while self.isloop:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -116,7 +117,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'is_active': False,
                 }
                 response = requests.post(backend_url, json=game_results)
-
+            if self.b.is_active == 0:
+                self.isloop = False
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -173,6 +175,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
         self.p2 = ball.Stick([15,1.5,0], 0.5, 3)
         self.paddles = []
         self.obtacles = []
+        self.isloop = True
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -244,7 +247,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while self.b.is_active:
+        while self.isloop:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -277,6 +280,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 response = requests.post(backend_url, json=game_results)
                 # print(response.status_code)
                 # print(response.text)
+            if self.b.is_active == 0:
+                self.isloop = False
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -335,6 +340,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         self.p4 = ball.Stick([15,-1.5,0], 0.5, 3)
         self.paddles = []
         self.obtacles = []
+        self.isloop = True
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -413,7 +419,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while self.b.is_active:
+        while self.isloop:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -447,6 +453,8 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
                 response = requests.post(backend_url, json=game_results)
                 # print(response.status_code)
                 # print(response.text)
+            if self.b.is_active == 0:
+                self.isloop = False
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,

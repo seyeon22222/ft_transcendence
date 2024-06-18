@@ -368,7 +368,7 @@ class multiMatchmakingView(APIView):
                 f'user_{player_id}',
                 {
                     'type': 'message',
-                    'message': f'Invite to match {match_name}.',
+                    'message': f'{match_name}.',
                     'player1': player_ids[0],
                     'player2': player_ids[1],
                     'player3': player_ids[2],
@@ -390,7 +390,7 @@ class tournamentInviteView(APIView):
             f'user_{player1}',
             {
                 'type': 'message',
-                'message': f'Invite to tournament {intournament.name}.',
+                'message': f'{intournament.name}.',
                 'player1' : player1,
                 'player2' : player2,
                 'g_type' : 't',
@@ -402,7 +402,7 @@ class tournamentInviteView(APIView):
             f'user_{player2}',
             {
                 'type': 'message',
-                'message': f'Invite to tournament {intournament.name}.',
+                'message': f'{intournament.name}.',
                 'player1' : player1,
                 'player2' : player2,
                 'g_type' : 't',
@@ -424,7 +424,7 @@ class MatchInviteView(APIView):
             f'user_{player1}',
             {
                 'type': 'message',
-                'message': f'Invite to match {match.name}.',
+                'message': f'{match.name}.',
                 'player1' : player1,
                 'player2' : player2,
                 'g_type' : 'm',
@@ -436,7 +436,7 @@ class MatchInviteView(APIView):
             f'user_{player2}',
             {
                 'type': 'message',
-                'message': f'Invite to match {match.name}.',
+                'message': f'{match.name}.',
                 'player1' : player1,
                 'player2' : player2,
                 'g_type' : 'm',
