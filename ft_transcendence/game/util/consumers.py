@@ -75,7 +75,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
-        while True:
+        while self.isloop:
             # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
@@ -86,6 +86,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             'is_active':self.b.is_active
             }))
             # 초 대기
+            if self.b.is_active == 0:
+                self.isloop = False
             await asyncio.sleep(0.001)
 
     async def game_update(self):
@@ -233,7 +235,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
             response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
-        while True:
+        while self.isloop:
             # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
@@ -243,6 +245,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
             'score2': self.b.point2,
             'is_active':self.b.is_active
             }))
+            if self.b.is_active == 0:
+                self.isloop = False
             # 초 대기
             await asyncio.sleep(0.001)
 
@@ -403,7 +407,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
-        while True:
+        while self.isloop:
             # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
@@ -415,6 +419,8 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             'score2': self.b.point2,
             'is_active':self.b.is_active
             }))
+            if self.b.is_active == 0:
+                self.isloop = False
             # 초 대기
             await asyncio.sleep(0.001)
 
