@@ -5,6 +5,7 @@ export async function tournament_view(hash) {
     // set style
     const style = document.getElementById("style");
     style.innerHTML = tournament_style();
+	setLanguage('tournament');
 
     // socket 초기화
     if (window.t_socket) {

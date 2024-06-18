@@ -11,6 +11,8 @@ export async function chatPrivate_js(hash) {
       return;
   }
 
+  setLanguage('chatprivate');
+
   // get current private room's two username
   const slug = hash.slice(1);
   const csrftoken = Cookies.get("csrftoken");

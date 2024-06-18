@@ -150,10 +150,8 @@ export async function info_js() {
         select_game_stat_view(element);
         select_match_info_view(element);
       }
-	  setLanguage('info');
     });
     if (!flag) {
-		console.log("Qqqq");
 		const infoModal = document.querySelector('.modal');
 		showModal('info', 'nouser_err');
 		infoModal.addEventListener('hidden.bs.modal', function () {

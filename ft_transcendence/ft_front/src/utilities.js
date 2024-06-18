@@ -70,15 +70,6 @@ export function delete_back_show() {
 	bodyElement.style.paddingRight = '';
 }
 
-// export function showModal(title, body) {
-// 	const modal = new bootstrap.Modal(document.querySelector('.modal'));
-// 	const modalTitle = document.querySelector('.modal .modal-title');
-// 	const modalBody = document.querySelector('.modal .modal-body p');
-// 	modalTitle.innerText = title;
-// 	modalBody.innerText = body;
-// 	modal.show();
-// }
-
 export function showModal(category, body) {
 	const langNow = document.getElementById("languageSelector").value;
 	const modal = new bootstrap.Modal(document.querySelector('.modal'));
