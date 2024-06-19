@@ -125,8 +125,23 @@ class Main {
     ws.onclose = () => {
       console.log("ws close : " + get_hash);
     };
+  
+    let messageQueue = [];
+    let processingMessages = false;
 
     ws.onmessage = async function (e) {
+      messageQueue.push(e);
+      if (!processingMessages) {
+        processingMessages = true;
+        while (messageQueue.length > 0) {
+          let event = messageQueue.shift();
+          await processMessage(event);
+        }
+        processingMessages = false;
+      }
+    };
+    
+    async function processMessage(e) {
       let data = JSON.parse(e.data);
       let ball_pos = data["ball_pos"];
       let paddle1_pos = data["paddle1_pos"];
@@ -139,7 +154,7 @@ class Main {
   
       if (score1 == 5 || score2 == 5) {
         let get_list_hash = get_hash.split("_");
-        // is_active = 0;
+        is_active = 0;
         console.log(
           "===========href=========",
           `/#multi/${get_list_hash[get_list_hash.length - 1]}`
@@ -166,6 +181,7 @@ class Main {
 
         }
       if (is_active == 0) {
+        console.log("is_active ============ 0")
         let get_list_hash = get_hash.split("_");
         location.href = `/#multi/2:2 Match ${get_list_hash[get_list_hash.length - 1]}`;
       }
