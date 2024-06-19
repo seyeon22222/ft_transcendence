@@ -77,12 +77,14 @@ const router = async () => {
   render = routes[`/${user_location[0]}`];
 
   content.innerHTML = await render[0]();
-  if (user_location.length >= 2) {
-    hash = `/${user_location[1]}`;
-    await render[1](hash);
-  } else {
-    await render[1]();
-  }
+  setTimeout(async () => {
+    if (user_location.length >= 2) {
+      hash = `/${user_location[1]}`;
+      await render[1](hash);
+    } else {
+      await render[1]();
+    }
+  }, 0.5);
 };
 
 export default router;

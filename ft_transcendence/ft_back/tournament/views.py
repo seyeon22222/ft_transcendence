@@ -734,18 +734,26 @@ class updateMatchCustom(APIView):
      def post(self, request, match_id):
         # match_id를 사용하여 해당 Match 객체 가져오기
         match = get_object_or_404(Match, id=match_id)
-        match.r = request.data.get('r', match.r)
-        match.g = request.data.get('g', match.g)  
-        match.b = request.data.get('b', match.b)
-        match.x = request.data.get('x', match.x) 
-        match.y = request.data.get('y', match.y)
-        match.z = request.data.get('z', match.z) 
-        match.w = request.data.get('w', match.w)
-        match.h = request.data.get('h', match.h)  
-        # 다른 필드들도 필요에 따라 추가로 업데이트
+        
+        # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
+        r = request.data.get('r', 0)
+        g = request.data.get('g', 0)
+        b = request.data.get('b', 0)
+        x = request.data.get('x', 0.0)
+        y = request.data.get('y', 0.0)
+        z = request.data.get('z', 0.0)
+        w = request.data.get('w', 0.0)
+        h = request.data.get('h', 0.0)
+        
+        # 새로운 custom 객체 생성
+        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        
+        # match 객체와 새로운 custom 객체 연결
+        match.custom.add(new_custom)
         
         # 변경된 내용 저장
         match.save()
+        
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
 
 class updateTournamentCustom(APIView):
@@ -782,18 +790,27 @@ class updateTournamentCustom(APIView):
         except tournament.DoesNotExist:
             return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
         
-        match.r = request.data.get('r', match.r)
-        match.g = request.data.get('g', match.g)  
-        match.b = request.data.get('b', match.b)
-        match.x = request.data.get('x', match.x) 
-        match.y = request.data.get('y', match.y)
-        match.z = request.data.get('z', match.z) 
-        match.w = request.data.get('w', match.w)
-        match.h = request.data.get('h', match.h)  
-    
+        # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
+        r = request.data.get('r', 0)
+        g = request.data.get('g', 0)
+        b = request.data.get('b', 0)
+        x = request.data.get('x', 0.0)
+        y = request.data.get('y', 0.0)
+        z = request.data.get('z', 0.0)
+        w = request.data.get('w', 0.0)
+        h = request.data.get('h', 0.0)
+        
+        # 새로운 custom 객체 생성
+        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        
+        # match 객체와 새로운 custom 객체 연결
+        match.custom.add(new_custom)
+        
         # 변경된 내용 저장
         match.save()
+        
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
+
 
 class updateMultiCustom(APIView):
     def get(self, request, multimatch_id):
@@ -808,15 +825,24 @@ class updateMultiCustom(APIView):
 
     def post(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
-        match.r = request.data.get('r', match.r)
-        match.g = request.data.get('g', match.g)  
-        match.b = request.data.get('b', match.b)
-        match.x = request.data.get('x', match.x) 
-        match.y = request.data.get('y', match.y)
-        match.z = request.data.get('z', match.z) 
-        match.w = request.data.get('w', match.w)
-        match.h = request.data.get('h', match.h)  
-    
+        
+        # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
+        r = request.data.get('r', 0)
+        g = request.data.get('g', 0)
+        b = request.data.get('b', 0)
+        x = request.data.get('x', 0.0)
+        y = request.data.get('y', 0.0)
+        z = request.data.get('z', 0.0)
+        w = request.data.get('w', 0.0)
+        h = request.data.get('h', 0.0)
+        
+        # 새로운 custom 객체 생성
+        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        
+        # match 객체와 새로운 custom 객체 연결
+        match.custom.add(new_custom)
+        
         # 변경된 내용 저장
         match.save()
+        
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
