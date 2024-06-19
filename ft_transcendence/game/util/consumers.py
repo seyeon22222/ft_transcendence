@@ -19,7 +19,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.p2 = ball.Stick([15,1.5,0], 0.5, 3)
         self.paddles = []
         self.obtacles = []
-        self.isloop = True
+        self.message_loop = True
+        self.game_loop = True
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -75,7 +76,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
-        while self.isloop:
+        while self.message_loop:
             # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
@@ -87,11 +88,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             }))
             # 초 대기
             if self.b.is_active == 0:
-                self.isloop = False
+                self.message_loop = False
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while self.isloop:
+        while self.game_loop:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -120,7 +121,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
                 response = requests.post(backend_url, json=game_results)
             if self.b.is_active == 0:
-                self.isloop = False
+                self.game_loop = False
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -177,7 +178,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
         self.p2 = ball.Stick([15,1.5,0], 0.5, 3)
         self.paddles = []
         self.obtacles = []
-        self.isloop = True
+        self.message_loop = True
+        self.game_loop = True
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -235,7 +237,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
             response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
-        while self.isloop:
+        while self.message_loop:
             # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
@@ -246,12 +248,12 @@ class TGameConsumer(AsyncWebsocketConsumer):
             'is_active':self.b.is_active
             }))
             if self.b.is_active == 0:
-                self.isloop = False
+                self.message_loop = False
             # 초 대기
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while self.isloop:
+        while self.game_loop:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -285,7 +287,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 # print(response.status_code)
                 # print(response.text)
             if self.b.is_active == 0:
-                self.isloop = False
+                self.game_loop = False
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -344,7 +346,8 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         self.p4 = ball.Stick([15,-1.5,0], 0.5, 3)
         self.paddles = []
         self.obtacles = []
-        self.isloop = True
+        self.message_loop = True
+        self.game_loop = True
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -376,7 +379,6 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.obtacles[1].movePos([0, -8, 0])
             self.task = self.loop.create_task(self.game_update())
         
-        
         await self.send(text_data=json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -407,7 +409,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             response = requests.post(backend_url, json=game_results)
 
     async def send_message(self):
-        while self.isloop:
+        while self.message_loop:
             # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
@@ -420,12 +422,12 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             'is_active':self.b.is_active
             }))
             if self.b.is_active == 0:
-                self.isloop = False
+                self.message_loop = False
             # 초 대기
             await asyncio.sleep(0.001)
 
     async def game_update(self):
-        while self.isloop:
+        while self.game_loop:
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
@@ -460,7 +462,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
                 # print(response.status_code)
                 # print(response.text)
             if self.b.is_active == 0:
-                self.isloop = False
+                self.game_loop = False
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,

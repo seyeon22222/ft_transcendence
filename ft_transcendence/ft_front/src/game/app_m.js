@@ -11,6 +11,7 @@ import { Program } from "../../static/graphics/Program.js";
 import { Shader } from "../../static/graphics/Shader.js";
 import { VertexBuffer } from "../../static/graphics/VertexBuffer.js";
 import { Ball, Stick } from "../../static/phong/ball.js";
+import { delete_back_show } from "../utilities.js";
 
 class Main {
   static gl = null;
@@ -417,6 +418,7 @@ class Main {
 }
 
 export async function game_m_js(hash) {
+  delete_back_show();
   const get_hash = hash.slice(1);
   let flag = 0;
   let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
@@ -470,7 +472,8 @@ export async function game_m_js(hash) {
           location.href = "/#";
         }
       } else {
-        const error = await response.json();
+        location.href = "/#";
+        const error = await response_name.json();
         console.log("user info API 요청 실패", error);
       }
     } else {

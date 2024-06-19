@@ -106,7 +106,6 @@ export async function info_js() {
   `;
 
 	// delete_back_show();
-	setLanguage("info");
 
     // check login status
     const check = await check_login();
@@ -149,6 +148,7 @@ export async function info_js() {
         select_image_view(element);
         select_game_stat_view(element);
         select_match_info_view(element);
+        setLanguage("info");
       }
     });
     if (!flag) {

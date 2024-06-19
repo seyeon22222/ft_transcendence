@@ -97,7 +97,11 @@ def handle_tournament_invite(tournament_instance, user_level):
 
     
     sorted_participants = filtered_participants.order_by('id')
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> seykim
     
     for i in range(0, len(sorted_participants), 2):
         player1 = sorted_participants[i].player
@@ -118,7 +122,7 @@ def handle_tournament_invite(tournament_instance, user_level):
             f'user_{player1_uuid}',
             {
                 'type': 'message',
-                'message': f'Invite to tournament {tournament_instance.name}.',
+                'message': f'{tournament_instance.name}.',
                 'player1' : str(player1_uuid),
                 'player2' : str(player2_uuid),
                 'g_type' : 't',
@@ -130,7 +134,7 @@ def handle_tournament_invite(tournament_instance, user_level):
             f'user_{player2_uuid}',
             {
                 'type': 'message',
-                'message': f'Invite to tournament {tournament_instance.name}.',
+                'message': f'{tournament_instance.name}.',
                 'player1' : str(player1_uuid),
                 'player2' : str(player2_uuid),
                 'g_type' : 't',

@@ -1,4 +1,4 @@
-import { check_language } from '../src/utilities.js'
+import { check_language, delete_back_show } from '../src/utilities.js'
 
 function createInvitePopup() {
     const popupContainer = document.getElementById('popupContainer');
@@ -143,6 +143,7 @@ async function m_accept(invitePopup, player1, player2, g_id) {
         const data = await response.json();
         url = data.hash;
         console.log(url);
+        delete_back_show();
         window.location.href = `/#gamem/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
@@ -166,6 +167,7 @@ async function t_accept(invitePopup, player1, player2, g_id) {
         const data = await response.json();
         url = data.hash;
         console.log(url);
+        delete_back_show();
         window.location.href = `/#gamet/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
@@ -191,6 +193,7 @@ async function mul_accept(invitePopup, player1, player2, player3, player4, g_id)
         const data = await response.json();
         url = data.hash;
         console.log(url);
+        delete_back_show();
         window.location.href = `/#gamemulti/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
