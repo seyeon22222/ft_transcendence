@@ -71,6 +71,7 @@ class Match(models.Model):
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2')
     match_result = models.CharField(default='', max_length=1)
     is_active = models.BooleanField(default=True)
+    is_flag = models.BooleanField(default=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requester')
     custom = models.ManyToManyField(custom, related_name='m_custom')

@@ -96,7 +96,7 @@ def handle_tournament_invite(tournament_instance, user_level):
     filtered_participants = tournament_participants.filter(level=user_level)
 
     
-    sorted_participants = filtered_participants.order_by('index')
+    sorted_participants = filtered_participants.order_by('id')
 
     
     for i in range(0, len(sorted_participants), 2):

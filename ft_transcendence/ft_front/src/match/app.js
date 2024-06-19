@@ -32,7 +32,8 @@ function makeButton(Button, matchId, data, player_data) {
     const startButton = document.createElement("button");
     startButton.innerHTML = "매치 시작";
     startButton.id = "match_start_button";
-    Button.appendChild(startButton);
+    if (data.is_flag !== false)
+      Button.appendChild(startButton);
     
     startButton.addEventListener("click", (event) => start_match(event, matchId, data));
   } else {
@@ -54,7 +55,7 @@ async function start_match(event, matchId, data) {
           'X-CSRFToken': csrftoken,
       },
       credentials: 'include',
-      body: JSON.stringify({ player1: data.player1, player2: data.player2, id : matchId}),
+      body: JSON.stringify({ player1: data.player1, player2: data.player2, id : matchId, is_flag : false}),
   });
   if (response.ok) {
       console.log(`${data.player1_username}와 ${data.player2_username}에게 게임 초대가 전송되었습니다.`);

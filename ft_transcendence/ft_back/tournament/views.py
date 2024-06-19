@@ -263,6 +263,7 @@ class MatchmakingView(APIView):
                     requester=user,
                     status='accepted',
                     is_active=True,
+                    is_flag=False,
                     match_date=startDate,
                 )
                 self.matchmakingInvite(match.id, user, opponent_user)
@@ -419,7 +420,10 @@ class MatchInviteView(APIView):
         match = get_object_or_404(Match, pk=match_id)
         player1 = request.data.get("player1")
         player2 = request.data.get("player2")
-
+        is_flag = request.data.get("is_flag")
+        match.is_flag = is_flag
+        match.save()
+        
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f'user_{player1}',
