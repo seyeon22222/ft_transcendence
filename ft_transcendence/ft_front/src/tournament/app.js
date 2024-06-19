@@ -454,7 +454,11 @@ async function updateTournamentInfo(arr) {
                 break;
             }
         }
-        player = player.sort((a, b) => a.index - b.index);
+        console.log("DEBUG FOR PLAYER");
+        console.log(player);
+        player = player.sort((a, b) => a.id - b.id);
+        console.log(player);
+
         const oper_csrftoken = Cookies.get('csrftoken');
         const oper_response = await fetch('user/info', {
             method: 'GET',
@@ -505,9 +509,7 @@ function player_check(player) {
 }
 
 /*
-    플레이어가 2명일 경우, semi_final에 플레이어 닉네임 삽입
-    플레이어가 3~4명일 경우, semi_final clear, quarter_final에 플레이어 닉네임 삽입
-    플레이어가 5~8명일 경우, quarter_final clear, round_8에 플레이어 닉네임 삽입
+    토너먼트 대진표 초기화, 가장 바닥 라운드 그려주기
 */
 function tour_view(player) {
     console.log("tour_view", player);
@@ -568,8 +570,21 @@ function tourstart_view(player) {
             }
 
             if (player.length > 4) {
-                const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
-                quarterfinal_html.innerHTML = player[i - 1].nickname;
+                if (player.length === 6) {
+                    if (i <= 4) { // player 1, player 2, player 3, player 4
+                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2
+                        quarterfinal_html.innerHTML = player[i - 1].nickname;
+                    } else if (i === 5) { // player 5
+                        const semifinal_html = document.getElementById(`quarter_final3`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    } else { // player 6
+                        const semifinal_html = document.getElementById(`quarter_final4`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    }
+                } else { // player 5, player 6
+                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
+                    quarterfinal_html.innerHTML = player[i - 1].nickname;
+                }
             }
         } else if (player[i - 1].level === 2) {
             if (player.length > 2) {
@@ -583,13 +598,39 @@ function tourstart_view(player) {
             }
             
             if (player.length > 4) {
-                const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
-                quarterfinal_html.innerHTML = player[i - 1].nickname;
+                if (player.length === 6) {
+                    if (i <= 4) { // player 1, player 2, player 3, player 4
+                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2
+                        quarterfinal_html.innerHTML = player[i - 1].nickname;
+                    } else if (i === 5) { // player 5
+                        const semifinal_html = document.getElementById(`quarter_final3`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    } else { // player 6
+                        const semifinal_html = document.getElementById(`quarter_final4`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    }
+                } else { // player 5, player 6
+                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
+                    quarterfinal_html.innerHTML = player[i - 1].nickname;
+                }
             }
         } else if (player[i - 1].level === 3) {
             if (player.length > 4) {
-                const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
-                quarterfinal_html.innerHTML = player[i - 1].nickname;
+                if (player.length === 6) {
+                    if (i <= 4) { // player 1, player 2, player 3, player 4
+                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2
+                        quarterfinal_html.innerHTML = player[i - 1].nickname;
+                    } else if (i === 5) { // player 5
+                        const semifinal_html = document.getElementById(`quarter_final3`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    } else { // player 6
+                        const semifinal_html = document.getElementById(`quarter_final4`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    }
+                } else { // player 5, player 6
+                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
+                    quarterfinal_html.innerHTML = player[i - 1].nickname;
+                }
             }
         }
     }
