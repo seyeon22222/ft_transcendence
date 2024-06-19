@@ -118,7 +118,7 @@ export async function tournament_view(hash) {
         });
         if (game_check.ok) {
             const game_data = await game_check.json();
-            if (game_data.is_active === false) {
+            if (game_data.is_active === false || game_data.is_flag === false) {
 				showModal('tournament', 'already_noti');
                 return ;
             }
@@ -193,7 +193,7 @@ async function startTournament(tournament_id) {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken,
         },
-        body : JSON.stringify({is_active : true})
+        body : JSON.stringify({is_active : true, is_flag : false})
     });
     if (response.ok) {
 
@@ -204,7 +204,7 @@ async function startTournament(tournament_id) {
 			showModal('tournament', 'under_noti');
             return;
         }
-        if (data.is_active === false) {
+        if (data.is_active === false || data.is_flag === false) {
 			showModal('tournament', 'already_noti');
             return;
         }

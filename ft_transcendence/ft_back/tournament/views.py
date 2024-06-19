@@ -58,6 +58,7 @@ class tournamentGame(APIView):
     def post(self, request, tournament_id):
         specific_tournament = get_object_or_404(tournament, pk=tournament_id)
         specific_tournament.is_active = request.data.get('is_active')
+        specific_tournament.is_flag = request.data.get('is_flag')
         specific_tournament.save()
         serializer = tournamentSerializer(specific_tournament)
         return Response(serializer.data)
