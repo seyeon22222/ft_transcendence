@@ -187,27 +187,26 @@ async function startTournament(tournament_id) {
         },
         credentials: 'include',
     });
-    await fetch(`match/t_list/${tournament_id}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken,
-        },
-        body : JSON.stringify({is_active : true, is_flag : false})
-    });
     if (response.ok) {
-
         const data = await response.json();
-        const players = data.participants;
-
-        if (players.length < 2) {
-			showModal('tournament', 'under_noti');
-            return;
-        }
         if (data.is_active === false || data.is_flag === false) {
-			showModal('tournament', 'already_noti');
+            showModal('tournament', 'already_noti');
             return;
         }
+        const players = data.participants;
+        
+        if (players.length < 2) {
+            showModal('tournament', 'under_noti');
+            return;
+            }
+        await fetch(`match/t_list/${tournament_id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body : JSON.stringify({is_active : true, is_flag : false})
+        });
 
         // 부전승 처리, 짝수여도 부전승 필요함
         const result = await handleByePlayer(players);

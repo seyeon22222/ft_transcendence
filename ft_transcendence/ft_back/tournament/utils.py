@@ -68,7 +68,7 @@ def check_how_to_handle(participant_count, completed_matches):
         elif completed_matches == 4:
             return {'operation': 1, 'winner_level': 2, 'loser_level': 3} 
         elif completed_matches == 5:
-            return {'operation': 2, 'winner_level': 2, 'loser_level': 3} 
+            return {'operation': 2, 'winner_level': 1, 'loser_level': 2} 
     else: 
         if completed_matches == 0 or completed_matches == 1 or completed_matches == 2:
             return {'operation': 0, 'winner_level': 3, 'loser_level': 4} 
@@ -118,7 +118,7 @@ def handle_tournament_invite(tournament_instance, user_level):
             f'user_{player1_uuid}',
             {
                 'type': 'message',
-                'message': f'Invite to tournament {tournament_instance.name}.',
+                'message': f'{tournament_instance.name}.',
                 'player1' : str(player1_uuid),
                 'player2' : str(player2_uuid),
                 'g_type' : 't',
@@ -130,7 +130,7 @@ def handle_tournament_invite(tournament_instance, user_level):
             f'user_{player2_uuid}',
             {
                 'type': 'message',
-                'message': f'Invite to tournament {tournament_instance.name}.',
+                'message': f'{tournament_instance.name}.',
                 'player1' : str(player1_uuid),
                 'player2' : str(player2_uuid),
                 'g_type' : 't',
