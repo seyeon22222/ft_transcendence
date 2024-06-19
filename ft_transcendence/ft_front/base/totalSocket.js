@@ -57,12 +57,12 @@ export async function initializeWebsocket() {
 			const user_lang = document.getElementById('languageSelector').value;
             // console.log("message", data);
 			// console.log(user_lang);
-			const message = `${window.lang[user_lang].message.match_complete} ${data.message}`;
+			// const message = `${window.lang[user_lang].message.match_complete} ${data.message}`;
             const player1 = data.player1;
             const player2 = data.player2;
             const g_type = data.g_type;
             const g_id = data.g_id;
-            openInvitePopup(message, player1, player2, g_type, g_id, data);
+            openInvitePopup(data.message, player1, player2, g_type, g_id, data);
         }
     } else {
         const error = await response.json();
@@ -80,16 +80,16 @@ export async function check_socket() {
 
 function openInvitePopup(message, player1, player2, g_type, g_id, data) {
     const popupMessage = document.getElementById('popupMessage');
-    popupMessage.textContent = message;
-
+    
     const invitePopup = document.getElementById('invitePopup');
     invitePopup.style.display = 'block';
-
+    
     let remaintimer = 5;
     const intervalId = setInterval(() => {
         const button_text = document.getElementById('acceptBtn');
 		const user_lang = document.getElementById('languageSelector').value;
         if (remaintimer > 0) {
+            popupMessage.textContent = `${window.lang[user_lang].message.match_complete} ${message}`;
             button_text.textContent = `${window.lang[user_lang].message.accept}(${remaintimer})`;
             remaintimer--;
         } else {
