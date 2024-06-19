@@ -511,7 +511,8 @@ export async function game_multi_js(hash) {
           location.href = "/#";
         }
       } else {
-        const error = await response.json();
+        location.href = "/#";
+        const error = await response_name.json();
         console.log("user info API 요청 실패", error);
       }
     } else {
