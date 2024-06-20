@@ -78,14 +78,12 @@ export function game_stat_view(data) {
     win_count: 0,
     defeat_count: 0,
     win_rate: "0",
-    reflect_rate: "0",
   };
 
   const statElements = [
     createStatElement("승리 횟수", stats.win_count),
     createStatElement("패배 횟수", stats.defeat_count),
     createStatElement("승률", stats.win_rate + "%"),
-    createStatElement("반사율", stats.reflect_rate + "%"),
   ];
 
   statElements.forEach((element) => gamestatus.appendChild(element));
@@ -185,7 +183,7 @@ export async function fetchMatchList(user_data, csrftoken) {
 }
 
 function createStatElement(label, value) {
-  const keyword = { "승리 횟수": "wins", "패배 횟수": "loses", "승률": "win_percent", "반사율": "reflections"};
+  const keyword = { "승리 횟수": "wins", "패배 횟수": "loses", "승률": "win_percent"};
   const element = document.createElement("h4");
 
 	element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: ${value}</span>`;

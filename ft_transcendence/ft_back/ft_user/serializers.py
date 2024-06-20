@@ -5,7 +5,7 @@ class GameStatSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = GameStat
-        fields = ['user', 'win_count', 'defeat_count', 'win_rate', 'reflect_rate']
+        fields = ['user', 'win_count', 'defeat_count', 'win_rate']
 
 class MatchInfoSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)

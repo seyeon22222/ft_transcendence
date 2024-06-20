@@ -28,7 +28,6 @@ class GameStat(models.Model):
     win_count = models.IntegerField(default=0) 
     defeat_count = models.IntegerField(default=0) 
     win_rate = models.IntegerField(default=0)
-    reflect_rate = models.IntegerField(default=0)
 
 class MatchInfo(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='match_info')

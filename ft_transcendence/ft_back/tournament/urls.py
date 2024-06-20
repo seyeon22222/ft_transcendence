@@ -1,5 +1,4 @@
-from django.urls import path, re_path
-from . import views
+from django.urls import path
 from .views import (
     tournamentCreateView, addTournamentPlayer, matchView,
     MatchRequestView, MatchResponseView, matchListView,
