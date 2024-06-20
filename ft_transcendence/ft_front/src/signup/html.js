@@ -32,19 +32,18 @@ export function signup_html() {
             </div>
         </div>
     </div>
-	<div class="modal_container" id="modal_container">
-		<div class="modal" tabindex="-1" style="display: none">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
-					</div>
-					<div class="modal-body">
-						<p></p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+
+    <div class="modal" tabindex="-1" style="display: none">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
+                </div>
+                <div class="modal-body">
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
     `;
 }

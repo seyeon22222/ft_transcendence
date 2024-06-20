@@ -3,7 +3,7 @@ export async function recordMessage(hash) {
   let message_data;
   let temp_data;
   const recordMessage = document.getElementById("chat-messages");
-  recordMessage.innerHTML = ""; // 이전 메시지 초기화
+  recordMessage.innerHTML = "";
   const temp_csrftoken = Cookies.get("csrftoken");
   const messageResponse = await fetch(`chat/rooms/${room_name_temp}`, {
     method: "GET",
@@ -14,7 +14,6 @@ export async function recordMessage(hash) {
     credentials: "include",
   });
 
-  //seycheon_block
   const req_response = await fetch(`user/info`, {
     method: "GET",
     headers: {
@@ -29,21 +28,18 @@ export async function recordMessage(hash) {
     const error = await req_response.json();
     console.error("API 요청 실패", error);
   }
-  //-----------------------
+
   if (messageResponse.ok) {
     message_data = await messageResponse.json();
 
     if (Array.isArray(message_data.messages)) {
       for (const message of message_data.messages) {
-        //seycheon_block
         const isBlocked = await checkBlockStatus(
-          //seycheon_block
           temp_data[0].username,
           message.username,
           temp_csrftoken
         );
         if (isBlocked == false) {
-          //seycheon_block
           const messageWrapper = document.createElement("div");
           messageWrapper.classList.add(
             "message-wrapper",
@@ -89,7 +85,6 @@ export async function recordMessage(hash) {
   }
 }
 
-// seycheon_block 차단 여부를 확인하는 함수
 async function checkBlockStatus(apply_user, accept_user, temp_csrftoken) {
   const formData = {
     apply_user: apply_user,
@@ -105,10 +100,8 @@ async function checkBlockStatus(apply_user, accept_user, temp_csrftoken) {
   });
 
   if (blockResponse.ok) {
-    return false; // 차단 여부 반환
+    return false;
   } else {
-    // console.error("Block check API error");
-    return true; // API 요청 실패 시 차단으로 간주
+    return true;
   }
 }
-//-----------------------

@@ -2,36 +2,13 @@ import { initializeWebsocket, check_socket } from "../../base/totalSocket.js";
 import { showModal } from "../utilities.js";
 
 export function login_js() {
-  // set style
+  
   const style = document.getElementById("style");
-  style.innerHTML = `
-    body {
-        background-color: #333; /* Dark gray background */
-        color: white;
-        font-family: 'Noto Sans KR', sans-serif;
-    }
-    .custom-yellow-btn {
-        background-color: #ffc107;
-        color: white;
-    }
-    .narrow-card {
-        max-width: 400px; /* Adjust this value to make the box narrower or wider */
-    }
-    .center-text { text-align: center; }
-    .spacing {
-        margin-top: 3rem; /* Adjust the value as needed for desired spacing */
-    }
-	.modal {
-		color: #000;
-		display: none;
-	}
-    `;
+  login_style(style);
 	
 	const csrftoken = Cookies.get("csrftoken");
 	setLanguage("login");
-	langNow = document.getElementById('languageSelector').value;
 	
-
 	try {
     fetch("user/check_login", {
       method: "GET",
@@ -61,18 +38,15 @@ export function login_js() {
             });
 
             if (response.ok) {
-				// const data = await response.json();
-				const modal = document.querySelector('.modal');
-				showModal('login', 'noti');
-				check_socket();
-				initializeWebsocket();
-				modal.addEventListener('hidden.bs.modal', function () {
-					location.href = "/#";
-				});
-            } else {
-            	// const error = await response.json();
-				showModal('login', 'err');
-			}
+              const modal = document.querySelector('.modal');
+              showModal('login', 'noti');
+              check_socket();
+              initializeWebsocket();
+              modal.addEventListener('hidden.bs.modal', function () {
+                location.href = "/#";
+				      });
+            } else
+		    		    showModal('login', 'err');
           } catch (error) {
             console.error("로그인 요청 중 오류 발생 : ", error);
           }
@@ -84,4 +58,29 @@ export function login_js() {
   }
 
   return null;
+}
+
+function login_style(style) {
+  style.innerHTML = `
+    body {
+        background-color: #333; /* Dark gray background */
+        color: white;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+    .custom-yellow-btn {
+        background-color: #ffc107;
+        color: white;
+    }
+    .narrow-card {
+        max-width: 400px; /* Adjust this value to make the box narrower or wider */
+    }
+    .center-text { text-align: center; }
+    .spacing {
+        margin-top: 3rem; /* Adjust the value as needed for desired spacing */
+    }
+	.modal {
+		color: #000;
+		display: none;
+	}
+    `;
 }

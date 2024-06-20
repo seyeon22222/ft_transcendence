@@ -40,8 +40,6 @@ class MatchConsumer(AsyncWebsocketConsumer):
 
 
 class messageConsumer(AsyncWebsocketConsumer):
-    
-
     async def connect(self):
         self.user_id = self.scope['url_route']['kwargs']['user_id']
         self.group_name = f'user_{self.user_id}'

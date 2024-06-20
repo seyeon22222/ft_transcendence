@@ -1,6 +1,3 @@
-// 1:1 매치의 파일과 비슷하게 이름 채워넣는 로직을 작성하면 됨
-// 2:2 해당 매치의 정보를 받아오는 곳 -> multimatchview/<int:multimatch_id>
-
 export async function multiMatch_js(hash) {
 
 	const style = document.getElementById("style");
@@ -24,9 +21,6 @@ export async function multiMatch_js(hash) {
 		const data = await response.json();
 		document.getElementById("match_name").innerHTML = data.name;
 		multimatch_render(data);
-	} else {
-		const error = await response.json();
-		// alert(error);
 	}
 
 }
@@ -67,27 +61,6 @@ function multimatch_render(data) {
 		}
 	}
 }
-
-// async function get_name() {
-// 	let data_name;
-// 	const csrftoken = Cookies.get('csrftoken');
-// 	const response_name = await fetch("user/info", {
-// 	  method: "GET",
-// 	  headers: {
-// 		"Content-Type": "application/json",
-// 		"X-CSRFToken": csrftoken,
-// 	  },
-// 	  credentials: "include",
-// 	});
-// 	if (response_name.ok) {
-// 	  data_name = await response_name.json();
-// 	} else {
-// 	  const error = await response.json();
-// 	  console.error("API 요청 실패", error);
-// 	}
-	
-// 	return (data_name);
-//   }
 
 function multiMatch_style() {
 	return `

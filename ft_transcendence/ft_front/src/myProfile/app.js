@@ -3,12 +3,9 @@ import { check_login } from "../utilities.js"
 
 export async function profile_js() {
 	try {
-		// set css style
 		const style = document.getElementById("style");
 		style.innerHTML = profile_style_html();
-		// setLanguage("profile");
 
-		// check login status
 		const check = await check_login();
 		if (check === false) {
 			location.href = `/#`;
@@ -18,7 +15,6 @@ export async function profile_js() {
 		let data;
 		const csrftoken = Cookies.get('csrftoken');
 		
-		// retrieve current user data
 		const response = await fetch('user/info', {
 			method: 'GET',
 			headers: {
@@ -29,9 +25,7 @@ export async function profile_js() {
 		});
 		if (response.ok) {
 			data = await response.json();
-			// console.log("In profile", data);
 			if (data) {
-				// set current user's info as placeholder
 				const name = document.getElementById("username_input");
 				const email = document.getElementById("email_input");
 				name.placeholder = data[0].username;

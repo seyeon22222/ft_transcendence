@@ -1,5 +1,3 @@
-// import { check_login } from '../utilities.js'
-
 window.lang = {
 	ko: {
 		home: {
@@ -512,12 +510,10 @@ let langNow = 'ko';
 
 document.querySelectorAll('.dropdown-item').forEach(item => {
 	item.addEventListener('click', event => {
-	  event.preventDefault(); // 기본 동작(링크 이동) 방지
+	  event.preventDefault();
 	  const selectedValue = event.target.getAttribute('value');
-	  console.log(`Selected value: ${selectedValue}`);
 	  langNow = selectedValue;
 
-	  // 선택된 값을 드롭다운 버튼에 표시
 	  document.getElementById('languageSelector').textContent = event.target.textContent;
 	});
   });
@@ -542,7 +538,6 @@ async function setLanguage(category) {
 	else
 		langNow = document.getElementById("languageSelector").value;
 	updateTexts(langNow, category);
-	console.log(langNow, category);
 }
 
 function updateTexts(langNow, category) {
@@ -577,7 +572,6 @@ async function check_login() {
 	  }
 }
 
-
 const language = document.getElementById("languageSelector");
 language.addEventListener("change", async (event) => {
 	event.preventDefault();
@@ -599,7 +593,7 @@ language.addEventListener("change", async (event) => {
 			console.log(data);
 		}
 	
-		const response = await fetch('user/language', {
+		await fetch('user/language', {
 			method: 'POST',
 			headers: {
 				'Content-Type' : 'application/json',
@@ -607,12 +601,6 @@ language.addEventListener("change", async (event) => {
 			},
 			body: JSON.stringify({user_id : data[0].user_id, language: document.getElementById('languageSelector').value})
 		});
-		
-		if (response.ok) {
-			// const t_data = await response.json();
-			// console.log(t_data);
-			// console.log("change!", document.getElementById('languageSelector').value);
-		}
 	}
 	user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
 	category = user_location[0];

@@ -54,10 +54,6 @@ export async function initializeWebsocket() {
 
         window.i_socket.onmessage = function (e) {
             const data = JSON.parse(e.data);
-			const user_lang = document.getElementById('languageSelector').value;
-            // console.log("message", data);
-			// console.log(user_lang);
-			// const message = `${window.lang[user_lang].message.match_complete} ${data.message}`;
             const player1 = data.player1;
             const player2 = data.player2;
             const g_type = data.g_type;
@@ -72,7 +68,6 @@ export async function initializeWebsocket() {
 
 export async function check_socket() {
     if (window.i_socket) {
-        console.log("close");
         window.i_socket.close();
         window.i_socket = null;
     }
@@ -93,7 +88,7 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
             button_text.textContent = `${window.lang[user_lang].message.accept}(${remaintimer})`;
             remaintimer--;
         } else {
-            clearInterval(intervalId); // 타이머 중지
+            clearInterval(intervalId);
             button_text.textContent = ``;
             if (g_type === 'm')
                 m_accept(invitePopup, player1, player2, g_id);
@@ -102,22 +97,18 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
             else if (g_type === 'mul') {
                 const player3 = data.player3;
                 const player4 = data.player4;
-                console.log("in socket",player3);
-                console.log("in socket",player4);
                 mul_accept(invitePopup, player1, player2, player3, player4, g_id);
             }
         }
-    }, 1000); // 1초 간격으로 실행
+    }, 1000);
 
     const acceptBtn = document.getElementById('acceptBtn');
     acceptBtn.onclick = async function(event) {
         event.preventDefault();
-        // 수락 로직 구현
-        console.log("게임 초대 수락");
         acceptBtn.textContent = ``;
-        clearInterval(intervalId); // 수락 시 타이머 중지
+        clearInterval(intervalId);
         if (g_type === 'm')
-            m_accept(invitePopup, player1, player2, g_id);
+            m_accept(invitePopup, g_id);
         else if (g_type === 't')
             t_accept(invitePopup, player1, player2, g_id);
         else if (g_type === 'mul') {
@@ -128,7 +119,7 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
     }
 }
 
-async function m_accept(invitePopup, player1, player2, g_id) {
+async function m_accept(invitePopup, g_id) {
     let url;
     const csrftoken = Cookies.get('csrftoken');
     const response = await fetch(`match/matchgethash/${g_id}`,  {
@@ -142,7 +133,6 @@ async function m_accept(invitePopup, player1, player2, g_id) {
     if (response.ok) {
         const data = await response.json();
         url = data.hash;
-        console.log(url);
         delete_back_show();
         window.location.href = `/#gamem/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
@@ -166,9 +156,8 @@ async function t_accept(invitePopup, player1, player2, g_id) {
     if (response.ok) {
         const data = await response.json();
         url = data.hash;
-        console.log(url);
         delete_back_show();
-        window.location.href = `/#gamet/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#gamet/${url}`;
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
@@ -177,8 +166,6 @@ async function t_accept(invitePopup, player1, player2, g_id) {
 }
 
 async function mul_accept(invitePopup, player1, player2, player3, player4, g_id) {
-    console.log("mul", player3);
-    console.log("mul", player4);
     let url;
     const csrftoken = Cookies.get('csrftoken');
     const response = await fetch(`match/multimatchhash/${player1}${player2}${player3}${player4}${g_id}`,  {
@@ -192,18 +179,14 @@ async function mul_accept(invitePopup, player1, player2, player3, player4, g_id)
     if (response.ok) {
         const data = await response.json();
         url = data.hash;
-        console.log(url);
         delete_back_show();
-        window.location.href = `/#gamemulti/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#gamemulti/${url}`;
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
         console.log(error);
     }
 }
-
-
-
 
 createInvitePopup();
 check_socket();

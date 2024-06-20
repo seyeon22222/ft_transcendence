@@ -24,7 +24,6 @@ export function login_html() {
             </div>
         </div>
     </div>
-	<div class="modal_container" id="modal_container">
 		<div class="modal" tabindex="-1" style="display: none">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -38,6 +37,5 @@ export function login_html() {
 				</div>
 			</div>
 		</div>
-	</div>
     `
 }

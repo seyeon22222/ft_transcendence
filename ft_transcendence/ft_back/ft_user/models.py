@@ -34,10 +34,3 @@ class MatchInfo(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='match_info')
     match_date = models.DateTimeField()
     match_result = models.CharField(max_length=5)
-
-
-# class Friends(models.Model):
-#     from_user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='sent_friend')
-#     to_user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='receive_friend')
-#     created_at = models.DateField(auto_now_add=True)
-#     status = models.CharField(max_length=20, choices=[('pending', '신청중'), ('accept', '수락'), ('reject', '거절')], default='신청중')

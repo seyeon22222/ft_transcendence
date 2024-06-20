@@ -24,7 +24,6 @@ export async function select_image_view(data) {
         profileImageDiv.innerHTML = '';
         profileImageDiv.appendChild(img);
         }
-
     }
 }
 

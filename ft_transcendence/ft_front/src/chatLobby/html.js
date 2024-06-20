@@ -5,13 +5,13 @@ export function chatLobby_html() {
             <div class="list_div">
                 <h1 class="text-3xl lg:text-6xl text-white" data-translate="room_list">채팅방 목록</h1>
                 <div class="w-full flex flex-wrap item-center" id="room_list">
-                    <!-- 여기에 각 room 추가 -->
+                    
                 </div>
             </div>
             <div class="list_div">
                 <h1 class="text-3xl lg:text-6xl text-white" data-translate="user_list">유저 목록</h1>
                 <div class="w-full flex flex-wrap item-center" id="user_list">
-                    <!-- 여기에 각 user link 추가 -->
+                    
                 </div>
             </div>
         </div>
@@ -24,20 +24,19 @@ export function chatLobby_html() {
             </form>
         </div>
     </div>
-	<div class="modal_container" id="modal_container">
-			<div class="modal" tabindex="-1" style="display: none; color: black;">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title"></h5>
-							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
-						</div>
-						<div class="modal-body">
-							<p></p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+	
+    <div class="modal" tabindex="-1" style="display: none; color: black;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
+                </div>
+                <div class="modal-body">
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
     `;
 }

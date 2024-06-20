@@ -17,8 +17,7 @@ export async function match_view(hash) {
     match_render(data);
     makeButton(Button, matchId, data, player_data);
   } else {
-    // const error = await response.json();
-    // alert(error);
+    const error = await response.json();
   }
 }
 
@@ -59,8 +58,6 @@ async function start_match(event, matchId, data) {
   });
   if (response.ok) {
       console.log(`${data.player1_username}와 ${data.player2_username}에게 게임 초대가 전송되었습니다.`);
-  } else {
-    //   alert('게임 초대 전송에 실패했습니다.');
   }
 }
 
