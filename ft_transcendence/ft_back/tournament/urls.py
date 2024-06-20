@@ -10,7 +10,6 @@ from .views import (
     tournamentMatchView, tournamentMatchDetailView, multiMatchmakingView, 
     multiMatchHash, multimatchResultView, MultiMatchDetailView,
     tournamentDetailView,tournamentMatchResultView, 
-    updateMatchCustom, updateTournamentCustom, updateMultiCustom
 )
 
 app_name = "tournament"
@@ -48,8 +47,5 @@ urlpatterns = [
     path('matchresult/<int:match_id>', matchResultView.as_view(), name='match_result'),
     path('multimatchresult/<int:multimatch_id>', multimatchResultView.as_view(), name='multimatch_result'),
     path('tournamentresult/<int:tournament_id>', tournamentMatchResultView.as_view(), name="tournament_result"),
-    
-    path('updatematchcustom/<int:match_id>',updateMatchCustom.as_view(), name="match_custom"),
-    path('updatetournamentcustom/<uuid:player1><uuid:player2><int:tournament_id>', updateTournamentCustom.as_view(), name="tournament_custom"),
-    path('updatemulticustom/<int:multimatch_id>',updateMultiCustom.as_view(),name='multi_custom')
+
 ]

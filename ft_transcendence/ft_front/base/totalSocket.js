@@ -91,7 +91,7 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
             clearInterval(intervalId);
             button_text.textContent = ``;
             if (g_type === 'm')
-                m_accept(invitePopup, player1, player2, g_id);
+                m_accept(invitePopup, g_id);
             else if (g_type === 't')
                 t_accept(invitePopup, player1, player2, g_id);
             else if (g_type === 'mul') {

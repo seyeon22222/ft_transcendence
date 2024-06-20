@@ -86,7 +86,6 @@ export async function info_js() {
       });
       if (req_response.ok) {
         temp_data = await req_response.json();
-        user_lang = temp_data[0].language;
       } else {
         const error = await req_response.json();
         console.error("API 요청 실패", error);

@@ -90,6 +90,7 @@ export async function make_tournament() {
 
 export async function multimatch_list_view(multiMatchcontainer) {
     let data;
+    const csrftoken = Cookies.get('csrftoken');
     const m_response = await fetch('match/multimatchList', {
         method: 'GET',
         headers: {

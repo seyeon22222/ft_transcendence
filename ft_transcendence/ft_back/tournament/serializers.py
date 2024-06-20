@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import tournament, tournamentMatch, tournamentParticipant, Match, MultiMatch, custom
+from .models import tournament, tournamentMatch, tournamentParticipant, Match, MultiMatch
 
 class tournamentParticipantSerializer(serializers.ModelSerializer):
 

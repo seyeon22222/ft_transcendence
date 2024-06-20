@@ -344,7 +344,6 @@ async function updateTournamentInfo(arr) {
             if (equal_arr(arr, data[i].name.split(" "))) {
                 tournament_id = data[i].id;
                 operator = data[i].operator;
-                flag = data[i].is_active;
                 for (let j = 0; j < data[i].participants.length; ++j) {
                     player.push(data[i].participants[j]);
                 }
