@@ -38,7 +38,6 @@ export class Mesh{
         const type = this.gl.UNSIGNED_INT;
         const offset = 0;
 
-        program.use();
         this.vertex_array._bind(); // vao
         this.gl.drawElements(mode, count, type, offset); // vao로 그림을 그림
         this.vertex_array._unbind();

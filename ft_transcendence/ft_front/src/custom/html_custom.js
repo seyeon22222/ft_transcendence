@@ -1,0 +1,67 @@
+export function custom_html() {
+    return `
+    <body>
+    <!-- Modal -->
+    <style>
+      .modal-dialog {
+          position: fixed;
+          margin: auto;
+          width: 320px;
+          height: 100%;
+          right: 0px;
+      }
+      .modal-content {
+          height: 50%;
+      }
+      </style>
+    <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">info</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div>
+                  <label for="message-text" class="col-form-label">width:</label>
+                  <input type="text" id="width" value="1">
+                </div>
+                <div>
+                  <label for="message-text" class="col-form-label">height:</label>
+                  <input type="text" id="height" value="1">
+                </div>
+                <div>
+                  <label for="message-text" class="col-form-label">degree:</label>
+                  <input type="text" id="degree" value="0">
+                </div>
+                <div>
+                  <label for="message-text" class="col-form-label">red(int[0, 255]):</label>
+                  <input type="text" id="red" value="255">
+                </div>
+                <div>
+                  <label for="message-text" class="col-form-label">green(int[0, 255]):</label>
+                  <input type="text" id="green" value="255">
+                </div>
+                <div>
+                  <label for="message-text" class="col-form-label">blue(int[0, 255]):</label>
+                  <input type="text" id="blue" value="255">
+                </div>
+              </form>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancel">cancel</button>
+              <button type="button" class="btn btn-primary" id="save">save</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="../src/static/game.css">
+    <div id="coordinate"></div>
+    <div class="game-container">
+      <canvas id="canvas"></canvas>
+    </div>
+    <div class="d-grid gap-2 col-7 mx-auto">
+      <button class="btn btn-primary" type="button" id="start">Start</button>
+    </div>
+</body>
+    `;
+}

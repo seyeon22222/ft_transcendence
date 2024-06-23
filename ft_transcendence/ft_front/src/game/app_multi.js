@@ -1,16 +1,8 @@
-import { Buffer } from "../../static/graphics/Buffer.js";
-import { DefaultFramebuffer } from "../../static/graphics/DefaultFramebuffer.js";
-import { Geometry } from "../../static/graphics/Geometry.js";
-import {
-  Mat4x4,
-  crossProduct,
-  normalizeVec,
-} from "../../static/graphics/Mat4x4.js";
-import { Mesh } from "../../static/graphics/Mesh.js";
-import { Program } from "../../static/graphics/Program.js";
-import { Shader } from "../../static/graphics/Shader.js";
-import { VertexBuffer } from "../../static/graphics/VertexBuffer.js";
-import { Ball, Stick } from "../../static/phong/ball.js";
+import { EventManager } from "../../static/Event/EventManager.js";
+import { Setting } from "../../static/graphics/Setting.js";
+
+// paddle_1 -> objects[1], paddle_2 -> objects[2], paddle_3 -> objects[3], paddle_4 -> objects[4], ball->objects[0]
+// [-15, 1.5]              [15, 1.5]               [-15, -1.5]              [15, -1.5]
 import { delete_back_show } from "../utilities.js";
 
 class Main {

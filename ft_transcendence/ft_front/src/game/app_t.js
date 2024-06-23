@@ -1,501 +1,220 @@
-import { Buffer } from "../../static/graphics/Buffer.js";
-import { DefaultFramebuffer } from "../../static/graphics/DefaultFramebuffer.js";
-import { Geometry } from "../../static/graphics/Geometry.js";
-import {
-  Mat4x4,
-  crossProduct,
-  normalizeVec,
-} from "../../static/graphics/Mat4x4.js";
-import { Mesh } from "../../static/graphics/Mesh.js";
-import { Program } from "../../static/graphics/Program.js";
-import { Shader } from "../../static/graphics/Shader.js";
-import { VertexBuffer } from "../../static/graphics/VertexBuffer.js";
-import { Ball, Stick } from "../../static/phong/ball.js";
+import { EventManager } from "../../static/Event/EventManager.js";
+import { Setting } from "../../static/graphics/Setting.js";
+
+// paddle_1 -> objects[1], paddle_2 -> objects[2], ball -> objects[0], up wall -> objects[3], down wall -> objects[4]
 import { delete_back_show } from "../utilities.js";
 
 class Main {
-  static gl = null;
-  static program = null;
-  static mesh = null;
-  static mesh2 = null;
-  static mesh3 = null;
-  static mesh4 = null;
-  static mesh5 = null;
-  static mesh6 = null;
+	static objects = [];
+	static cam = Setting.setCam();
+	static player = 0;
 
-  static ball = null;
-  static stick1 = null;
-  static stick2 = null;
+	static score1 = 0;
+	static score2 = 0;
 
-  static keyA = 0;
-  static keyQ = 0;
-  static lastTime = 0;
-  static players = 0;
-  static camDegree = 0;
-  static camMat4;
-  static projMat4;
-  static vpLoc;
+	static webfunc(get_hash) {
+		let flag = 1;
+		// WebSocket 연결 시도
+		let ws = new WebSocket(
+			"wss://" + window.location.host + "/ws/tgame/" + get_hash + "/"
+		);
+		Setting.setPipe();
+		Main.cam = Setting.setCam();
+		Main.objects = Setting.setGameMap(); // 미완
+		EventManager.setEventKeyboard(Main.cam, ws);
+		EventManager.setScreenEvent();
 
-  static score1 = 0;
-  static score2 = 0;
+		function sleep(ms) {
+			const start = new Date().getTime();
+			while (new Date().getTime() < start + ms) {
+			// 아무것도 하지 않고 대기
+			}
+		}
 
-  static webfunc(get_hash) {
-    Main.ball = new Ball();
-    Main.stick1 = new Stick([-15, 1.5, 0]);
-    Main.stick2 = new Stick([15, 1.5, 0]);
-    console.log(Main.players);
-    let flag = 1;
-    // WebSocket 연결 시도
-    let ws = new WebSocket(
-      "wss://" + window.location.host + "/ws/tgame/" + get_hash + "/"
-    );
+		window.addEventListener("popstate", function () {
+			// WebSocket 연결 닫기
+			if (ws && ws.readyState !== WebSocket.CLOSED) {
+			ws.close();
+			sleep(1000);
+			ws = null;
+			console.log("popstate : " + get_hash);
+			}
+			Main.player = 0;
+			window.removeEventListener("resize", handleResize);
+		});
 
-    function sleep(ms) {
-      const start = new Date().getTime();
-      while (new Date().getTime() < start + ms) {
-        // 아무것도 하지 않고 대기
-      }
-    }
+		let messageQueue = [];
+		let processingMessages = false;
 
-    window.addEventListener("popstate", function () {
-      // WebSocket 연결 닫기
-      if (ws && ws.readyState !== WebSocket.CLOSED) {
-        ws.close();
-        sleep(1000);
-        ws = null;
-        console.log("popstate : " + get_hash);
-      }
-      Main.players = 0;
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("keyup", handleKeyUp);
-      window.removeEventListener("keydown", handleKeyDown);
-    });
+		ws.onopen = () => {
+			let message = { message: "", players: window.players};
+			ws.send(JSON.stringify(message));
+		}
 
-    const handleResize = () => {
-      canvas.height = window.innerHeight - 50;
-      canvas.width = window.innerWidth - 50;
-    };
+		ws.onclose = () => {
+			console.log("ws close : " + get_hash);
+		};
 
-    const handleKeyUp = (event) => {
-      let message = { message: event.key, players: Main.players };
-      let flag = 0;
-      if (event.code === "KeyQ") {
-        message = { message: "upstop", players: Main.players };
-        flag = 1;
-      }
-      if (event.code == "KeyA") {
-        message = { message: "downstop", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "ArrowRight" || event.code === "ArrowLeft")
-        Main.camDegree = 0;
-      if (flag) ws.send(JSON.stringify(message));
-    };
+		ws.onmessage = async function (e) {
+			messageQueue.push(e);
+			if (!processingMessages) {
+			processingMessages = true;
+			while (messageQueue.length > 0) {
+				let event = messageQueue.shift();
+				await processMessage(event);
+			}
+			processingMessages = false;
+			}
+		};
 
-    const handleKeyDown = (event) => {
-      let message = { message: event.key, players: Main.players };
-      let flag = 0;
+		async function processMessage(e) {
+			let data = JSON.parse(e.data);
+			let ball_pos = data["ball_pos"];
+			let paddle1_pos = data["paddle1_pos"];
+			let paddle2_pos = data["paddle2_pos"];
+			let score1 = data["score1"];
+			let score2 = data["score2"];
+			let is_active = data["is_active"];
 
-      if (event.code === "KeyQ") {
-        message = { message: "up", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "KeyA") {
-        message = { message: "down", players: Main.players };
-        flag = 1;
-      }
-      if (event.code === "ArrowRight")
-        Main.camDegree = Math.min(45, Main.camDegree + 1);
-      if (event.code === "ArrowLeft")
-        Main.camDegree = Math.max(-45, Main.camDegree - 1);
-      if (flag) ws.send(JSON.stringify(message));
-    };
+			if (score1 == 5 || score2 == 5) {
+				let get_list_hash = get_hash.split("_");
+				is_active = 0;
+				console.log(
+					"===========href=========",
+					`/#tournament/${get_list_hash[get_list_hash.length - 1]}`
+				);
+			} 
+			else {
+				if (document.getElementById("game-score"))
+					document.getElementById("game-score").innerHTML = score1 + " : " + score2;
+				Main.objects[0].movePos(ball_pos);
+				Main.objects[1].movePos(paddle1_pos);
+				Main.objects[2].movePos(paddle2_pos);
+				if (Main.player == 0) {
+					Main.player = window.players;
+					flag = 0;
+				}
+				if (!flag) {
+					Main.entry();
+					flag = 1;
+				}
+			}
 
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("keyup", handleKeyUp);
-    window.addEventListener("keydown", handleKeyDown);
-    
-    let messageQueue = [];
-    let processingMessages = false;
+			if (is_active == 0) {
+				let get_list_hash = get_hash.split("_");
+				let match_id = get_list_hash[get_list_hash.length - 1];
+				console.log(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`);
+				const csrftoken_t = Cookies.get("csrftoken");
+				const response_t = await fetch(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
+					method: "GET",
+					headers: {
+					"Content-Type": "application/json",
+					"X-CSRFToken": csrftoken_t,
+					},
+					credentials: "include",
+				});
+				if (response_t.ok) {
+					let data = await response_t.json();
+					let name_t = data.name;
+					console.log("name_t", name_t);
+					await closeWebSocket();
+					location.href = `/#tournament/${name_t}`;
+				}
+			}
+		}
 
-    ws.onopen = () => {
-      let message = { message: "", players: window.players};
-      ws.send(JSON.stringify(message));
-    }
-
-    ws.onclose = () => {
-      console.log("ws close : " + get_hash);
-    };
-
-    ws.onmessage = async function (e) {
-      messageQueue.push(e);
-      if (!processingMessages) {
-        processingMessages = true;
-        while (messageQueue.length > 0) {
-          let event = messageQueue.shift();
-          await processMessage(event);
-        }
-        processingMessages = false;
-      }
-    };
-
-    async function processMessage(e) {
-      let data = JSON.parse(e.data);
-      let ball_pos = data["ball_pos"];
-      let paddle1_pos = data["paddle1_pos"];
-      let paddle2_pos = data["paddle2_pos"];
-      let score1 = data["score1"];
-      let score2 = data["score2"];
-      let is_active = data["is_active"];
-    
-      if (score1 == 5 || score2 == 5) {
-        let get_list_hash = get_hash.split("_");
-        is_active = 0;
-        console.log(
-          "===========href=========",
-          `/#tournament/${get_list_hash[get_list_hash.length - 1]}`
-        );
-      } else {
-        if (document.getElementById("game-score"))
-          document.getElementById("game-score").innerHTML = score1 + " : " + score2;
-        for (let i = 0; i < 3; i++) {
-          Main.stick1.pos[i] = paddle1_pos[i];
-          Main.stick2.pos[i] = paddle2_pos[i];
-          Main.ball.pos[i] = ball_pos[i];
-        }
-        if (Main.players == 0) {
-          Main.players = window.players;
-          flag = 0;
-        }
-        if (!flag) {
-          Main.entry();
-          flag = 1;
-        }
-      }
-    
-      if (is_active == 0) {
-        let get_list_hash = get_hash.split("_");
-        let match_id = get_list_hash[get_list_hash.length - 1];
-        console.log(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`);
-        const csrftoken_t = Cookies.get("csrftoken");
-        const response_t = await fetch(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrftoken_t,
-          },
-          credentials: "include",
-        });
-        if (response_t.ok) {
-          let data = await response_t.json();
-          let name_t = data.name;
-          console.log("name_t", name_t);
-          await closeWebSocket();
-          location.href = `/#tournament/${name_t}`;
-        }
-      }
-    }
-    
-    async function closeWebSocket() {
-      if (ws) {
-        ws.close();
-        ws = null;
-      }
-    }
-  }
-  static entry() {
-    if (!document.getElementById("canvas"))
-      return;
-    
-    const canvas = document.getElementById("canvas");
-    canvas.height = 909;
-    canvas.width = 1678;
-    const gl = canvas.getContext("webgl2");
-    if (!gl) {
-      alert("Webgl2 not supported!");
-    }
-
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    const vs = new Shader(gl, gl.VERTEX_SHADER);
-    const fs = new Shader(gl, gl.FRAGMENT_SHADER);
-    vs.shaderSource(`#version 300 es
-        in vec4	position;
-        in vec4 color;
-
-        uniform mat4 model;
-        uniform mat4 vp;
-
-        out vec4	col;
-
-        vec4 moveMatrix = vec4(0, 0, 0, 0);
-        void	main() {
-            gl_Position = vp * model * position;
-            col = color;
-        }`);
-    fs.shaderSource(`#version 300 es
-        precision mediump float; // float의 바이트를 정함
-
-        in vec4	col;
-
-        out vec4	fragColor;
-
-        void	main() {
-            fragColor = col;
-        }`);
-    vs.compile();
-    fs.compile();
-    const program = new Program(gl);
-    program.attach(vs);
-    program.attach(fs);
-    program.link();
-
-    // sphere
-    let sphere = new Geometry();
-    sphere.createSphere();
-    const data = new Float32Array(sphere.vertices);
-    const vertex_buffer = new Buffer(
-      gl,
-      gl.ARRAY_BUFFER,
-      sphere.vertices.length * 4,
-      gl.STATIC_DRAW
-    ); // 버퍼 생성
-    vertex_buffer.setData(0, data, 0, sphere.vertices.length * 4); // 버퍼 정보 입력
-    const position_view = new VertexBuffer(
-      gl,
-      vertex_buffer,
-      3,
-      gl.FLOAT,
-      false
-    ); // 버택스 버퍼(포지션) 읽는 형식 설정
-    let tmpArr = [1, 1, 1, 1];
-    let color = [];
-    for (let i = 0; i < 21 * 21; i++) {
-      for (let j = 0; j < 4; j++) color.push(tmpArr[j]);
-    }
-    color = new Float32Array(color);
-    const color_buffer = new Buffer(
-      gl,
-      gl.ARRAY_BUFFER,
-      color.length * 4,
-      gl.STATIC_DRAW
-    );
-    color_buffer.setData(0, color, 0, color.length * 4);
-    const color_view = new VertexBuffer(gl, color_buffer, 4, gl.FLOAT, false);
-    const buffer_view = {
-      // 쉐이더와 데이터 형식 일치
-      position: position_view,
-      color: color_view,
-    };
-    const mesh = Mesh.from(gl, buffer_view, sphere.indices); // 메쉬 생성
-
-    // stick1
-    let box1 = new Geometry();
-    box1.createBox(0.5, 3);
-    const v_buffer = new Buffer(gl, gl.ARRAY_BUFFER, 72 * 4, gl.STATIC_DRAW);
-    v_buffer.setData(0, new Float32Array(box1.vertices), 0, 72 * 4);
-    const pos_view = new VertexBuffer(gl, v_buffer, 3, gl.FLOAT, false);
-    let color_data = [];
-    let tmp = [0, 1, 0, 1];
-    for (let i = 0; i < 24; i++) {
-      for (let j = 0; j < 4; j++) color_data.push(tmp[j]);
-    }
-    color_data = new Float32Array(color_data);
-    const color_box = new Buffer(
-      gl,
-      gl.ARRAY_BUFFER,
-      color_data.length * 4,
-      gl.STATIC_DRAW
-    );
-    color_box.setData(0, color_data, 0, color_data.length * 4);
-    const color_box_view = new VertexBuffer(gl, color_box, 4, gl.FLOAT, false);
-
-    // wall
-    let box2 = new Geometry();
-    box2.createBox(30, 0.5);
-    const box2_buffer = new Buffer(
-      gl,
-      gl.ARRAY_BUFFER,
-      box2.vertices.length * 4,
-      gl.STATIC_DRAW
-    );
-    box2_buffer.setData(
-      0,
-      new Float32Array(box2.vertices),
-      0,
-      box2.vertices.length * 4
-    );
-    const box2_view = new VertexBuffer(gl, box2_buffer, 3, gl.FLOAT, false);
-    buffer_view["position"] = box2_view;
-    buffer_view["color"] = color_view;
-    const mesh3 = Mesh.from(gl, buffer_view, box2.indices);
-
-    // view 행렬 설정
-    let camMatrix = Mat4x4.camMatrix([0, 0, 1], [0, 1, 0], [0, 0, 20]);
-    Main.camMat4 = camMatrix;
-
-    // 투영 행렬 설정
-    let projectionMatrix = Mat4x4.projectionMatrix(
-      Math.PI / 3,
-      0.1,
-      1000,
-      canvas.width / canvas.height
-    );
-    Main.projMat4 = projectionMatrix;
-    let vpLocation = gl.getUniformLocation(program.id, "vp");
-    Main.vpLoc = vpLocation;
-
-    program.use();
-
-    Main.gl = gl;
-    Main.program = program;
-
-    let mesh2, mesh4;
-    console.log("players: " + Main.players);
-    if (Main.players == 1) {
-      buffer_view["position"] = pos_view;
-      buffer_view["color"] = color_box_view;
-      Main.mesh2 = Mesh.from(gl, buffer_view, box1.indices);
-      buffer_view["color"] = color_view;
-      Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
-    } 
-    else {
-      console.log("player: ", 2);
-        buffer_view["position"] = pos_view;
-        buffer_view["color"] = color_view;
-        Main.mesh2 = Mesh.from(gl, buffer_view, box1.indices);
-        buffer_view["color"] = color_box_view;
-        Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
-    }
-
-    Main.mesh = mesh;
-    Main.mesh3 = mesh3;
-    requestAnimationFrame(Main.update);
-  }
-  static render() {
-    DefaultFramebuffer.setClearColor(0.4, 0.4, 0.4, 1.0);
-    Main.gl.enable(Main.gl.CULL_FACE);
-    Main.gl.enable(Main.gl.DEPTH_TEST);
-    Main.gl.cullFace(Main.gl.BACK);
-    DefaultFramebuffer.clearColor(Main.gl);
-
-    let modelLocation = Main.gl.getUniformLocation(Main.program.id, "model");
-    let viewMatrix = Mat4x4.viewMatrix(
-      Mat4x4.multipleMat4(Mat4x4.rotMatAxisY(Main.camDegree), Main.camMat4)
-    );
-    let vpMatirx = Mat4x4.multipleMat4(Main.projMat4, viewMatrix);
-    Main.program.use();
-    Main.gl.uniformMatrix4fv(Main.vpLoc, true, vpMatirx);
-
-    // ball
-    Main.gl.uniformMatrix4fv(
-      modelLocation,
-      true,
-      Mat4x4.transportMat(Main.ball.pos)
-    );
-    Main.mesh.draw(Main.program);
-
-    // stick1
-    Main.gl.uniformMatrix4fv(
-      modelLocation,
-      true,
-      Mat4x4.transportMat(Main.stick1.pos)
-    );
-    Main.mesh2.draw(Main.program);
-
-    // stick2
-    Main.gl.uniformMatrix4fv(
-      modelLocation,
-      true,
-      Mat4x4.transportMat(Main.stick2.pos)
-    );
-    Main.mesh4.draw(Main.program);
-  
-    // wall_1
-    Main.gl.uniformMatrix4fv(
-      modelLocation,
-      true,
-      Mat4x4.transportMat([0, 8, 0])
-    );
-    Main.mesh3.draw(Main.program);
-
-    // wall_2
-    Main.gl.uniformMatrix4fv(
-      modelLocation,
-      true,
-      Mat4x4.transportMat([0, -8, 0])
-    );
-    Main.mesh3.draw(Main.program);
-  }
-  static update() {
-    Main.render();
-    requestAnimationFrame(Main.update);
-  }
+		async function closeWebSocket() {
+			if (ws) {
+				ws.close();
+				ws = null;
+			}
+		}
+	}
+	static entry() {
+		if (Main.player == 1)
+			Main.objects[1].setColor([0, 1, 0, 1]);
+		else
+			Main.objects[2].setColor([0, 1, 0, 1]);
+		requestAnimationFrame(Main.update);
+	}
+	static render() {
+		Setting.setRender();
+		Main.cam.putCam();
+		for (let i = 0; i < Main.objects.length; i++)
+			Main.objects[i].draw(false);
+	}
+	static update() {
+		Main.render();
+		requestAnimationFrame(Main.update);
+	}
 }
 
 export async function game_t_js(hash) {
-  delete_back_show();
-  const get_hash = hash.slice(1);
-  let flag = 0;
-  let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
-  let match_id = get_list_hash[get_list_hash.length - 1]; //
+	delete_back_show();
+	const get_hash = hash.slice(1);
+	let flag = 0;
+	let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
+	let match_id = get_list_hash[get_list_hash.length - 1]; //
 
-  const csrftoken = Cookies.get("csrftoken");
-  console.log("t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}", `/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`);
-  const response = await fetch(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
-    //match serializer 반환값 가져옴
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": csrftoken,
-    },
-    credentials: "include",
-  });
-  if (response.ok) {
-    let data = await response.json();
-    console.log(data.player1_uuid, "===", get_list_hash[0]);
-    console.log(data.player2_uuid, "===", get_list_hash[1]);
-    console.log(data.match_result, "===", "null");
-    if (
-      data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
-      data.player2_uuid === get_list_hash[1] &&
-      data.match_result == '' //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
-    ) {
-      console.log("abc");
-      const response_name = await fetch("user/info", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrftoken,
-        },
-        credentials: "include",
-      });
-      if (response_name.ok) {
-        //url에 해당 uuid값이 있는지
-        let data = await response_name.json();
-        let get_list_hash = get_hash.split("_");
-        for (let i = 0; i < get_list_hash.length - 1; i++) {
-          if (get_list_hash[i] == data[0].user_id) {
-            window.uuid = data[0].user_id;
-            window.players = i + 1;
-            flag = 1;
-          }
-        }
-        if (flag == 1) {
-          Main.webfunc(get_hash);
-        } else {
-          location.href = "/#";
-        }
-      } else {
-        location.href = "/#";
-        const error = await response_name.json();
-        console.log("user info API 요청 실패", error);
-      }
-    } else {
-      location.href = "/#";
-    }
-  } else {
-    location.href = "/#";
-    const error = await response.json();
-    console.log("match API 요청 실패", error);
-  }
+	const csrftoken = Cookies.get("csrftoken");
+	console.log("t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}", `/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`);
+	const response = await fetch(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
+	//match serializer 반환값 가져옴
+	method: "GET",
+	headers: {
+		"Content-Type": "application/json",
+		"X-CSRFToken": csrftoken,
+	},
+	credentials: "include",
+	});
+	if (response.ok) {
+		let data = await response.json();
+		console.log(data.player1_uuid, "===", get_list_hash[0]);
+		console.log(data.player2_uuid, "===", get_list_hash[1]);
+		console.log(data.match_result, "===", "null");
+		if (
+			data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
+			data.player2_uuid === get_list_hash[1] &&
+			data.match_result == '' //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
+		) {
+			console.log("abc");
+			const response_name = await fetch("user/info", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				"X-CSRFToken": csrftoken,
+			},
+			credentials: "include",
+			});
+			if (response_name.ok) {
+			//url에 해당 uuid값이 있는지
+			let data = await response_name.json();
+			let get_list_hash = get_hash.split("_");
+			for (let i = 0; i < get_list_hash.length - 1; i++) {
+				if (get_list_hash[i] == data[0].user_id) {
+				window.uuid = data[0].user_id;
+				window.players = i + 1;
+				flag = 1;
+				}
+			}
+			if (flag == 1) {
+				Main.webfunc(get_hash);
+			} else {
+				location.href = "/#";
+			}
+			} else {
+			location.href = "/#";
+			const error = await response_name.json();
+			console.log("user info API 요청 실패", error);
+			}
+		} 
+		else {
+			location.href = "/#";
+		}
+	} 
+	else {
+		location.href = "/#";
+		const error = await response.json();
+		console.log("match API 요청 실패", error);
+	}
 }
