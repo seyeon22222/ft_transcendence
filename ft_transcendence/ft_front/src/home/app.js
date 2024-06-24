@@ -29,6 +29,9 @@ export async function home_js() {
 
             const mulmatchmakingButton = document.getElementById('mulmatchmaking_button');
             mulmatchmaking_button_eventhandler(mulmatchmakingButton);
+
+            const AI_button = document.getElementById('ai_button');
+            ai_button_eventhandler(AI_button);
         }
         else {
             const container = document.getElementById("buttons-container");
@@ -38,6 +41,12 @@ export async function home_js() {
     } catch (error) {
         console.error('home 화면에서 오류 발생 : ', error);
     }
+}
+
+function ai_button_eventhandler(button) {
+    button.addEventListener('click', async () => {
+        location.href = '/#ai';
+    });
 }
 
 function matchmaking_button_eventhandler(button) {
@@ -158,6 +167,7 @@ function home_login_html() {
         <a href="/#profile" class="btn btn-primary" data-translate="my_profile">내 프로필</a>
         <a href="/#chatLobby" class="btn btn-primary" data-translate="chatting">채팅</a>
         <a href="/#matchlobby" class="btn btn-primary" data-translate="tournament">토너먼트</a>
+        <button class="btn" id="ai_button" data-translate="ai_button">AI</button>
         <button class="btn" id="matchmaking_button" data-translate="matchmaking">매치메이킹</button>
         <button class="btn" id="mulmatchmaking_button" data-translate="multimatchmaking">2:2 매치</button>
         <button class="btn" id="logout_button" data-translate="logout">로그아웃</button>
