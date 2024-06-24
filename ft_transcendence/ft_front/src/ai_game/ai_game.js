@@ -13,6 +13,8 @@ import { gl } from "../../static/aigame/core/definition.js";
 import { ctx } from "../../static/aigame/core/definition.js";
 import { gl_canvas } from "../../static/aigame/core/definition.js";
 
+window.flag = 0;
+
 class Scene {
 	constructor() {
 		this.gameObjects = [
@@ -76,9 +78,14 @@ async function update() {
 		PostProcessor.tonemap
 	], Camera.color_texture, null, [1.0, 5.0]);
 	ctx.drawImage(gl_canvas, 0, 0);
+	if (window.flag === 1) 
+		return;
 	requestAnimationFrame(update);
 }
 
 export function ai_game_js() {	
 	main();
+	window.addEventListener('popstate', async function () {
+		window.flag = 1;
+	});
 }
