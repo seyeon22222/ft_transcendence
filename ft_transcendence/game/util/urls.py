@@ -15,8 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path , include
+from django.urls import path
+from .views import (
+    shader_file,
+    mesh_json,
+    skybox_image,
+)
 
 urlpatterns = [
-    path("game/", include("game.urls")),
+    path('shader/<str:filename>', shader_file.as_view()),
+    path('mesh/<str:filename>', mesh_json.as_view()),
+    path('skybox/<str:filename>', skybox_image.as_view()),
+
 ]

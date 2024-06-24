@@ -1,5 +1,13 @@
+import { GameObject } from "./GameObject.js";
+import { Stick } from "./Stick.js";
+import { Ball } from "./Ball.js";
+import { Transform } from "../component/Transform.js";
+import { PongTable } from "../component/PongTable.js";
+import { Renderer } from "../component/Renderer.js";
+import { MeshAsset } from "../asset/MeshAsset.js";
+import { MaterialAsset } from "../asset/MaterialAsset.js";
 
-class Table extends GameObject {
+export class Table extends GameObject {
 	constructor() {
 		super();
 		this.children = [

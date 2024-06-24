@@ -1,5 +1,5 @@
 
-class Matrix {
+export class Matrix {
 	static translation(v) {
 		return [
 			1, 0, 0, v.x,

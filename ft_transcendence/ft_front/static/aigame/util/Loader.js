@@ -1,5 +1,5 @@
 
-class Loader {
+export class Loader {
 	static async loadTexture(gl, src) {
 		let texture = gl.createTexture();
 		let response = await fetch(src);
@@ -18,7 +18,6 @@ class Loader {
 	}
 	static async loadCubemap(gl, srcs, size) {
 		let texture = gl.createTexture();
-
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 		gl.texStorage2D(gl.TEXTURE_CUBE_MAP, 1, gl.SRGB8_ALPHA8, size, size);
 		gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -38,25 +37,29 @@ class Loader {
 		return (texture);
 	}
 	static async loadProgram(gl, vs_src, fs_src) {
-		let vs = gl.createShader(gl.VERTEX_SHADER);
-		let fs = gl.createShader(gl.FRAGMENT_SHADER);
-		let program = gl.createProgram();
-
-		gl.shaderSource(vs, await (await fetch(vs_src)).text());
-		gl.shaderSource(fs, await (await fetch(fs_src)).text());
-		gl.compileShader(vs);
-		gl.compileShader(fs);
-		gl.attachShader(program, vs);
-		gl.attachShader(program, fs);
-		gl.linkProgram(program);
-		console.log(gl.getShaderInfoLog(vs));
-		console.log(gl.getShaderInfoLog(fs));
-		return (program);
+		try {
+			let vs = gl.createShader(gl.VERTEX_SHADER);
+			let fs = gl.createShader(gl.FRAGMENT_SHADER);
+			let program = gl.createProgram();
+			const data = await (await fetch(vs_src)).json();
+			const data2 = await (await fetch(fs_src)).json();
+			gl.shaderSource(vs, data);
+			gl.shaderSource(fs, data2);
+			gl.compileShader(vs);
+			gl.compileShader(fs);
+			gl.attachShader(program, vs);
+			gl.attachShader(program, fs);
+			gl.linkProgram(program);
+			console.log(gl.getShaderInfoLog(vs));
+			console.log(gl.getShaderInfoLog(fs));
+			return (program);
+		} catch (error) {
+			console.error(error);
+		}
 	}
 	static async loadMesh(gl, src) {
 		let json = await (await fetch(src)).json();
 		let vao = gl.createVertexArray();
-
 		gl.bindVertexArray(vao);
 		for (let key of Object.keys(json)) {
 			if (key == "index") {

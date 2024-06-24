@@ -1,5 +1,7 @@
+import { GameObject } from "./GameObject.js";
+import { BotControl } from "../component/BotControl.js";
 
-class Bot extends GameObject {
+export class Bot extends GameObject {
 	constructor() {
 		super();
 		this.bot_control = new BotControl(this); // #TODO

@@ -1,5 +1,5 @@
 
-class Time {
+export class Time {
 	static time = 0;
 	static deltaTime = 0;
 

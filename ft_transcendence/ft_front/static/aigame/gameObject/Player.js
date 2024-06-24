@@ -1,5 +1,7 @@
+import { GameObject } from "./GameObject.js";
+import { PlayerControl } from "../component/PlayerControl.js";
 
-class Player extends GameObject {
+export class Player extends GameObject {
 	constructor() {
 		super();
 		this.player_control = new PlayerControl(this);

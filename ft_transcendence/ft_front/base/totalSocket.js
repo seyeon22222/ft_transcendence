@@ -1,4 +1,4 @@
-import { check_language, delete_back_show } from '../src/utilities.js'
+import { delete_back_show } from '../src/utilities.js'
 
 function createInvitePopup() {
     const popupContainer = document.getElementById('popupContainer');

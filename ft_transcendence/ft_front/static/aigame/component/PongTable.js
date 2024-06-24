@@ -8,8 +8,11 @@ GameOver,
 Pause
 }
 */
+import { Vector3 } from "../util/Vector3.js";
+import { Time } from "../core/Time.js";
+import { clamp } from "../util/MathUtil.js";
 
-class PongTable {
+export class PongTable {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
 		this.transform = gameObject.transform;
@@ -77,11 +80,11 @@ class PongTable {
 	}
 
 	updateStick() {
-		this.stick[0].transform.position.z = Math.clamp(
+		this.stick[0].transform.position.z = clamp(
 			this.stick[0].transform.position.z + this.stick_velocity[0] * Time.deltaTime,
 			-this.height / 2, this.height / 2
 		);
-		this.stick[1].transform.position.z = Math.clamp(
+		this.stick[1].transform.position.z = clamp(
 			this.stick[1].transform.position.z + this.stick_velocity[1] * Time.deltaTime,
 			-this.height / 2, this.height / 2
 		);

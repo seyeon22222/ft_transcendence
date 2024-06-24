@@ -1,5 +1,10 @@
+import { GameObject } from "./GameObject.js";
+import { Transform } from "../component/Transform.js";
+import { PongBall } from "../component/PongBall.js";
+import { Renderer } from "../component/Renderer.js";
+import { Vector3 } from "../util/Vector3.js"
 
-class Ball extends GameObject {
+export class Ball extends GameObject {
 	constructor() {
 		super();
 		this.transform = new Transform();

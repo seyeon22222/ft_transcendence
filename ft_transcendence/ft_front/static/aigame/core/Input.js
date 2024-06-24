@@ -1,5 +1,5 @@
 
-class Input {
+export class Input {
 	static key_pressed = {};
 
 	static getKey(c) {

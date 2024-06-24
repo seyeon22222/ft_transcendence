@@ -1,6 +1,17 @@
-export function ai_game_js() {
-
-}
+import { MaterialAsset } from "../../static/aigame/asset/MaterialAsset.js";
+import { MeshAsset } from "../../static/aigame/asset/MeshAsset.js";
+import { TextureAsset } from "../../static/aigame/asset/TextureAsset.js";
+import { PostProcessor } from "../../static/aigame/core/PostProcessor.js";
+import { canvas_init } from "../../static/aigame/core/definition.js";
+import { Table } from "../../static/aigame/gameObject/Table.js";
+import { Player } from "../../static/aigame/gameObject/Player.js";
+import { Bot } from "../../static/aigame/gameObject/Bot.js";
+import { Time } from "../../static/aigame/core/Time.js";
+import { Camera } from "../../static/aigame/core/Camera.js";
+import { Vector3 } from "../../static/aigame/util/Vector3.js";
+import { gl } from "../../static/aigame/core/definition.js";
+import { ctx } from "../../static/aigame/core/definition.js";
+import { gl_canvas } from "../../static/aigame/core/definition.js";
 
 class Scene {
 	constructor() {
@@ -38,13 +49,18 @@ class Scene {
 let scene = null;
 
 async function main() {
-	await MaterialAsset.init();
-	await MeshAsset.init();
-	await TextureAsset.init();
-	await PostProcessor.init();
-	scene = new Scene();
-	scene.start();
-	requestAnimationFrame(update);
+    try {
+        canvas_init();
+        await MaterialAsset.init();
+        await MeshAsset.init();
+        await TextureAsset.init();
+        await PostProcessor.init();
+        scene = new Scene();
+        scene.start();
+        requestAnimationFrame(update);
+    } catch (error) {
+        console.error("Error during initialization:", error);
+    }
 }
 
 async function update() {
@@ -63,4 +79,6 @@ async function update() {
 	requestAnimationFrame(update);
 }
 
-main();
+export function ai_game_js() {	
+	main();
+}

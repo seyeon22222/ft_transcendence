@@ -1,5 +1,7 @@
+import { gl } from "../core/definition.js";
+import { Camera } from "../core/Camera.js";
 
-class Renderer {
+export class Renderer {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
 		this.transform = gameObject.transform;
