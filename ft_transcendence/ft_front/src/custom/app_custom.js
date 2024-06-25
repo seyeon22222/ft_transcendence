@@ -1,6 +1,8 @@
 import { Setting } from "../../static/graphics/Setting.js"; // comp
 import { Ray } from "../../static/phong/Ray.js"; // comp
 import { EventManager } from "../../static/Event/EventManager.js"; // comp
+import { View } from "./app_view.js";
+import { delete_back_show } from "../utilities.js";
 
 class Main {
 	static objects = [];
@@ -8,7 +10,7 @@ class Main {
 	static cam = null;
 	static ray = null;
 
-	static entry() {
+	static entry(hash) {
 		Setting.setPipe();
 		Main.objects = Setting.setBasicObjects();
 		Main.add_button = Setting.setAddButton();
@@ -117,7 +119,10 @@ export async function custom_view(hash) {
             }
           }
           if (flag == 1) {
-            Main.entry(get_hash);
+            if (window.players === 1)
+              Main.entry(get_hash);
+            else
+              View.entry(get_hash);
           } else {
             location.href = "/#";
           }
