@@ -7,12 +7,12 @@ export class EventManager {
     static key_list = [];
     static screen_list = [];
 
-    static setEventMouse(ray, button, objects) {
+    static setEventMouse(ray, button, objects, id) {
         EventManager.mouse_list.push(new MouseEvent('click', ray, button, objects));
         EventManager.mouse_list.push(new MouseEvent('mousemove', ray));
         EventManager.mouse_list.push(new MouseEvent('mouseup', null, null, objects));
         EventManager.mouse_list.push(new MouseEvent('mousedown', ray));
-        EventManager.mouse_list.push(new MouseEvent('start', null, null, objects));
+        EventManager.mouse_list.push(new MouseEvent('start', null, null, objects, id));
     }
 
     static setEventKeyboard(cam, ws) {

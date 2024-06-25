@@ -20,7 +20,7 @@ export class MouseEvent {
         MouseEvent.obj_idx = objects.length - 1;
     }
 
-    constructor(type, ray = null, button = null, objects = null) {
+    constructor(type, ray = null, button = null, objects = null, id = null) {
         this.type = type;
         this.child1_type = null;
         this.child1_event = null;
@@ -38,7 +38,7 @@ export class MouseEvent {
         else if (type == 'mouseup')
             this.setUp(objects);
         else if (type == 'start')
-            this.setStart(objects);
+            this.setStart(objects, id);
         else if (type == 'gamestart')
             this.setGameStart();
     }
@@ -72,7 +72,7 @@ export class MouseEvent {
         this.m_event = tmp_event;
     }
 
-    setStart(objects) {
+    setStart(objects, id) {
         let tmp_event = () => {
             if (MouseEvent.new_object) {
                 let max_x = -100, max_y = -100, min_x = 100, min_y = 100;
@@ -104,7 +104,20 @@ export class MouseEvent {
                 MouseEvent.obj_idx = 0;
             }
             // TODO -> 서버에 정보 보내기
-            console.log("서버에 정보 보내기");
+            for (let i = 5; i < objects.length; i++) {
+                let backend_url = 'http://backend:8000/match/updatematchcustom/' + id;
+                let game_results = {
+                    'r' : objects[i].color[0],
+                    'g' : objects[i].color[1],
+                    'b' : objects[i].color[2],
+                    'x' : objects[i].pos[0],
+                    'y' : objects[i].pos[1],
+                    'z' : 0,
+                    'w' : objects[i].width,
+                    'h' : objects[i].height
+                }
+                requests.post(backend_url, json=game_results);
+            }
         }
         document.getElementById('start').addEventListener('click', tmp_event);
         this.m_event = tmp_event;

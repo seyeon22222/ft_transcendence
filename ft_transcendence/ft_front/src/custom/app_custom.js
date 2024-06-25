@@ -9,6 +9,7 @@ class Main {
 	static add_button;
 	static cam = null;
 	static ray = null;
+	static id = null;
 
 	static entry(hash) {
 		Setting.setPipe();
@@ -18,7 +19,7 @@ class Main {
 		Main.ray = new Ray(Main.cam);
 
 		EventManager.setEventKeyboard(Main.cam);
-		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects);
+		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects, Main.id);
 
 		requestAnimationFrame(Main.update);
 	}
@@ -70,6 +71,7 @@ class Main {
 }
 
 export async function custom_view(hash) {
+	//TODO: 분기를 나눠 줄 것 (Main(custom page), View(보는 페이지) 둘 중 어느 것을 실행 시킬 지 결정)
     delete_back_show();
     const get_hash = hash.slice(1);
     let flag = 0;
