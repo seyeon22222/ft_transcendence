@@ -1,4 +1,4 @@
-import { Mat4x4 } from "../utils/Mat4x4.js"; // comp
+import { Mat4x4 } from "../utils/Mat4x4.js";
 import { CollisionBox } from "./CollisionBox.js"; // comp
 import { Mesh } from "../graphics/Mesh.js"; // comp
 import { Buffer } from "../graphics/Buffer.js"; // comp

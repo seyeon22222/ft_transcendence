@@ -1,4 +1,4 @@
-import { Mat4x4 } from "../utils/Mat4x4"; // comp
+import { Mat4x4 } from "../utils/Mat4x4.js";
 
 export class Cam {
     constructor(gl) {

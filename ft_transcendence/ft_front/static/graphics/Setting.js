@@ -58,8 +58,8 @@ export class Setting {
 		// 투영 행렬 설정
 	    cam.projMat(
 			Math.PI / 3, 
-			canvas.width, 
-			canvas.height,
+			Pipeline.canvas.width, 
+			Pipeline.canvas.height,
 			0.1, 
 			1000
 		);

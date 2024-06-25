@@ -6,7 +6,7 @@ import { delete_back_show } from "../utilities.js";
 
 class Main {
 	static objects = [];
-	static cam = Setting.setCam();
+	static cam;
 	static player = 0;
 
 	static score1 = 0;

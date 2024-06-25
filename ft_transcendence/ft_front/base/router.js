@@ -26,8 +26,8 @@ import { game_t_js } from "../src/game/app_t.js";
 import { game_multi_js } from "../src/game/app_multi.js";
 import { multiMatch_js } from "../src/multimatch/app.js";
 import { multiMatch_html } from "../src/multimatch/html.js";
-import { custom_html } from "../src/custom/html.js"
-import { custom_view } from "../src/custom/app.js" 
+import { custom_html } from "../src/custom/html_custom.js"
+import { custom_view } from "../src/custom/app_custom.js" 
 
 const routes = {
   "/": [home_html, home_js],

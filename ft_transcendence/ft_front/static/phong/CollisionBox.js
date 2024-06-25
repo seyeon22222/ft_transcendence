@@ -1,4 +1,4 @@
-import { Mat4x4 } from "../utils/Mat4x4"; // comp
+import { Mat4x4 } from "../utils/Mat4x4.js";
 
 function subDir(dir1, dir2) {
     let ans = [];

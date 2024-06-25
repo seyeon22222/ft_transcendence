@@ -4,13 +4,14 @@ import { Program } from "./Program.js"; // comp
 export class Pipeline {
     static gl;
     static program;
+	static canvas;
 
     static initPipeline() {
-        const canvas = document.getElementById("canvas");
-		canvas.height = 909;
-    	canvas.width = 1678;
+        Pipeline.canvas = document.getElementById("canvas");
+		Pipeline.canvas.height = 909;
+    	Pipeline.canvas.width = 1678;
 
-		const gl = canvas.getContext("webgl2");
+		const gl = Pipeline.canvas.getContext("webgl2");
 		if (!gl)
 			alert("Webgl2 not supported!");
 		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);

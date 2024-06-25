@@ -7,11 +7,7 @@ import { delete_back_show } from "../utilities.js";
 
 class Main {
 	static objects = [];
-	static cam = Setting.setCam();
-	static player = 0;
-
-	static score1 = 0;
-	static score2 = 0;
+	static cam;
 
 	static webfunc(get_hash) {
 	Setting.setPipe();
@@ -24,6 +20,7 @@ class Main {
 	let ws = new WebSocket(
 		"wss://" + window.location.host + "/ws/game/" + get_hash + "/"
 	);
+
 	EventManager.setEventKeyboard(Main.cam, ws);
 
 	function sleep(ms) {
@@ -36,21 +33,12 @@ class Main {
 	window.addEventListener("popstate", function () {
 		// WebSocket 연결 닫기
 		if (ws && ws.readyState !== WebSocket.CLOSED) {
-		ws.close();
-		sleep(1000);
-		ws = null;
-		console.log("popstate : " + get_hash);
+			ws.close();
+			sleep(1000);
+			ws = null;
+			console.log("popstate : " + get_hash);
 		}
-		Main.player = 0;
-		window.removeEventListener("resize", handleResize);
 	});
-
-	const handleResize = () => {
-		canvas.height = window.innerHeight - 50;
-		canvas.width = window.innerWidth - 50;
-	};
-
-	window.addEventListener("resize", handleResize);
 
 	let messageQueue = [];
 	let processingMessages = false;
@@ -71,6 +59,7 @@ class Main {
 			processingMessages = false;
 		}
 	};
+
 	async function processMessage(e) {
 		let data = JSON.parse(e.data);
 		let ball_pos = data["ball_pos"];
@@ -106,18 +95,9 @@ class Main {
 			}
 			if (is_active == 0) {
 				let get_list_hash = get_hash.split("_");
-				await closeWebSocket();
 				location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
 			}
 	}
-
-	async function closeWebSocket() {
-		if (ws) {
-			ws.close();
-			ws = null;
-		}
-	}
-
 
 	}
 	static entry() {
