@@ -11,6 +11,7 @@ export class View {
 	static entry(hash, id) {
 		Setting.setPipe();
 		//TODO 정보를 받아야함 함수로 만들 것
+		View.objects = Setting.setBasicObjects();
 		View.cam = Setting.setCam();
 
         EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects));

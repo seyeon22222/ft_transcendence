@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch, multimatchmaking
+from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch, multimatchmaking, custom
 from .serializers import tournamentSerializer, tournamentMatchSerializer, matchSerializer, MultiSerializer, CustomSerializer
 from ft_user.models import MyUser, GameStat, MatchInfo
 from django.shortcuts import get_object_or_404
@@ -746,7 +746,7 @@ class updateMatchCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = match.custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         
         # match 객체와 새로운 custom 객체 연결
         match.custom.add(new_custom)
@@ -801,7 +801,7 @@ class updateTournamentCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = match.custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         
         # match 객체와 새로운 custom 객체 연결
         match.custom.add(new_custom)
@@ -837,7 +837,7 @@ class updateMultiCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = match.custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         
         # match 객체와 새로운 custom 객체 연결
         match.custom.add(new_custom)

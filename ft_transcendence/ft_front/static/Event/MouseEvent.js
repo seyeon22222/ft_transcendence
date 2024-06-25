@@ -20,7 +20,7 @@ export class MouseEvent {
         MouseEvent.obj_idx = objects.length - 1;
     }
 
-    constructor(type, ray = null, button = null, objects = null, id = null) {
+    constructor(type, ray = null, button = null, objects = null, id = null, ws = null) {
         this.type = type;
         this.child1_type = null;
         this.child1_event = null;
@@ -38,9 +38,9 @@ export class MouseEvent {
         else if (type == 'mouseup')
             this.setUp(objects);
         else if (type == 'start')
-            this.setStart(objects, id);
+            this.setStart(objects, id, ws);
         else if (type == 'gamestart')
-            this.setGameStart();
+            this.setGameStart(ws);
     }
 
     destructor() {
@@ -63,16 +63,18 @@ export class MouseEvent {
             document.getElementById('start').removeEventListener('click', this.m_event);
     }
 
-    setGameStart() {
+    setGameStart(ws) {
         let tmp_event = () => {
-            //TODO player2가 게임 시작을 눌렀을 때-> game page로 넘어가야함
-
+            //TODO player2가 start를 눌렀다는 것을 알려줘야함(서버에)
+            let message = { message: window.players};
+		    ws.send(JSON.stringify(message));
         };
         document.getElementById('start').addEventListener('click', tmp_event);
         this.m_event = tmp_event;
+        this.type = 'gamestart';
     }
 
-    setStart(objects, id) {
+    setStart(objects, id, ws) {
         let tmp_event = () => {
             if (MouseEvent.new_object) {
                 let max_x = -100, max_y = -100, min_x = 100, min_y = 100;
@@ -105,7 +107,7 @@ export class MouseEvent {
             }
             // TODO -> 서버에 정보 보내기
             const csrftoken = Cookies.get('csrftoken');
-            for (let i = 5; i < objects.length; i++) {
+            for (let i = 6; i < objects.length; i++) {
                 let game_results = {
                     'r' : objects[i].color[0],
                     'g' : objects[i].color[1],
@@ -116,8 +118,7 @@ export class MouseEvent {
                     'w' : objects[i].width,
                     'h' : objects[i].height
                 }
-                const response = fetch(`http://backend:8000/match/updatematchcustom/${id}`, {
-                    //match serializer 반환값 가져옴
+                const response = fetch(`/match/updatematchcustom/${id}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -126,6 +127,8 @@ export class MouseEvent {
                     body: JSON.stringify(game_results),
                 });
             }
+            let message = { message: window.players};
+		    ws.send(JSON.stringify(message));
         }
         document.getElementById('start').addEventListener('click', tmp_event);
         this.m_event = tmp_event;

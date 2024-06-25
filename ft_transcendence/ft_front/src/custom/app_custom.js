@@ -18,7 +18,7 @@ class Main {
 		Main.ray = new Ray(Main.cam);
 
 		EventManager.setEventKeyboard(Main.cam);
-		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects, id);
+		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects, id, ws);
 
 		requestAnimationFrame(Main.update);
 	}
