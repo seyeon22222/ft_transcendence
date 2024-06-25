@@ -4,7 +4,7 @@ import requests
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import customInfo
 
-class GameConsumer(AsyncWebsocketConsumer):
+class CustomConsumer(AsyncWebsocketConsumer):
     consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
 
     def __init__(self, *args, **kwargs):
@@ -26,26 +26,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         self.info.player_count += 1
 
-        await self.send(text_data=json.dumps({
-            'ball_pos': self.b.pos,
-            'paddle1_pos': self.p1.pos,
-            'paddle2_pos': self.p2.pos,
-            'score1': self.b.point1,
-            'score2': self.b.point2,
-            'is_active':self.b.is_active
-            }))
-
     async def disconnect(self, close_code):
-        self.task.cancel()
         self.info.player_count -= 1
         if self.info.player_count == 0:
             del self.consumers[self.room_group_name]
-        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
+        print("=======================================self.players : =====================")
     
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        player = text_data_json['players']
 
         await self.send(json.dumps({
             'ball_pos': self.b.pos,
