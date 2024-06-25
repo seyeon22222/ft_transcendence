@@ -45,7 +45,7 @@ const routes = {
   "/gamet": [game_html, game_t_js],
   "/gamemulti": [game_html, game_multi_js],
   "/multi": [multiMatch_html, multiMatch_js],
-  "/custom" :[custom_html, custom_view],
+  "/customm" :[custom_html, custom_view],
 };
 
 // 의미: 현재 URL 해시(location.hash)를 분석하여 적절한 페이지를 렌더링하는 함수입니다.

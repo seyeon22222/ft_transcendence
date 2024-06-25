@@ -104,8 +104,8 @@ export class MouseEvent {
                 MouseEvent.obj_idx = 0;
             }
             // TODO -> 서버에 정보 보내기
+            const csrftoken = Cookies.get('csrftoken');
             for (let i = 5; i < objects.length; i++) {
-                let backend_url = 'http://backend:8000/match/updatematchcustom/' + id;
                 let game_results = {
                     'r' : objects[i].color[0],
                     'g' : objects[i].color[1],
@@ -116,7 +116,15 @@ export class MouseEvent {
                     'w' : objects[i].width,
                     'h' : objects[i].height
                 }
-                requests.post(backend_url, json=game_results);
+                const response = fetch(`http://backend:8000/match/updatematchcustom/${id}`, {
+                    //match serializer 반환값 가져옴
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrftoken,
+                    },
+                    body: JSON.stringify(game_results),
+                });
             }
         }
         document.getElementById('start').addEventListener('click', tmp_event);

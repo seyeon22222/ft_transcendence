@@ -746,7 +746,7 @@ class updateMatchCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        new_custom = match.custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         
         # match 객체와 새로운 custom 객체 연결
         match.custom.add(new_custom)
@@ -801,7 +801,7 @@ class updateTournamentCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        new_custom = match.custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         
         # match 객체와 새로운 custom 객체 연결
         match.custom.add(new_custom)
@@ -837,7 +837,7 @@ class updateMultiCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        new_custom = match.custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         
         # match 객체와 새로운 custom 객체 연결
         match.custom.add(new_custom)

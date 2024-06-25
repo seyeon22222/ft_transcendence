@@ -12,8 +12,8 @@ clean:
 
 fclean: clean
 	@$(LOG) "fclean"
-	@rm -rf data
-	@cp -r init_data data
+	@sudo rm -rf data
+	@sudo cp -r init_data data
 	@rm -rf ./ft_back/ft_user/migrations/0001_initial.py
 	@rm -rf ./ft_back/chatting/migrations/0001_initial.py
 	@rm -rf ./ft_back/tournament/migrations/0001_initial.py

@@ -8,24 +8,24 @@ export class View {
 	static cam = null;
 	static ray = null;
 
-	static entry() {
+	static entry(hash, id) {
 		Setting.setPipe();
 		//TODO 정보를 받아야함 함수로 만들 것
-		Main.cam = Setting.setCam();
+		View.cam = Setting.setCam();
 
-        EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, Main.objects));
-		requestAnimationFrame(Main.update);
+        EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects));
+		requestAnimationFrame(View.update);
 	}
 	
 	static render() {
 		Setting.setRender();
-		Main.cam.putCam();
-        for (let i = 0; i < Main.objects.length; i++)
-            Main.objects.draw();
+		View.cam.putCam();
+        for (let i = 0; i < View.objects.length; i++)
+            View.objects.draw();
 	}
 
 	static update() {
-		Main.render();
-		requestAnimationFrame(Main.update);
+		View.render();
+		requestAnimationFrame(View.update);
 	}
 }

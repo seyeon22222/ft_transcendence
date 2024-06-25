@@ -9,9 +9,8 @@ class Main {
 	static add_button;
 	static cam = null;
 	static ray = null;
-	static id = null;
 
-	static entry(hash) {
+	static entry(hash, id) {
 		Setting.setPipe();
 		Main.objects = Setting.setBasicObjects();
 		Main.add_button = Setting.setAddButton();
@@ -19,7 +18,7 @@ class Main {
 		Main.ray = new Ray(Main.cam);
 
 		EventManager.setEventKeyboard(Main.cam);
-		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects, Main.id);
+		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects, id);
 
 		requestAnimationFrame(Main.update);
 	}
@@ -121,8 +120,10 @@ export async function custom_view(hash) {
             }
           }
           if (flag == 1) {
-			Main.id = match_id;
-            Main.entry(get_hash);
+            if (window.players === 1)
+              Main.entry(get_hash, match_id);
+            else
+              View.entry(get_hash, match_id);
           } else {
             location.href = "/#";
           }

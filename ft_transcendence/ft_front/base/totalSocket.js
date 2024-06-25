@@ -144,7 +144,7 @@ async function m_accept(invitePopup, player1, player2, g_id) {
         url = data.hash;
         console.log(url);
         delete_back_show();
-        window.location.href = `/#gamem/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#customm/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
