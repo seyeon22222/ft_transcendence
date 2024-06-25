@@ -1,14 +1,17 @@
 import { Setting } from "../../static/graphics/Setting.js"; // comp
 import { Ray } from "../../static/phong/Ray.js"; // comp
 import { EventManager } from "../../static/Event/EventManager.js"; // comp
+import { delete_back_show } from "../utilities.js";
+import { View } from "./app_view.js";
 
 class Main {
 	static objects = [];
 	static add_button;
 	static cam = null;
 	static ray = null;
+	static id = null;
 
-	static entry() {
+	static entry(hash) {
 		Setting.setPipe();
 		Main.objects = Setting.setBasicObjects();
 		Main.add_button = Setting.setAddButton();
@@ -16,7 +19,7 @@ class Main {
 		Main.ray = new Ray(Main.cam);
 
 		EventManager.setEventKeyboard(Main.cam);
-		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects);
+		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects, Main.id);
 
 		requestAnimationFrame(Main.update);
 	}
@@ -68,6 +71,7 @@ class Main {
 }
 
 export async function custom_view(hash) {
+	//TODO: 분기를 나눠 줄 것 (Main(custom page), View(보는 페이지) 둘 중 어느 것을 실행 시킬 지 결정)
     delete_back_show();
     const get_hash = hash.slice(1);
     let flag = 0;
@@ -117,6 +121,7 @@ export async function custom_view(hash) {
             }
           }
           if (flag == 1) {
+			Main.id = match_id;
             Main.entry(get_hash);
           } else {
             location.href = "/#";
