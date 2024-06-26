@@ -4,6 +4,13 @@ import { EventManager } from "../../static/Event/EventManager.js"; // comp
 import { delete_back_show } from "../utilities.js";
 import { View } from "./app_view.js";
 
+function deleteEvent() {
+  Setting.deleteEvent('mouse');
+}
+
+window.removeEventListener('unload', deleteEvent);
+window.addEventListener('unload', deleteEvent);
+
 class Main {
 	static objects = [];
 	static add_button;
@@ -17,9 +24,7 @@ class Main {
 		Main.cam = Setting.setCam();
 		Main.ray = new Ray(Main.cam);
 
-		EventManager.setEventKeyboard(Main.cam);
 		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects, id, ws);
-
 		requestAnimationFrame(Main.update);
 	}
 	

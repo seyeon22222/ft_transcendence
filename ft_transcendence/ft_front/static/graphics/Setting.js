@@ -82,13 +82,13 @@ export class Setting {
 			objects[i].setModelLoc(loc);
         return objects;
 	}
-	//TODO 받아온 정보를 통해 인자 추가하기
     static setGameMap(multiFlag) {
 		let objects = [];
 		if (multiFlag == false)
 			objects = Setting.setDualMap();
 		else 
-			objects = Setting.setMultiMap();
+		objects = Setting.setMultiMap();
+		//TODO 받아온 정보를 통해 인자 추가하기
 		return objects;
 	}
 

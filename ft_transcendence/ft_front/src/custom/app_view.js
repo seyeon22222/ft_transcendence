@@ -2,6 +2,13 @@ import { Setting } from "../../static/graphics/Setting.js"; // comp
 import { EventManager } from "../../static/Event/EventManager.js";
 import { MouseEvent } from "../../static/Event/MouseEvent.js";
 
+function deleteEvent() {
+	Setting.deleteEvent('mouse');
+}
+
+window.removeEventListener('unload', deleteEvent);
+window.addEventListener('unload', deleteEvent);
+
 export class View {
 	static objects = [];
 	static add_button;
