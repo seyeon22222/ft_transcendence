@@ -55,7 +55,9 @@ export class View {
 					b: data.custom[i].custom.b,
 					x: data.custom[i].custom.x,
 					y: data.custom[i].custom.y,
-					z: data.custom[i].custom.z
+					z: data.custom[i].custom.z,
+					w: data.custom[i].custom.w,
+					h: data.custom[i].custom.h,
 				  };
 				  View.objects.push(customObject);
 				}
@@ -73,7 +75,7 @@ export class View {
 		View.cam.putCam();
     for (let i = 0; i < View.objects.length; i++){
       if (i == 1) continue;
-      (View.objects[i]).draw(false);
+      View.objects[i].draw(false);
     }
 	}
 

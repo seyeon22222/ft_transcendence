@@ -93,6 +93,7 @@ export async function custom_view(hash) {
     const get_hash = hash.slice(1);
     let flag = 0;
     let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
+    console.log('get_list_hash', get_list_hash);
     let match_id = get_list_hash[get_list_hash.length - 1]; //
   
     const csrftoken = Cookies.get("csrftoken");
