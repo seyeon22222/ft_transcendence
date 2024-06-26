@@ -43,13 +43,26 @@ export class View {
 	      });
 	      if (response.ok) {
 	        let data = await response.json();
-			console.log(data);
-			console.log("data.r : " + data.r);
-			console.log("data.r : " + data.g);
-			console.log("data.r : " + data.b);
+			// console.log("data", data);
+			// console.log("data.custom", data.custom);
+			// console.log("(data.custom)[0].custom", (data.custom)[0].custom);
+			// console.log("(data.custom)[0].custom.r", (data.custom)[0].custom.r);
+			// data.custom의 길이만큼 반복
+			for (var i = 0; i < data.custom.length; i++) {
+				let customObject = {
+					r: data.custom[i].custom.r,
+					g: data.custom[i].custom.g,
+					b: data.custom[i].custom.b,
+					x: data.custom[i].custom.x,
+					y: data.custom[i].custom.y,
+					z: data.custom[i].custom.z
+				  };
+				  View.objects.push(customObject);
+				}
+			}
+			console.log('view objects', View.objects);
         }
       }
-    };
 
     EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects));
 		requestAnimationFrame(View.update);
@@ -60,7 +73,7 @@ export class View {
 		View.cam.putCam();
     for (let i = 0; i < View.objects.length; i++){
       if (i == 1) continue;
-      View.objects[i].draw(false);
+      (View.objects[i]).draw(false);
     }
 	}
 
