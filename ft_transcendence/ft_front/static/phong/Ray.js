@@ -27,9 +27,7 @@ export class Ray {
     setRay(x, y) {
         this.inv_view = Mat4x4.invMat4(this.cam.view_mat);
         let ori = this.windowToCanvasNDC(x, y);
-        let f_near = [0, 0, -this.cam.near, 1];
-        f_near = Mat4x4.multipleMat4AndVec4(Mat4x4.rotMatAxisY(this.cam.degree), f_near);
-        f_near = f_near[2];
+        let f_near = -this.cam.near;
         ori = [ori.x * -f_near, ori.y * -f_near, f_near, -f_near];
         ori = Mat4x4.multipleMat4AndVec4(this.inv_porj, ori);
         ori = Mat4x4.multipleMat4AndVec4(this.inv_view, ori);

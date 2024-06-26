@@ -82,7 +82,6 @@ export class ObjectManager {
 			objects = ObjectManager.setDualMap();
 		else 
 		objects = ObjectManager.setMultiMap();
-		//TODO 받아온 정보를 통해 인자 추가하기
 		return objects;
 	}
 
