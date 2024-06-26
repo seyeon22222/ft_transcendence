@@ -153,8 +153,9 @@ class MultiSerializer(serializers.ModelSerializer):
             return obj.match_result
         else:
             return None
-        
+
 class CustomSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = custom
-        fields = ('id', 'r', 'g', 'b', 'x', 'y', 'z', 'w', 'h')
+        fields = '__all__'

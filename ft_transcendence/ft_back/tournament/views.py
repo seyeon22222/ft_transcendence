@@ -745,11 +745,10 @@ class updateMatchCustom(APIView):
         w = request.data.get('w', 0.0)
         h = request.data.get('h', 0.0)
         
-        # 새로운 custom 객체 생성
-        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
-        
         # match 객체와 새로운 custom 객체 연결
+        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         match.custom.add(new_custom)
+        
         
         # 변경된 내용 저장
         match.save()

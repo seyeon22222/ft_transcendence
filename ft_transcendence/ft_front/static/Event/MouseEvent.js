@@ -114,11 +114,12 @@ export class MouseEvent {
                     'b' : objects[i].color[2],
                     'x' : objects[i].pos[0],
                     'y' : objects[i].pos[1],
-                    'z' : 0,
+                    'z' : objects[i].degree,
                     'w' : objects[i].width,
                     'h' : objects[i].height
                 }
                 const response = fetch(`/match/updatematchcustom/${id}`, {
+                    //match serializer 반환값 가져옴
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -289,9 +290,12 @@ export class MouseEvent {
 
     setRed() {
         let tmp_event = () => {
-            let r = Math.abs(document.getElementById('red').value) / 255;
+            let r = Math.abs(document.getElementById('red').value);
+            r = Math.min(a, 255) / 255;
             let g = Math.abs(document.getElementById('green').value) / 255;
+            g = Math.min(g, 255) / 255;
             let b = Math.abs(document.getElementById('blue').value) / 255;
+            b = Math.min(b, 255) / 255;
             MouseEvent.new_object.setColor([r, g, b, 1]);
         }
         this.input_types.push('red');
@@ -301,9 +305,12 @@ export class MouseEvent {
 
     setGreen() {
         let tmp_event = () => {
-            let r = Math.abs(document.getElementById('red').value) / 255;
+            let r = Math.abs(document.getElementById('red').value);
+            r = Math.min(a, 255) / 255;
             let g = Math.abs(document.getElementById('green').value) / 255;
+            g = Math.min(g, 255) / 255;
             let b = Math.abs(document.getElementById('blue').value) / 255;
+            b = Math.min(b, 255) / 255;
             MouseEvent.new_object.setColor([r, g, b, 1]);
         }
         this.input_types.push('green');
@@ -313,9 +320,12 @@ export class MouseEvent {
 
     setBlue() {
         let tmp_event = () => {
-            let r = Math.abs(document.getElementById('red').value) / 255;
+            let r = Math.abs(document.getElementById('red').value);
+            r = Math.min(a, 255) / 255;
             let g = Math.abs(document.getElementById('green').value) / 255;
+            g = Math.min(g, 255) / 255;
             let b = Math.abs(document.getElementById('blue').value) / 255;
+            b = Math.min(b, 255) / 255;
             MouseEvent.new_object.setColor([r, g, b, 1]);
         }
         this.input_types.push('blue');

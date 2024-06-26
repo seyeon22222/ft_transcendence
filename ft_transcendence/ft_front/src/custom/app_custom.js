@@ -18,6 +18,25 @@ class Main {
 	static ray = null;
 
 	static entry(hash, id) {
+    let ws = new WebSocket("wss://" + window.location.host + "/ws/custom/" + hash + "/");
+
+    window.addEventListener("popstate", function () {
+      // WebSocket 연결 닫기
+      if (ws && ws.readyState !== WebSocket.CLOSED) {
+        ws.close();
+        ws = null;
+        console.log("popstate : " + hash);
+      }
+
+    });
+
+    ws.onmessage = async function (e) {
+      let data = JSON.parse(e.data);
+		  let message = data["message"];
+
+      console.log(message);
+    };
+
 		Setting.setPipe();
 		Main.objects = Setting.setBasicObjects();
 		Main.add_button = Setting.setAddButton();
