@@ -13,7 +13,7 @@ class Main {
 	Setting.setPipe();
 	Main.cam = Setting.setCam();
 	//TODO
-	Main.objects = Setting.setGameMap(); // 미완성
+	Main.objects = Setting.setGameMap(false); // 미완성
 	
 	let flag = 1;
 	// WebSocket 연결 시도

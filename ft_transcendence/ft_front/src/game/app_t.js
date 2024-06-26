@@ -20,7 +20,7 @@ class Main {
 		);
 		Setting.setPipe();
 		Main.cam = Setting.setCam();
-		Main.objects = Setting.setGameMap(); // 미완
+		Main.objects = Setting.setGameMap(false);
 		EventManager.setEventKeyboard(Main.cam, ws);
 		EventManager.setScreenEvent();
 

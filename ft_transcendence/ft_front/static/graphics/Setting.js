@@ -33,10 +33,62 @@ export class Setting {
         return objects;
     }
 
-	//TODO 받아온 정보를 통해 인자 추가하기
-    static setGameMap() {
+	static setDualMap() {
 		let objects = [];
 
+        let ball = new Sphere(Pipeline.gl, Pipeline.program);
+		ball.createSphere();
+        objects.push(ball);
+		for (let i = 1; i < 5; i++)
+			objects.push(new Box(Pipeline.gl, Pipeline.program));
+		objects[1].createBox(0.5, 3);
+		objects[1].movePos([-15, 0, 0]);
+		objects[2].createBox(0.5, 3);
+		objects[2].movePos([15, 0, 0]);
+		objects[3].createBox(30, 0.5);
+		objects[3].movePos([0, 8, 0]);
+		objects[4].createBox(30, 0.5);
+		objects[4].movePos([0, -8, 0]);
+
+		let loc = Pipeline.gl.getUniformLocation(Pipeline.program.id, "model");
+		for (let i = 0; i < objects.length; i++)
+			objects[i].setModelLoc(loc);
+        return objects;
+	}
+
+	static setMultiMap() {
+		let objects = [];
+
+        let ball = new Sphere(Pipeline.gl, Pipeline.program);
+		ball.createSphere();
+        objects.push(ball);
+		for (let i = 1; i < 7; i++)
+			objects.push(new Box(Pipeline.gl, Pipeline.program));
+		objects[1].createBox(0.5, 3);
+		objects[1].movePos([-15, 1.5, 0]);
+		objects[2].createBox(0.5, 3);
+		objects[2].movePos([15, 1.5, 0]);
+		objects[3].createBox(0.5, 3);
+		objects[3].movePos([-15, -1.5, 0]);
+		objects[4].createBox(0.5, 3);
+		objects[4].movePos([15, -1.5, 0]);
+		objects[5].createBox(30, 0.5);
+		objects[5].movePos([0, 8, 0]);
+		objects[6].createBox(30, 0.5);
+		objects[6].movePos([0, -8, 0]);
+
+		let loc = Pipeline.gl.getUniformLocation(Pipeline.program.id, "model");
+		for (let i = 0; i < objects.length; i++)
+			objects[i].setModelLoc(loc);
+        return objects;
+	}
+	//TODO 받아온 정보를 통해 인자 추가하기
+    static setGameMap(multiFlag) {
+		let objects = [];
+		if (multiFlag == false)
+			objects = Setting.setDualMap();
+		else 
+			objects = Setting.setMultiMap();
 		return objects;
 	}
 

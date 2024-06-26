@@ -1,5 +1,5 @@
 import { Setting } from "../../static/graphics/Setting.js"; // comp
-import { EventManager } from "../../static/Event/EventManager.js"; // comp
+import { EventManager } from "../../static/Event/EventManager.js";
 import { MouseEvent } from "../../static/Event/MouseEvent.js";
 
 export class View {
@@ -10,9 +10,9 @@ export class View {
 
 	static entry(hash, id) {
 		Setting.setPipe();
-		//TODO 정보를 받아야함 함수로 만들 것
 		View.objects = Setting.setBasicObjects();
 		View.cam = Setting.setCam();
+
 
         EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects));
 		requestAnimationFrame(View.update);
@@ -21,8 +21,10 @@ export class View {
 	static render() {
 		Setting.setRender();
 		View.cam.putCam();
-        for (let i = 0; i < View.objects.length; i++)
-            View.objects.draw();
+        for (let i = 0; i < View.objects.length; i++) {
+            if (i == 1) continue;
+			View.objects[i].draw(false);
+		}
 	}
 
 	static update() {
