@@ -59,6 +59,17 @@ class tournamentMatch(models.Model):
         return f"{self.player1.username} vs {self.player2.username} in {self.tournament.name}"
 
 
+class TournamentMatchCustom(models.Model):
+    match = models.ForeignKey(tournamentMatch, on_delete=models.CASCADE)
+    custom = models.ForeignKey(Custom, on_delete=models.CASCADE)
+
+    class Meta:
+        # 중복을 허용하지 않음
+        unique_together = ('match', 'custom')
+
+    def __str__(self):
+        return f'{self.match.name} - {self.custom.id}'
+
     
 class Match(models.Model):
 
@@ -122,3 +133,14 @@ class MultiMatch(models.Model):
 
     def __str__(self):
         return f"{self.player1.username}, {self.player2.username}, {self.player3.username}, {self.player4.username} in {self.name}"
+
+class MultiMatchCustom(models.Model):
+    match = models.ForeignKey(MultiMatch, on_delete=models.CASCADE)
+    custom = models.ForeignKey(Custom, on_delete=models.CASCADE)
+
+    class Meta:
+        # 중복을 허용하지 않음
+        unique_together = ('match', 'custom')
+
+    def __str__(self):
+        return f'{self.match.name} - {self.custom.id}'

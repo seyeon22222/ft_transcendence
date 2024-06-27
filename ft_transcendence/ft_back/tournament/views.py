@@ -765,14 +765,14 @@ class updateTournamentCustom(APIView):
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            match = tournament.objects.get(pk=tournament_id)
-        except tournament.DoesNotExist:
+            match = tournamentMatch.objects.get(pk=tournament_id)
+        except tournamentMatch.DoesNotExist:
             return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
         # match.custom.all()을 통해 연결된 모든 custom 객체 가져오기
         custom_objects = match.custom.all()
         
         # Serializer를 사용하여 JSON 형식으로 직렬화
-        serializer = CustomSerializer(custom_objects, many=True)
+        serializer = tournamentMatchSerializer(custom_objects, many=True)
         
         # 직렬화된 데이터를 Response로 반환
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -786,8 +786,8 @@ class updateTournamentCustom(APIView):
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            match = tournament.objects.get(pk=tournament_id)
-        except tournament.DoesNotExist:
+            match = tournamentMatch.objects.get(pk=tournament_id)
+        except tournamentMatch.DoesNotExist:
             return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
         
         # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
@@ -815,11 +815,8 @@ class updateTournamentCustom(APIView):
 class updateMultiCustom(APIView):
     def get(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
-        custom_objects = match.custom.all()
-        print(len(custom_objects))
-        # Serializer를 사용하여 JSON 형식으로 직렬화
-        serializer = CustomSerializer(custom_objects, many=True)
-        
+        serializer = MultiSerializer(match)
+
         # 직렬화된 데이터를 Response로 반환
         return Response(serializer.data, status=status.HTTP_200_OK)
 
