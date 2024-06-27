@@ -102,6 +102,9 @@ export class ObjectManager {
         if (degree !== 0)
             object.rotBox(degree);
         object.setColor(color);
+		let loc = Pipeline.gl.getUniformLocation(Pipeline.program.id, "model");
+		object.setModelLoc(loc);
         obstacles.push(object);
+		console.log("addObject size: ", obstacles.length);
     }
 }

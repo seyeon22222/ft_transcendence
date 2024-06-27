@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch, multimatchmaking, custom
-from .serializers import tournamentSerializer, tournamentMatchSerializer, matchSerializer, MultiSerializer, CustomSerializer
+from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch, multimatchmaking, Custom
+from .serializers import tournamentSerializer, tournamentMatchSerializer, MatchSerializer, MultiSerializer, CustomSerializer
 from ft_user.models import MyUser, GameStat, MatchInfo
 from django.shortcuts import get_object_or_404
 from ft_user.utils import validate_input
@@ -104,14 +104,14 @@ class matchListView(APIView):
 
     def get(self, request):
         matchs = Match.objects.all()
-        serializer = matchSerializer(matchs, many=True)
+        serializer = MatchSerializer(matchs, many=True)
         return Response(serializer.data)
     
 class matchDetailView(APIView):
 
     def get(self, request, match_id):
         match = get_object_or_404(Match, id=match_id)
-        serializer = matchSerializer(match)
+        serializer = MatchSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class tournamentMatchView(APIView):
@@ -144,7 +144,7 @@ class matchView(APIView):
     def get(self, request):
         user = request.user
         matches = Match.objects.filter(player1=user).union(Match.objects.filter(player2=user))
-        serializer = matchSerializer(matches, many=True)
+        serializer = MatchSerializer(matches, many=True)
         return Response(serializer.data)
 
 class MatchRequestView(APIView):
@@ -719,16 +719,17 @@ class tournamentMatchResultView(APIView):
 
 class updateMatchCustom(APIView):
      def get(self, request, match_id):
+        
         # match_id를 사용하여 해당 Match 객체 가져오기
         match = get_object_or_404(Match, id=match_id)
-
-        # match.custom.all()을 통해 연결된 모든 custom 객체 가져오기
-        custom_objects = match.custom.all()
-        
-        # Serializer를 사용하여 JSON 형식으로 직렬화
-        serializer = CustomSerializer(custom_objects, many=True)
-        
-        # 직렬화된 데이터를 Response로 반환
+        serializer = MatchSerializer(match)
+        # print(s)
+        # # match.custom.all()을 통해 연결된 모든 custom 객체 가져오기
+        # custom_objects = match.custom.all()
+        # print(custom_objects)
+        # # Serializer를 사용하여 JSON 형식으로 직렬화
+        # serializer = CustomSerializer(match)
+        # print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
      
      def post(self, request, match_id):
@@ -746,12 +747,12 @@ class updateMatchCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # match 객체와 새로운 custom 객체 연결
-        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         match.custom.add(new_custom)
-        
+
         
         # 변경된 내용 저장
-        match.save()
+        # match.save()
         
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
 
@@ -800,7 +801,7 @@ class updateTournamentCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         
         # match 객체와 새로운 custom 객체 연결
         match.custom.add(new_custom)
@@ -815,7 +816,7 @@ class updateMultiCustom(APIView):
     def get(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
         custom_objects = match.custom.all()
-        
+        print(len(custom_objects))
         # Serializer를 사용하여 JSON 형식으로 직렬화
         serializer = CustomSerializer(custom_objects, many=True)
         
@@ -836,7 +837,7 @@ class updateMultiCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
+        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
         
         # match 객체와 새로운 custom 객체 연결
         match.custom.add(new_custom)
