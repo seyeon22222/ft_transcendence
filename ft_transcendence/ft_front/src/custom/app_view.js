@@ -3,12 +3,6 @@ import { EventManager } from "../../static/Event/EventManager.js";
 import { MouseEvent } from "../../static/Event/MouseEvent.js";
 import { ObjectManager } from "../../static/phong/ObjectManager.js";
 
-function deleteEvent() {
-	Setting.deleteEvent('mouse');
-}
-
-window.removeEventListener('unload', deleteEvent);
-window.addEventListener('unload', deleteEvent);
 
 export class View {
 	static objects = [];
@@ -25,12 +19,13 @@ export class View {
 		let ws = new WebSocket("wss://" + window.location.host + "/ws/custom/" + hash + "/");
 		
 		window.addEventListener("popstate", function () {
-		// WebSocket 연결 닫기
-		if (ws && ws.readyState !== WebSocket.CLOSED) {
-			ws.close();
-			ws = null;
-			console.log("popstate : " + hash);
-		}
+			// WebSocket 연결 닫기
+			if (ws && ws.readyState !== WebSocket.CLOSED) {
+				ws.close();
+				ws = null;
+				console.log("popstate : " + hash);
+			}
+			EventManager.deleteEvent("mouse");
 		});
 
 		ws.onmessage = async function (e) {
@@ -49,8 +44,9 @@ export class View {
 				});
 				if (response.ok) {
 					let data = await response.json();
+					console.log("view data len: ", data.custom.length);
 					for (var i = 0; i < data.custom.length; i++) {
-						let color = [data.custom[i].custom.r, data.custom[i].custom.g, data.custom[i].custom.b, 1];
+						let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
 						let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
 						let degree = data.custom[i].custom.z;
 						let w = data.custom[i].custom.w;
@@ -60,7 +56,7 @@ export class View {
 				}
 			}
     }
-		EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects));
+		EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects, null, ws));
 		requestAnimationFrame(View.update);
 	}
 	
