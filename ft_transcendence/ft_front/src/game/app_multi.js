@@ -39,7 +39,6 @@ class Main {
     Main.stick2 = new Stick([15, 1.5, 0]);
     Main.stick3 = new Stick([-15, -1.5, 0]);
     Main.stick4 = new Stick([15, -1.5, 0]);
-    console.log(Main.players);
     let flag = 1;
     // WebSocket 연결 시도
     let ws = new WebSocket(

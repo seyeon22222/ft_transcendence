@@ -514,7 +514,7 @@ document.querySelectorAll('.dropdown-item').forEach(item => {
 	item.addEventListener('click', event => {
 	  event.preventDefault(); // 기본 동작(링크 이동) 방지
 	  const selectedValue = event.target.getAttribute('value');
-	  console.log(`Selected value: ${selectedValue}`);
+	//   console.log(`Selected value: ${selectedValue}`);
 	  langNow = selectedValue;
 
 	  // 선택된 값을 드롭다운 버튼에 표시
@@ -596,7 +596,7 @@ language.addEventListener("change", async (event) => {
 
 		if (test_res.ok) {
 			data = await test_res.json();
-			console.log(data);
+			// console.log(data);
 		}
 	
 		const response = await fetch('user/language', {

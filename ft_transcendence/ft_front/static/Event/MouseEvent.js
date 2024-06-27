@@ -65,20 +65,15 @@ export class MouseEvent {
 
     setGameStart(ws) {
         let tmp_event = () => {
-            //TODO player2가 start를 눌렀다는 것을 알려줘야함(서버에)
-            console.log("ws player : " + window.players);
             let message = { message: window.players};
-            console.log("ws message : " + message);
-            console.log(ws);
 		    ws.send(JSON.stringify(message));
         };
         document.getElementById('start').addEventListener('click', tmp_event);
         this.m_event = tmp_event;
-        this.type = 'gamestart';
     }
 
     setStart(objects, id, ws) {
-        let tmp_event = () => {
+        let tmp_event = async () => {
             if (MouseEvent.new_object) {
                 let max_x = -100, max_y = -100, min_x = 100, min_y = 100;
                 let flag = false;
@@ -122,7 +117,7 @@ export class MouseEvent {
                     'w' : objects[i].width,
                     'h' : objects[i].height
                 }
-                const response = fetch(`/match/updatematchcustom/${id}`, {
+                const response = await fetch(`/match/updatematchcustom/${id}`, {
                     //match serializer 반환값 가져옴
                     method: "POST",
                     headers: {

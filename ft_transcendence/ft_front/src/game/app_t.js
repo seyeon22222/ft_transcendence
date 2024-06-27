@@ -37,10 +37,10 @@ class Main {
 			ws.close();
 			sleep(1000);
 			ws = null;
-			console.log("popstate : " + get_hash);
 			}
 			Main.player = 0;
-			window.removeEventListener("resize", handleResize);
+			EventManager.deleteEvent("keyboard");
+			EventManager.deleteEvent("screen");
 		});
 
 		let messageQueue = [];
@@ -79,10 +79,10 @@ class Main {
 			if (score1 == 5 || score2 == 5) {
 				let get_list_hash = get_hash.split("_");
 				is_active = 0;
-				console.log(
-					"===========href=========",
-					`/#tournament/${get_list_hash[get_list_hash.length - 1]}`
-				);
+				// console.log(
+				// 	"===========href=========",
+				// 	`/#tournament/${get_list_hash[get_list_hash.length - 1]}`
+				// );
 			} 
 			else {
 				if (document.getElementById("game-score"))
@@ -131,10 +131,7 @@ class Main {
 		}
 	}
 	static entry() {
-		if (Main.player == 1)
-			Main.objects[1].setColor([0, 1, 0, 1]);
-		else
-			Main.objects[2].setColor([0, 1, 0, 1]);
+		Main.objects[window.players].setColor([0, 1, 0, 1]);
 		requestAnimationFrame(Main.update);
 	}
 	static render() {

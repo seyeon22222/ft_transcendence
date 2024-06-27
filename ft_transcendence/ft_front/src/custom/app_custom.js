@@ -4,18 +4,12 @@ import { EventManager } from "../../static/Event/EventManager.js"; // comp
 import { delete_back_show } from "../utilities.js";
 import { View } from "./app_view.js";
 
-function deleteEvent() {
-  Setting.deleteEvent('mouse');
-}
-
-window.removeEventListener('unload', deleteEvent);
-window.addEventListener('unload', deleteEvent);
-
 class Main {
 	static objects = [];
 	static add_button;
 	static cam = null;
 	static ray = null;
+  static loop = true;
 
 	static entry(hash, id) {
     let ws = new WebSocket("wss://" + window.location.host + "/ws/custom/" + hash + "/");
@@ -27,6 +21,8 @@ class Main {
         ws = null;
         console.log("popstate : " + hash);
       }
+      EventManager.deleteEvent('mouse');
+      Main.loop = false;
     });
     
     ws.onopen = () => {
@@ -99,7 +95,8 @@ class Main {
 
 	static update() {
 		Main.render();
-		requestAnimationFrame(Main.update);
+    if (Main.loop)
+		  requestAnimationFrame(Main.update);
 	}
 }
 

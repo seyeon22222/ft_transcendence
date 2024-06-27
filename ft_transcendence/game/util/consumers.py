@@ -6,6 +6,17 @@ from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import ball
 
+def setObject(data, obstacles):
+    pos = [data['x'], data['y'], 0]
+    degree = data['z']
+    w = data['w']
+    h = data['h']
+    obj = ball.Box(w, h)
+    if (degree):
+        obj.rotBox(degree)
+    obj.movePos(pos)
+    obstacles.append(obj)
+
 class GameConsumer(AsyncWebsocketConsumer):
     consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
 
@@ -18,7 +29,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.p1 = ball.Stick([-15,1.5,0], 0.5, 3)
         self.p2 = ball.Stick([15,1.5,0], 0.5, 3)
         self.paddles = []
-        self.obtacles = []
+        self.obstacles = []
         self.message_loop = True
         self.game_loop = True
 
@@ -35,17 +46,31 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.p1 = self.consumers[self.room_group_name].p1
             self.p2 = self.consumers[self.room_group_name].p2
             self.paddles = self.consumers[self.room_group_name].paddles
-            self.obtacles = self.consumers[self.room_group_name].obtacles
+            self.obstacles = self.consumers[self.room_group_name].obstacles
             self.task = self.loop.create_task(self.send_message())
         else:
             self.consumer = self
             self.consumers[self.room_group_name] = self
             self.paddles.append(self.p1)
             self.paddles.append(self.p2)
-            self.obtacles.append(ball.Box(30, 0.5))
-            self.obtacles[0].movePos([0, 8, 0])
-            self.obtacles.append(ball.Box(30, 0.5))
-            self.obtacles[1].movePos([0, -8, 0])
+            self.obstacles.append(ball.Box(30, 0.5))
+            self.obstacles[0].movePos([0, 8, 0])
+            self.obstacles.append(ball.Box(30, 0.5))
+            self.obstacles[1].movePos([0, -8, 0])
+            backend_url = 'http://backend:8000/match/updatematchcustom/' + list(self.room_name.split('_'))[-1]
+            params= {
+                    'match_id': list(self.room_name.split('_'))[-1],
+            }
+            response = requests.get(backend_url, params=params)
+            # 응답의 상태 코드 확인
+            print("connect start")
+            if response.status_code == 200:
+                # 응답 데이터를 JSON 형식으로 변환
+                data = response.json()
+                for d in data['custom']:
+                    setObject(d['custom'], self.obstacles)
+            else:
+                print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
 
         await self.send(text_data=json.dumps({
@@ -96,10 +121,10 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
-            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
-            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
+            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obstacles[0].bot1[1], self.obstacles[1].top1[1])
+            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obstacles[0].bot1[1], self.obstacles[1].top1[1])
             self.b.pos[2] = 1
-            self.b.update(self.paddles, self.obtacles, self.dt * 20)
+            self.b.update(self.paddles, self.obstacles, self.dt * 20)
             self.b.pos[2] = 0
             if self.b.point1 == 5 :
                 self.b.is_active = 0
@@ -177,7 +202,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
         self.p1 = ball.Stick([-15,1.5,0], 0.5, 3)
         self.p2 = ball.Stick([15,1.5,0], 0.5, 3)
         self.paddles = []
-        self.obtacles = []
+        self.obstacles = []
         self.message_loop = True
         self.game_loop = True
 
@@ -194,17 +219,17 @@ class TGameConsumer(AsyncWebsocketConsumer):
             self.p1 = self.consumers[self.room_group_name].p1
             self.p2 = self.consumers[self.room_group_name].p2
             self.paddles = self.consumers[self.room_group_name].paddles
-            self.obtacles = self.consumers[self.room_group_name].obtacles
+            self.obstacles = self.consumers[self.room_group_name].obstacles
             self.task = self.loop.create_task(self.send_message())
         else:
             self.consumer = self
             self.consumers[self.room_group_name] = self
             self.paddles.append(self.p1)
             self.paddles.append(self.p2)
-            self.obtacles.append(ball.Box(30, 0.5))
-            self.obtacles[0].movePos([0, 8, 0])
-            self.obtacles.append(ball.Box(30, 0.5))
-            self.obtacles[1].movePos([0, -8, 0])
+            self.obstacles.append(ball.Box(30, 0.5))
+            self.obstacles[0].movePos([0, 8, 0])
+            self.obstacles.append(ball.Box(30, 0.5))
+            self.obstacles[1].movePos([0, -8, 0])
             self.task = self.loop.create_task(self.game_update())
         
         await self.send(text_data=json.dumps({
@@ -257,10 +282,10 @@ class TGameConsumer(AsyncWebsocketConsumer):
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
-            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
-            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1])
+            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obstacles[0].bot1[1], self.obstacles[1].top1[1])
+            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obstacles[0].bot1[1], self.obstacles[1].top1[1])
             self.b.pos[2] = 1
-            self.b.update(self.paddles, self.obtacles, self.dt * 20)
+            self.b.update(self.paddles, self.obstacles, self.dt * 20)
             self.b.pos[2] = 0
             if self.b.point1 == 5 :
                 self.b.is_active = 0
@@ -333,7 +358,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         self.p3 = ball.Stick([-15,-1.5,0], 0.5, 3)
         self.p4 = ball.Stick([15,-1.5,0], 0.5, 3)
         self.paddles = []
-        self.obtacles = []
+        self.obstacles = []
         self.message_loop = True
         self.game_loop = True
 
@@ -352,7 +377,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.p3 = self.consumers[self.room_group_name].p3
             self.p4 = self.consumers[self.room_group_name].p4
             self.paddles = self.consumers[self.room_group_name].paddles
-            self.obtacles = self.consumers[self.room_group_name].obtacles
+            self.obstacles = self.consumers[self.room_group_name].obstacles
             self.task = self.loop.create_task(self.send_message())
         else:
             self.consumer = self
@@ -361,10 +386,10 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.paddles.append(self.p2)
             self.paddles.append(self.p3)
             self.paddles.append(self.p4)
-            self.obtacles.append(ball.Box(30, 0.5))
-            self.obtacles[0].movePos([0, 8, 0])
-            self.obtacles.append(ball.Box(30, 0.5))
-            self.obtacles[1].movePos([0, -8, 0])
+            self.obstacles.append(ball.Box(30, 0.5))
+            self.obstacles[0].movePos([0, 8, 0])
+            self.obstacles.append(ball.Box(30, 0.5))
+            self.obstacles[1].movePos([0, -8, 0])
             self.task = self.loop.create_task(self.game_update())
         
         await self.send(text_data=json.dumps({
@@ -419,13 +444,13 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.dt = (time.perf_counter() - self.lastTime)
             self.lastTime = time.perf_counter()
 
-            map_length = self.obtacles[0].bot1[1] - self.obtacles[1].top1[1]
-            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
-            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1], self.obtacles[1].top1[1] + map_length / 2)
-            self.p3.update(self.p3.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1] - map_length / 2, self.obtacles[1].top1[1])
-            self.p4.update(self.p4.dir[1] * 10 * self.dt, self.obtacles[0].bot1[1] - map_length / 2, self.obtacles[1].top1[1])
+            map_length = self.obstacles[0].bot1[1] - self.obstacles[1].top1[1]
+            self.p1.update(self.p1.dir[1] * 10 * self.dt, self.obstacles[0].bot1[1], self.obstacles[1].top1[1] + map_length / 2)
+            self.p2.update(self.p2.dir[1] * 10 * self.dt, self.obstacles[0].bot1[1], self.obstacles[1].top1[1] + map_length / 2)
+            self.p3.update(self.p3.dir[1] * 10 * self.dt, self.obstacles[0].bot1[1] - map_length / 2, self.obstacles[1].top1[1])
+            self.p4.update(self.p4.dir[1] * 10 * self.dt, self.obstacles[0].bot1[1] - map_length / 2, self.obstacles[1].top1[1])
             self.b.pos[2] = 1
-            self.b.update(self.paddles, self.obtacles, self.dt * 20)
+            self.b.update(self.paddles, self.obstacles, self.dt * 20)
             self.b.pos[2] = 0
             if self.b.point1 == 5 :
                 self.b.is_active = 0

@@ -43,13 +43,13 @@ export async function initializeWebsocket() {
             protocol + "//" + window.location.host + "/ws/message/" + user_id + "/"
         );
 
-        console.log(window.i_socket);
+        // console.log(window.i_socket);
         window.i_socket.onopen = function() {
-            console.log("window.i_socket opened");
+            // console.log("window.i_socket opened");
         };
 
         window.i_socket.onclose = function(event) {
-            console.log("window.i_socket closed:", event);
+            // console.log("window.i_socket closed:", event);
         };
 
         window.i_socket.onmessage = function (e) {
@@ -66,13 +66,13 @@ export async function initializeWebsocket() {
         }
     } else {
         const error = await response.json();
-        console.log("처음 접속 시 발생해야하는 에러");
+        // console.log("처음 접속 시 발생해야하는 에러");
     }
 }
 
 export async function check_socket() {
     if (window.i_socket) {
-        console.log("close");
+        // console.log("close");
         window.i_socket.close();
         window.i_socket = null;
     }
@@ -102,8 +102,8 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
             else if (g_type === 'mul') {
                 const player3 = data.player3;
                 const player4 = data.player4;
-                console.log("in socket",player3);
-                console.log("in socket",player4);
+                // console.log("in socket",player3);
+                // console.log("in socket",player4);
                 mul_accept(invitePopup, player1, player2, player3, player4, g_id);
             }
         }
@@ -113,7 +113,7 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
     acceptBtn.onclick = async function(event) {
         event.preventDefault();
         // 수락 로직 구현
-        console.log("게임 초대 수락");
+        // console.log("게임 초대 수락");
         acceptBtn.textContent = ``;
         clearInterval(intervalId); // 수락 시 타이머 중지
         if (g_type === 'm')
@@ -142,7 +142,7 @@ async function m_accept(invitePopup, player1, player2, g_id) {
     if (response.ok) {
         const data = await response.json();
         url = data.hash;
-        console.log(url);
+        // console.log(url);
         delete_back_show();
         window.location.href = `/#customm/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
@@ -177,8 +177,8 @@ async function t_accept(invitePopup, player1, player2, g_id) {
 }
 
 async function mul_accept(invitePopup, player1, player2, player3, player4, g_id) {
-    console.log("mul", player3);
-    console.log("mul", player4);
+    // console.log("mul", player3);
+    // console.log("mul", player4);
     let url;
     const csrftoken = Cookies.get('csrftoken');
     const response = await fetch(`match/multimatchhash/${player1}${player2}${player3}${player4}${g_id}`,  {
