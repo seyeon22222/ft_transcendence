@@ -1,9 +1,18 @@
 import { EventManager } from "../../static/Event/EventManager.js";
 import { Setting } from "../../static/graphics/Setting.js";
 import { delete_back_show } from "../utilities.js";
+import { ObjectManager } from "../../static/phong/ObjectManager.js";
 // paddle_1 -> objects[1], paddle_2 -> objects[2], ball -> objects[0], up wall -> objects[3], down wall -> objects[4]
 
 //TODO 정보를 받아서 그리는 함수 만들기
+
+function deleteEvent() {
+	EventManager.deleteEvent('keyboard');
+	EventManager.deleteEvent('screen');
+}
+  
+window.removeEventListener('unload', deleteEvent);
+window.addEventListener('unload', deleteEvent);
 
 class Main {
 	static objects = [];
@@ -12,8 +21,7 @@ class Main {
 	static webfunc(get_hash) {
 	Setting.setPipe();
 	Main.cam = Setting.setCam();
-	//TODO
-	Main.objects = Setting.setGameMap(false); // 미완성
+	Main.objects = Setting.setGameMap(false);
 	
 	let flag = 1;
 	// WebSocket 연결 시도
@@ -22,6 +30,7 @@ class Main {
 	);
 
 	EventManager.setEventKeyboard(Main.cam, ws);
+	EventManager.setScreenEvent();
 
 	function sleep(ms) {
 		const start = new Date().getTime();

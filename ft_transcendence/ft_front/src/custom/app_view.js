@@ -58,10 +58,8 @@ export class View {
 						ObjectManager.addObstacle(View.objects, color, pos, degree, w, h);
 					}
 				}
-				console.log('view objects', View.objects);
 			}
     }
-
 		EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects));
 		requestAnimationFrame(View.update);
 	}
