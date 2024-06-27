@@ -33,10 +33,18 @@ export class View {
 		}
 		});
 
+		ws.onopen = () => {
+			let message = {message: window.players};
+			ws.send(JSON.stringify(message));
+		};
+
 		ws.onmessage = async function (e) {
 			let data = JSON.parse(e.data);
 			let message = data["message"];
-
+			let time = data["time"];
+			
+			if (time != undefined)
+      			document.getElementById("time").innerHTML = time;
 			console.log("message : " + message);
 			if (message === "complete") {
 				const csrftoken = Cookies.get("csrftoken");
@@ -61,7 +69,7 @@ export class View {
 					}
 				}
 			}
-			else if (message === 'start') {
+			if (message === 'start' || time == 0) {
 				location.href = "/#gamem/" + hash;
 			}
     }

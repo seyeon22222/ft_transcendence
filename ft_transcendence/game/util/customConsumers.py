@@ -10,10 +10,12 @@ class CustomConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.info = customInfo.CustomInfo()
+        self.player = None
         
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
         self.room_group_name = f'game_{self.room_name}'
+        self.loop = asyncio.get_event_loop()
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -28,6 +30,7 @@ class CustomConsumer(AsyncWebsocketConsumer):
         else:
             self.consumer = self
             self.consumers[self.room_group_name] = self
+            self.task = self.loop.create_task(self.update_time())
 
         self.info.player_count += 1
 
@@ -39,18 +42,22 @@ class CustomConsumer(AsyncWebsocketConsumer):
         self.info.player_count -= 1
         if self.info.player_count == 0:
             del self.consumers[self.room_group_name]
-        print("=======================================self.players : =====================")
+        if self.info.time != -1 :
+            self.info.time = 0
+            
     
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         reply = ''
 
-        print("message :", message)
-        if message == 1:
+        if self.player is None:
+            self.player = message
+        elif message == 1:
             reply = 'complete'
-        if message == 2:
+        elif message == 2:
             reply = 'start'
+            self.info.time = -1
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -66,3 +73,24 @@ class CustomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             "message": message,
         }))
+    
+    async def send_time(self, event):
+
+        time = event["time"]
+
+        await self.send(text_data=json.dumps({
+            "time": time,
+        }))
+
+    async def update_time(self):
+        while self.info.time >= 0:
+            # 클라이언트로 메시지 보내기
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type' : 'send_time',
+                    'time' : self.info.time
+                }
+            )
+            self.info.time -= 1
+            await asyncio.sleep(1)
