@@ -107,7 +107,6 @@ export class MouseEvent {
             // TODO -> 서버에 정보 보내기
             const csrftoken = Cookies.get('csrftoken');
             for (let i = 6; i < objects.length; i++) {
-                console.log(Math.floor(objects[i].color[0] * 255), Math.floor(objects[i].color[1] * 255, Math.floor(objects[i].color[2] * 255)));
                 let game_results = {
                     'r' : Math.floor(objects[i].color[0] * 255),
                     'g' : Math.floor(objects[i].color[1] * 255),

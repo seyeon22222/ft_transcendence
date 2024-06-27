@@ -9,6 +9,7 @@ export class View {
 	static add_button;
 	static cam = null;
 	static ray = null;
+	static loop = true;
 
 	static entry(hash, id) {
 		//TODO 정보를 받아야함 함수로 만들 것
@@ -26,11 +27,14 @@ export class View {
 				console.log("popstate : " + hash);
 			}
 			EventManager.deleteEvent("mouse");
+			View.loop = false;
 		});
 
 		ws.onmessage = async function (e) {
 			let data = JSON.parse(e.data);
 			let message = data["message"];
+
+			console.log("message : " + message);
 			if (message === "complete") {
 				const csrftoken = Cookies.get("csrftoken");
 				const response = await fetch(`/match/updatematchcustom/${id}`, {
@@ -55,6 +59,9 @@ export class View {
 					}
 				}
 			}
+			else if (message === 'start') {
+				location.href = "/#gamem/" + hash;
+			}
     }
 		EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects, null, ws));
 		requestAnimationFrame(View.update);
@@ -69,6 +76,7 @@ export class View {
 
 	static update() {
 		View.render();
-		requestAnimationFrame(View.update);
+		if (View.loop)
+			requestAnimationFrame(View.update);
 	}
 }

@@ -81,7 +81,7 @@ export class ObjectManager {
 		if (multiFlag == false)
 			objects = ObjectManager.setDualMap();
 		else 
-		objects = ObjectManager.setMultiMap();
+			objects = ObjectManager.setMultiMap();
 		return objects;
 	}
 
@@ -105,6 +105,5 @@ export class ObjectManager {
 		let loc = Pipeline.gl.getUniformLocation(Pipeline.program.id, "model");
 		object.setModelLoc(loc);
         obstacles.push(object);
-		console.log("addObject size: ", obstacles.length);
     }
 }

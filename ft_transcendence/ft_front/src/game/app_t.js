@@ -37,7 +37,6 @@ class Main {
 			ws.close();
 			sleep(1000);
 			ws = null;
-			console.log("popstate : " + get_hash);
 			}
 			Main.player = 0;
 			window.removeEventListener("resize", handleResize);
@@ -79,10 +78,10 @@ class Main {
 			if (score1 == 5 || score2 == 5) {
 				let get_list_hash = get_hash.split("_");
 				is_active = 0;
-				console.log(
-					"===========href=========",
-					`/#tournament/${get_list_hash[get_list_hash.length - 1]}`
-				);
+				// console.log(
+				// 	"===========href=========",
+				// 	`/#tournament/${get_list_hash[get_list_hash.length - 1]}`
+				// );
 			} 
 			else {
 				if (document.getElementById("game-score"))

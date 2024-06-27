@@ -53,9 +53,9 @@ export function custom_html() {
             </div>
         </div>
         </div>
-    </div>
+        </div>
+    <div id="time"></div>
     <link rel="stylesheet" href="../src/static/game.css">
-    <div id="coordinate"></div>
     <div class="game-container">
       <canvas id="canvas"></canvas>
     </div>

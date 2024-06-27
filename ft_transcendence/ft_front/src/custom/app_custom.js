@@ -9,6 +9,7 @@ class Main {
 	static add_button;
 	static cam = null;
 	static ray = null;
+  static loop = true;
 
 	static entry(hash, id) {
     let ws = new WebSocket("wss://" + window.location.host + "/ws/custom/" + hash + "/");
@@ -21,13 +22,17 @@ class Main {
         console.log("popstate : " + hash);
       }
       EventManager.deleteEvent('mouse');
+      Main.loop = false;
     });
 
     ws.onmessage = async function (e) {
       let data = JSON.parse(e.data);
 		  let message = data["message"];
 
-      console.log(message);
+      console.log("message : " + message);
+      if (message === 'start') {
+				location.href = "/#gamem/" + hash;
+			}
     };
 
 		Setting.setPipe();
@@ -82,7 +87,8 @@ class Main {
 
 	static update() {
 		Main.render();
-		requestAnimationFrame(Main.update);
+    if (Main.loop)
+		  requestAnimationFrame(Main.update);
 	}
 }
 

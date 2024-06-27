@@ -6,19 +6,14 @@ import { ObjectManager } from "../../static/phong/ObjectManager.js";
 
 //TODO 정보를 받아서 그리는 함수 만들기
 
-function deleteEvent() {
-	EventManager.deleteEvent('keyboard');
-	EventManager.deleteEvent('screen');
-}
-  
-window.removeEventListener('unload', deleteEvent);
-window.addEventListener('unload', deleteEvent);
-
 class Main {
 	static objects = [];
 	static cam;
+	static loop = true;
+	static player = 0;
 
 	static webfunc(get_hash) {
+	console.log("app_m start!!!");
 	Setting.setPipe();
 	Main.cam = Setting.setCam();
 	Main.objects = Setting.setGameMap(false);
@@ -47,6 +42,9 @@ class Main {
 			ws = null;
 			console.log("popstate : " + get_hash);
 		}
+		EventManager.deleteEvent("keyboard");
+		EventManager.deleteEvent("screen");
+		Main.loop = false;
 	});
 
 	let messageQueue = [];
@@ -110,6 +108,7 @@ class Main {
 
 	}
 	static entry() {
+		Main.objects[window.players].setColor([0, 1, 0, 1]);
 		requestAnimationFrame(Main.update);
 	}
 	static render() {
@@ -120,7 +119,8 @@ class Main {
 	}
 	static update() {
 		Main.render();
-		requestAnimationFrame(Main.update);
+		if (Main.loop)
+			requestAnimationFrame(Main.update);
 	}
 }
 

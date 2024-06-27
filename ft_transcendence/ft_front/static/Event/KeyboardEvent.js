@@ -14,14 +14,14 @@ export class KeyboardEvent {
 
     setKeyUp(cam, ws) {
         let tmp_event = (event) => {
-            let message = { message: event.key, pid: window.players};
+            let message = { message: event.key, players: window.players};
             let flag = 0;
             if (event.code === "KeyQ") {
-                message = { message: "upstop", pid: window.players};
+                message = { message: "upstop", players: window.players};
                 flag = 1;
             }
             if (event.code == "KeyA") {
-                message = { message: "downstop", pid: window.players};
+                message = { message: "downstop", players: window.players};
                 flag = 1;
             }
             if (event.code === "ArrowRight" || event.code === "ArrowLeft")
@@ -35,14 +35,14 @@ export class KeyboardEvent {
 
     setKeyDown(cam, ws) {
         let tmp_event = (event) => {
-            let message = { message: event.key, pid: window.players};
+            let message = { message: event.key, players: window.players};
             let flag = 0;
             if (event.code === "KeyQ") {
-                message = { message: "up", pid: window.players};
+                message = { message: "up", players: window.players};
                 flag = 1;
             }
             if (event.code === "KeyA") {
-                message = { message: "down", pid: window.players};
+                message = { message: "down", players: window.players};
                 flag = 1;
             }
             if (event.code === "ArrowRight")
