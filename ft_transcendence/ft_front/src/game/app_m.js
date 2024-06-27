@@ -12,8 +12,7 @@ class Main {
 	static loop = true;
 	static player = 0;
 
-	static webfunc(get_hash) {
-	console.log("app_m start!!!");
+	static async webfunc(get_hash, id) {
 	Setting.setPipe();
 	Main.cam = Setting.setCam();
 	Main.objects = Setting.setGameMap(false);
@@ -24,6 +23,31 @@ class Main {
 		"wss://" + window.location.host + "/ws/game/" + get_hash + "/"
 	);
 
+	const Fetch = async () => {
+		const csrftoken = Cookies.get("csrftoken");
+		const response = await fetch(`/match/updatematchcustom/${id}`, {
+		//match serializer 반환값 가져옴
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			"X-CSRFToken": csrftoken,
+		},
+		credentials: "include",
+		});
+		if (response.ok) {
+			let data =  await response.json();
+			console.log("app_m data: ", data);
+			for (let i = 0; i < data.custom.length; i++) {
+				let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
+				let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
+				let degree = data.custom[i].custom.z;
+				let w = data.custom[i].custom.w;
+				let h = data.custom[i].custom.h;
+				ObjectManager.addObstacle(Main.objects, color, pos, degree, w, h);
+			}
+		}
+	}
+	await Fetch();
 	EventManager.setEventKeyboard(Main.cam, ws);
 	EventManager.setScreenEvent();
 
@@ -174,7 +198,7 @@ export async function game_m_js(hash) {
 				}
 			}
 			if (flag == 1) {
-				Main.webfunc(get_hash);
+				Main.webfunc(get_hash, match_id);
 			} else {
 				location.href = "/#";
 			}
