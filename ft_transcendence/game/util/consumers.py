@@ -6,6 +6,17 @@ from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import ball
 
+def setObject(data, obstacles):
+    pos = [data['x'], data['y'], 0]
+    degree = data['z']
+    w = data['w']
+    h = data['h']
+    obj = ball.Box(w, h)
+    if (degree):
+        obj.rotBox(degree)
+    obj.movePos(pos)
+    obstacles.append(obj)
+
 class GameConsumer(AsyncWebsocketConsumer):
     consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
 
@@ -26,18 +37,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
         self.room_group_name = f'game_{self.room_name}'
         self.loop = asyncio.get_event_loop()
-        backend_url = 'http://backend:8000/match/updatematchcustom/' + list(self.room_name.split('_'))[-1]
-        params= {
-                'match_id': list(self.room_name.split('_'))[-1],
-            }
-        response = requests.get(backend_url, params=params)
-        # 응답의 상태 코드 확인
-        if response.status_code == 200:
-            # 응답 데이터를 JSON 형식으로 변환
-            data = response.json()
-            print(data['custom'])
-        else:
-            print(f"Error: {response.status_code}")
     
         await self.accept()
 
@@ -58,6 +57,20 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.obstacles[0].movePos([0, 8, 0])
             self.obstacles.append(ball.Box(30, 0.5))
             self.obstacles[1].movePos([0, -8, 0])
+            backend_url = 'http://backend:8000/match/updatematchcustom/' + list(self.room_name.split('_'))[-1]
+            params= {
+                    'match_id': list(self.room_name.split('_'))[-1],
+            }
+            response = requests.get(backend_url, params=params)
+            # 응답의 상태 코드 확인
+            print("connect start")
+            if response.status_code == 200:
+                # 응답 데이터를 JSON 형식으로 변환
+                data = response.json()
+                for d in data['custom']:
+                    setObject(d['custom'], self.obstacles)
+            else:
+                print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
 
         await self.send(text_data=json.dumps({

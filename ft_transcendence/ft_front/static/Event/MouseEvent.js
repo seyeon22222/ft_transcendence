@@ -73,7 +73,7 @@ export class MouseEvent {
     }
 
     setStart(objects, id, ws) {
-        let tmp_event = () => {
+        let tmp_event = async () => {
             if (MouseEvent.new_object) {
                 let max_x = -100, max_y = -100, min_x = 100, min_y = 100;
                 let flag = false;
@@ -117,7 +117,7 @@ export class MouseEvent {
                     'w' : objects[i].width,
                     'h' : objects[i].height
                 }
-                const response = fetch(`/match/updatematchcustom/${id}`, {
+                const response = await fetch(`/match/updatematchcustom/${id}`, {
                     //match serializer 반환값 가져옴
                     method: "POST",
                     headers: {
