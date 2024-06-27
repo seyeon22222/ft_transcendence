@@ -27,14 +27,16 @@ class Main {
         ws = null;
         console.log("popstate : " + hash);
       }
-
     });
 
     ws.onmessage = async function (e) {
       let data = JSON.parse(e.data);
 		  let message = data["message"];
 
-      console.log(message);
+      console.log("message : " + message);
+      if (message === 'start') {
+				location.href = "/#gamem/" + hash;
+			}
     };
 
 		Setting.setPipe();

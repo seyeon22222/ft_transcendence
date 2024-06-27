@@ -3,7 +3,7 @@ export class ScreenEvent {
         this.type = type;
         this.s_event = null;
         if (type === 'resize')
-            setResize();
+            this.setResize();
     }
 
     destructor() {

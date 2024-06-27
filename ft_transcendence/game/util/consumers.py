@@ -307,19 +307,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
         if self.players == None:
             if (player == 1 or player == 2):
                self.players = player
-            # else:
-            #     if (uuid == (self.room_name.split('_'))[1]):
-            #         self.players = 1
-            #     else: 
-            #         self.players = 2
         else:
-        #     if (uuid == (self.room_name.split('_'))[1]):
-        #         self.players = 1
-        #     else: 
-        #         self.players = 2
-        #     print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
-        # else:
-        #     if player == None
             player = int(player)
         for i in range(0, 2):
             if (message == 'up' and player == i + 1):

@@ -66,7 +66,10 @@ export class MouseEvent {
     setGameStart(ws) {
         let tmp_event = () => {
             //TODO player2가 start를 눌렀다는 것을 알려줘야함(서버에)
+            console.log("ws player : " + window.players);
             let message = { message: window.players};
+            console.log("ws message : " + message);
+            console.log(ws);
 		    ws.send(JSON.stringify(message));
         };
         document.getElementById('start').addEventListener('click', tmp_event);
@@ -78,6 +81,7 @@ export class MouseEvent {
         let tmp_event = () => {
             if (MouseEvent.new_object) {
                 let max_x = -100, max_y = -100, min_x = 100, min_y = 100;
+                let flag = false;
                 for (let k = 0; k < 4; k++) {
                     if (MouseEvent.new_object.colbox.vertices[k][0] > max_x)
                         max_x = MouseEvent.new_object.colbox.vertices[k][0];
@@ -109,9 +113,9 @@ export class MouseEvent {
             const csrftoken = Cookies.get('csrftoken');
             for (let i = 6; i < objects.length; i++) {
                 let game_results = {
-                    'r' : objects[i].color[0],
-                    'g' : objects[i].color[1],
-                    'b' : objects[i].color[2],
+                    'r' : Math.floor(objects[i].color[0] * 255),
+                    'g' : Math.floor(objects[i].color[1] * 255),
+                    'b' : Math.floor(objects[i].color[2] * 255),
                     'x' : objects[i].pos[0],
                     'y' : objects[i].pos[1],
                     'z' : objects[i].degree,
@@ -291,10 +295,10 @@ export class MouseEvent {
     setRed() {
         let tmp_event = () => {
             let r = Math.abs(document.getElementById('red').value);
-            r = Math.min(a, 255) / 255;
-            let g = Math.abs(document.getElementById('green').value) / 255;
+            r = Math.min(r, 255) / 255;
+            let g = Math.abs(document.getElementById('green').value);
             g = Math.min(g, 255) / 255;
-            let b = Math.abs(document.getElementById('blue').value) / 255;
+            let b = Math.abs(document.getElementById('blue').value);
             b = Math.min(b, 255) / 255;
             MouseEvent.new_object.setColor([r, g, b, 1]);
         }
@@ -306,10 +310,10 @@ export class MouseEvent {
     setGreen() {
         let tmp_event = () => {
             let r = Math.abs(document.getElementById('red').value);
-            r = Math.min(a, 255) / 255;
-            let g = Math.abs(document.getElementById('green').value) / 255;
+            r = Math.min(r, 255) / 255;
+            let g = Math.abs(document.getElementById('green').value);
             g = Math.min(g, 255) / 255;
-            let b = Math.abs(document.getElementById('blue').value) / 255;
+            let b = Math.abs(document.getElementById('blue').value);
             b = Math.min(b, 255) / 255;
             MouseEvent.new_object.setColor([r, g, b, 1]);
         }
@@ -321,10 +325,10 @@ export class MouseEvent {
     setBlue() {
         let tmp_event = () => {
             let r = Math.abs(document.getElementById('red').value);
-            r = Math.min(a, 255) / 255;
-            let g = Math.abs(document.getElementById('green').value) / 255;
+            r = Math.min(r, 255) / 255;
+            let g = Math.abs(document.getElementById('green').value);
             g = Math.min(g, 255) / 255;
-            let b = Math.abs(document.getElementById('blue').value) / 255;
+            let b = Math.abs(document.getElementById('blue').value);
             b = Math.min(b, 255) / 255;
             MouseEvent.new_object.setColor([r, g, b, 1]);
         }

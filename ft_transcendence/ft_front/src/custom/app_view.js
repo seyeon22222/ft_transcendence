@@ -36,6 +36,8 @@ export class View {
 		ws.onmessage = async function (e) {
 			let data = JSON.parse(e.data);
 			let message = data["message"];
+
+			console.log("message : " + message);
 			if (message === "complete") {
 				const csrftoken = Cookies.get("csrftoken");
 				const response = await fetch(`/match/updatematchcustom/${id}`, {
@@ -50,7 +52,7 @@ export class View {
 				if (response.ok) {
 					let data = await response.json();
 					for (var i = 0; i < data.custom.length; i++) {
-						let color = [data.custom[i].custom.r, data.custom[i].custom.g, data.custom[i].custom.b, 1];
+						let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
 						let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
 						let degree = data.custom[i].custom.z;
 						let w = data.custom[i].custom.w;
@@ -59,8 +61,11 @@ export class View {
 					}
 				}
 			}
+			else if (message === 'start') {
+				location.href = "/#gamem/" + hash;
+			}
     }
-		EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects));
+		EventManager.mouse_list.push(new MouseEvent('gamestart', null, null, View.objects, null, ws));
 		requestAnimationFrame(View.update);
 	}
 	

@@ -49,6 +49,8 @@ class CustomConsumer(AsyncWebsocketConsumer):
         print("message :", message)
         if message == 1:
             reply = 'complete'
+        if message == 2:
+            reply = 'start'
         await self.channel_layer.group_send(
             self.room_group_name,
             {
