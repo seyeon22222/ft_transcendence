@@ -62,8 +62,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'match_id': list(self.room_name.split('_'))[-1],
             }
             response = requests.get(backend_url, params=params)
-            # 응답의 상태 코드 확인
-            print("connect start")
             if response.status_code == 200:
                 # 응답 데이터를 JSON 형식으로 변환
                 data = response.json()
@@ -230,6 +228,18 @@ class TGameConsumer(AsyncWebsocketConsumer):
             self.obstacles[0].movePos([0, 8, 0])
             self.obstacles.append(ball.Box(30, 0.5))
             self.obstacles[1].movePos([0, -8, 0])
+            backend_url = 'http://backend:8000/match/updatetournamentcustom/' + list(self.room_name.split('_'))[0] + list(self.room_name.split('_'))[1] + list(self.room_name.split('_'))[-1]
+            params= {
+                    'match_id': list(self.room_name.split('_'))[-1],
+            }
+            response = requests.get(backend_url, params=params)
+            if response.status_code == 200:
+                # 응답 데이터를 JSON 형식으로 변환
+                data = response.json()
+                for d in data['custom']:
+                    setObject(d['custom'], self.obstacles)
+            else:
+                print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
         
         await self.send(text_data=json.dumps({
@@ -244,7 +254,6 @@ class TGameConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         
         self.task.cancel()
-        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
         if self.players == 1:
             del self.consumers[self.room_group_name]
             match_result = 2
@@ -390,6 +399,18 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.obstacles[0].movePos([0, 8, 0])
             self.obstacles.append(ball.Box(30, 0.5))
             self.obstacles[1].movePos([0, -8, 0])
+            backend_url = 'http://backend:8000/match/updatemulticustom/' + list(self.room_name.split('_'))[-1]
+            params= {
+                    'match_id': list(self.room_name.split('_'))[-1],
+            }
+            response = requests.get(backend_url, params=params)
+            if response.status_code == 200:
+                # 응답 데이터를 JSON 형식으로 변환
+                data = response.json()
+                for d in data['custom']:
+                    setObject(d['custom'], self.obstacles)
+            else:
+                print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
         
         await self.send(text_data=json.dumps({
