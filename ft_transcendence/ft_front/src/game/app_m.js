@@ -2,6 +2,7 @@ import { EventManager } from "../../static/Event/EventManager.js";
 import { Setting } from "../../static/graphics/Setting.js";
 import { delete_back_show } from "../utilities.js";
 import { ObjectManager } from "../../static/phong/ObjectManager.js";
+// paddle_1 -> objects[1], paddle_2 -> objects[2], ball -> objects[0], up wall -> objects[3], down wall -> objects[4]
 
 class Main {
 	static objects = [];
@@ -10,123 +11,126 @@ class Main {
 	static player = 0;
 
 	static async webfunc(get_hash, id) {
-		console.log("webfunc start");
-		Setting.setPipe();
-		Main.cam = Setting.setCam();
-		Main.objects = Setting.setGameMap(false);
-		Main.loop = true;
-		let flag = 0;
-		// WebSocket 연결 시도
-		let ws = new WebSocket(
-			"wss://" + window.location.host + "/ws/game/" + get_hash + "/"
-		);
+	Setting.setPipe();
+	Main.cam = Setting.setCam();
+	Main.objects = Setting.setGameMap(false);
+	Main.loop = true;
+	let flag = 1;
+	// WebSocket 연결 시도
+	let ws = new WebSocket(
+		"wss://" + window.location.host + "/ws/game/" + get_hash + "/"
+	);
 
-		const Fetch = async () => {
-			const csrftoken = Cookies.get("csrftoken");
-			const response = await fetch(`/match/updatematchcustom/${id}`, {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": csrftoken,
-			},
-			credentials: "include",
-			});
-			if (response.ok) {
-				let data =  await response.json();
-				for (let i = 0; i < data.custom.length; i++) {
-					let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
-					let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
-					let degree = data.custom[i].custom.z;
-					let w = data.custom[i].custom.w;
-					let h = data.custom[i].custom.h;
-					ObjectManager.addObstacle(Main.objects, color, pos, degree, w, h);
-				}
-			}
-		}
-		await Fetch();
-		EventManager.setEventKeyboard(Main.cam, ws);
-		EventManager.setScreenEvent();
-		function sleep(ms) {
-			const start = new Date().getTime();
-			while (new Date().getTime() < start + ms) {
-			// 아무것도 하지 않고 대기
-			}
-		}
-
-		window.addEventListener("popstate", function () {
-			// WebSocket 연결 닫기
-			if (ws && ws.readyState !== WebSocket.CLOSED) {
-				ws.close();
-				sleep(1000);
-				ws = null;
-				// console.log("popstate : " + get_hash);
-			}
-			EventManager.deleteEvent("keyboard");
-			EventManager.deleteEvent("screen");
-			Main.loop = false;
+	const Fetch = async () => {
+		const csrftoken = Cookies.get("csrftoken");
+		const response = await fetch(`/match/updatematchcustom/${id}`, {
+		//match serializer 반환값 가져옴
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			"X-CSRFToken": csrftoken,
+		},
+		credentials: "include",
 		});
-
-		let messageQueue = [];
-		let processingMessages = false;
-
-		ws.onopen = () => {
-			let message = { message: "", players: window.players};
-			ws.send(JSON.stringify(message));
-		}
-
-		ws.onmessage = async function (e) {
-			messageQueue.push(e);
-			if (!processingMessages) {
-				processingMessages = true;
-				while (messageQueue.length > 0) {
-					let event = messageQueue.shift();
-					await processMessage(event);
-				}
-				processingMessages = false;
+		if (response.ok) {
+			let data =  await response.json();
+			console.log("app_m data: ", data);
+			for (let i = 0; i < data.customs.length; i++) {
+				let color = [data.customs[i].r / 255, data.customs[i].g / 255, data.customs[i].b / 255, 1];
+				let pos = [data.customs[i].x, data.customs[i].y, 0, 1];
+				let degree = data.customs[i].z;
+				let w = data.customs[i].w;
+				let h = data.customs[i].h;
+				ObjectManager.addObstacle(Main.objects, color, pos, degree, w, h);
 			}
-		};
+		}
+	}
+	await Fetch();
+	EventManager.setEventKeyboard(Main.cam, ws);
+	EventManager.setScreenEvent();
 
-		async function processMessage(e) {
-			let data = JSON.parse(e.data);
-			let ball_pos = data["ball_pos"];
-			let paddle1_pos = data["paddle1_pos"];
-			let paddle2_pos = data["paddle2_pos"];
-			let score1 = data["score1"];
-			let score2 = data["score2"];
-			let is_active = data["is_active"];
+	function sleep(ms) {
+		const start = new Date().getTime();
+		while (new Date().getTime() < start + ms) {
+		// 아무것도 하지 않고 대기
+		}
+	}
 
-			if (score1 == 5 || score2 == 5) {
-				let get_list_hash = get_hash.split("_");
-				// is_active = 0;
-				// console.log(
-				// 	"===========href=========",
-				// 	`/#match/${get_list_hash[get_list_hash.length - 1]}`
-				// );
-			} 
-			else {
-				document.getElementById("game-score").innerHTML = score1 + " : " + score2;
-				Main.objects[0].movePos(ball_pos);
-				Main.objects[1].movePos(paddle1_pos);
-				Main.objects[2].movePos(paddle2_pos);
-				if (Main.player == 0) {
-					Main.player = window.players;
-					flag = 0;
-				}
-				if (!flag && Main.loop) {
-					Main.entry();
-					flag = 1;
-				}
+	window.addEventListener("popstate", function () {
+		// WebSocket 연결 닫기
+		if (ws && ws.readyState !== WebSocket.CLOSED) {
+			ws.close();
+			sleep(1000);
+			ws = null;
+			console.log("popstate : " + get_hash);
+		}
+		EventManager.deleteEvent("keyboard");
+		EventManager.deleteEvent("screen");
+		Main.loop = false;
+	});
+
+	let messageQueue = [];
+	let processingMessages = false;
+
+	ws.onopen = () => {
+		let message = { message: "", players: window.players};
+		ws.send(JSON.stringify(message));
+	}
+
+	ws.onmessage = async function (e) {
+		messageQueue.push(e);
+		if (!processingMessages) {
+			processingMessages = true;
+			while (messageQueue.length > 0) {
+				let event = messageQueue.shift();
+				await processMessage(event);
+			}
+			processingMessages = false;
+		}
+	};
+
+	async function processMessage(e) {
+		let data = JSON.parse(e.data);
+		let ball_pos = data["ball_pos"];
+		let paddle1_pos = data["paddle1_pos"];
+		let paddle2_pos = data["paddle2_pos"];
+		let score1 = data["score1"];
+		let score2 = data["score2"];
+		let is_active = data["is_active"];
+
+		if (score1 == 5 || score2 == 5) {
+			let get_list_hash = get_hash.split("_");
+			// is_active = 0;
+			console.log(
+				"===========href=========",
+				`/#match/${get_list_hash[get_list_hash.length - 1]}`
+			);
+		} 
+		else {
+			document.getElementById("game-score").innerHTML =
+				score1 + " : " + score2;
+			Main.objects[0].movePos(ball_pos);
+			Main.objects[1].movePos(paddle1_pos);
+			Main.objects[2].movePos(paddle2_pos);
+			if (Main.player == 0) {
+				Main.player = window.players;
+				flag = 0;
+			}
+			if (!flag && Main.loop) {
+				Main.entry();
+				flag = 1;
+			}
+
 			}
 			if (is_active == 0) {
 				let get_list_hash = get_hash.split("_");
 				location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
 			}
-		}
+	}
 
 	}
 	static entry() {
 		Main.objects[window.players].setColor([0, 1, 0, 1]);
-		console.log("app_m objects size: ", Main.objects.length);
 		requestAnimationFrame(Main.update);
 	}
 	static render() {
@@ -137,7 +141,6 @@ class Main {
 	}
 	static update() {
 		Main.render();
-		// console.log("app_m loop: ", Main.loop);
 		if (Main.loop)
 			requestAnimationFrame(Main.update);
 	}
@@ -151,7 +154,7 @@ export async function game_m_js(hash) {
 	let match_id = get_list_hash[get_list_hash.length - 1]; //
 
 	const csrftoken = Cookies.get("csrftoken");
-	// console.log("matchvie/${match_id}", `/matchview/${match_id}`);
+	console.log("matchvie/${match_id}", `/matchview/${match_id}`);
 	const response = await fetch(`/match/matchview/${match_id}`, {
 	//match serializer 반환값 가져옴
 	method: "GET",
@@ -163,11 +166,15 @@ export async function game_m_js(hash) {
 	});
 	if (response.ok) {
 	let data = await response.json();
+	console.log(data.player1_uuid, "===", get_list_hash[0]);
+	console.log(data.player2_uuid, "===", get_list_hash[1]);
+	console.log(data.winner_username, "===", "null");
 	if (
 		data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
 		data.player2_uuid === get_list_hash[1] &&
 		data.winner_username === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
 	) {
+		console.log("abc");
 		const response_name = await fetch("user/info", {
 		method: "GET",
 		headers: {
@@ -189,7 +196,6 @@ export async function game_m_js(hash) {
 				}
 			}
 			if (flag == 1) {
-				// console.log("app_m start start");
 				Main.webfunc(get_hash, match_id);
 			} else {
 				location.href = "/#";

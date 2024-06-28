@@ -65,8 +65,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             if response.status_code == 200:
                 # 응답 데이터를 JSON 형식으로 변환
                 data = response.json()
-                for d in data['custom']:
-                    setObject(d['custom'], self.obstacles)
+                for d in data['customs']:
+                    setObject(d, self.obstacles)
             else:
                 print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
@@ -236,8 +236,8 @@ class TGameConsumer(AsyncWebsocketConsumer):
             if response.status_code == 200:
                 # 응답 데이터를 JSON 형식으로 변환
                 data = response.json()
-                for d in data['custom']:
-                    setObject(d['custom'], self.obstacles)
+                for d in data['customs']:
+                    setObject(d, self.obstacles)
             else:
                 print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
@@ -407,8 +407,8 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             if response.status_code == 200:
                 # 응답 데이터를 JSON 형식으로 변환
                 data = response.json()
-                for d in data['custom']:
-                    setObject(d['custom'], self.obstacles)
+                for d in data['customs']:
+                    setObject(d, self.obstacles)
             else:
                 print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
