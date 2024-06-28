@@ -8,11 +8,9 @@ class Main {
 	static objects = [];
 	static cam;
 	static player = 0;
+	static loop = true;
 
-	static score1 = 0;
-	static score2 = 0;
-
-	static webfunc(get_hash) {
+	static async webfunc(get_hash, match_id) {
 		let flag = 1;
 		// WebSocket 연결 시도
 		let ws = new WebSocket(
@@ -23,6 +21,33 @@ class Main {
 		Main.objects = Setting.setGameMap(false);
 		EventManager.setEventKeyboard(Main.cam, ws);
 		EventManager.setScreenEvent();
+
+		const Fetch = async () => {
+			const csrftoken = Cookies.get("csrftoken");
+			//updatetournamentcustom/<uuid:player1><uuid:player2><int:tournament_id>
+			const response = await fetch(`/match/updatematchcustom/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
+			//match serializer 반환값 가져옴
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				"X-CSRFToken": csrftoken,
+			},
+			credentials: "include",
+			});
+			if (response.ok) {
+				let data =  await response.json();
+				console.log("app_t data: ", data);
+				for (let i = 0; i < data.custom.length; i++) {
+					let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
+					let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
+					let degree = data.custom[i].custom.z;
+					let w = data.custom[i].custom.w;
+					let h = data.custom[i].custom.h;
+					ObjectManager.addObstacle(Main.objects, color, pos, degree, w, h);
+				}
+			}
+		}
+		await Fetch();
 
 		function sleep(ms) {
 			const start = new Date().getTime();
@@ -41,6 +66,7 @@ class Main {
 			Main.player = 0;
 			EventManager.deleteEvent("keyboard");
 			EventManager.deleteEvent("screen");
+			Main.loop = false;
 		});
 
 		let messageQueue = [];
@@ -142,7 +168,8 @@ class Main {
 	}
 	static update() {
 		Main.render();
-		requestAnimationFrame(Main.update);
+		if (Main.loop)
+			requestAnimationFrame(Main.update);
 	}
 }
 
@@ -195,7 +222,7 @@ export async function game_t_js(hash) {
 				}
 			}
 			if (flag == 1) {
-				Main.webfunc(get_hash);
+				Main.webfunc(get_hash, match_id);
 			} else {
 				location.href = "/#";
 			}

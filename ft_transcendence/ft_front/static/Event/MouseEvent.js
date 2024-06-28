@@ -2,6 +2,41 @@ import { Pipeline } from "../graphics/Pipeline.js"; // comp
 import { Box } from "../phong/Box.js"; // comp
 import { Mat4 } from "../utils/Mat4.js"; // comp
 
+async function sendTournament() {
+    
+}
+
+async function sendMatch(objects, id, ws) {
+    const csrftoken = Cookies.get('csrftoken');
+    for (let i = 6; i < objects.length; i++) {
+        let game_results = {
+            'r' : Math.floor(objects[i].color[0] * 255),
+            'g' : Math.floor(objects[i].color[1] * 255),
+            'b' : Math.floor(objects[i].color[2] * 255),
+            'x' : objects[i].pos[0],
+            'y' : objects[i].pos[1],
+            'z' : objects[i].degree,
+            'w' : objects[i].width,
+            'h' : objects[i].height
+        }
+        const response = await fetch(`/match/updatematchcustom/${id}`, {
+            //match serializer 반환값 가져옴
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify(game_results),
+        });
+    }
+    let message = { message: window.players};
+    ws.send(JSON.stringify(message));
+}
+
+async function sendMulti() {
+    
+}
+
 export class MouseEvent {
     static new_object = null;
     static m_flag = 0;
@@ -104,31 +139,7 @@ export class MouseEvent {
                 MouseEvent.new_object = null;
                 MouseEvent.obj_idx = 0;
             }
-            // TODO -> 서버에 정보 보내기
-            const csrftoken = Cookies.get('csrftoken');
-            for (let i = 6; i < objects.length; i++) {
-                let game_results = {
-                    'r' : Math.floor(objects[i].color[0] * 255),
-                    'g' : Math.floor(objects[i].color[1] * 255),
-                    'b' : Math.floor(objects[i].color[2] * 255),
-                    'x' : objects[i].pos[0],
-                    'y' : objects[i].pos[1],
-                    'z' : objects[i].degree,
-                    'w' : objects[i].width,
-                    'h' : objects[i].height
-                }
-                const response = await fetch(`/match/updatematchcustom/${id}`, {
-                    //match serializer 반환값 가져옴
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrftoken,
-                    },
-                    body: JSON.stringify(game_results),
-                });
-            }
-            let message = { message: window.players};
-		    ws.send(JSON.stringify(message));
+            await sendMatch(objects, id, ws);
         }
         document.getElementById('start').addEventListener('click', tmp_event);
         this.m_event = tmp_event;

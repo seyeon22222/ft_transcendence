@@ -4,8 +4,6 @@ import { delete_back_show } from "../utilities.js";
 import { ObjectManager } from "../../static/phong/ObjectManager.js";
 // paddle_1 -> objects[1], paddle_2 -> objects[2], ball -> objects[0], up wall -> objects[3], down wall -> objects[4]
 
-//TODO 정보를 받아서 그리는 함수 만들기
-
 class Main {
 	static objects = [];
 	static cam;
