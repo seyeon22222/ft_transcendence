@@ -1,6 +1,6 @@
 import { EventManager } from "../../static/Event/EventManager.js";
 import { Setting } from "../../static/graphics/Setting.js";
-
+import { ObjectManager } from "../../static/phong/ObjectManager.js";
 // paddle_1 -> objects[1], paddle_2 -> objects[2], ball -> objects[0], up wall -> objects[3], down wall -> objects[4]
 import { delete_back_show } from "../utilities.js";
 
@@ -25,9 +25,21 @@ class Main {
 
 		const Fetch = async () => {
 			const csrftoken = Cookies.get("csrftoken");
-			//updatetournamentcustom/<uuid:player1><uuid:player2><int:tournament_id>
-			let player1 = window.location.hash.slice(2).toLocaleLowerCase().split("/");
-    		let player2 = window.location.hash.slice(3).toLocaleLowerCase().split("/");
+			let hash = window.location.hash.slice(1); // "#customt/..."의 '#'을 제거
+			console.log(hash);
+
+			// 해시 값을 슬래시(/)를 기준으로 먼저 분할합니다.
+			let segments = hash.split('/'); // ["customt", "3e4096e9-caac-4c04-9055-91b65d963517_0f6c78a4-eb60-4469-aa97-7da2a75a6269_138"]
+
+			// UUID 부분을 언더스코어(_)로 분할합니다.
+			let uuids = segments[1].split('_'); // ["3e4096e9-caac-4c04-9055-91b65d963517", "0f6c78a4-eb60-4469-aa97-7da2a75a6269", "138"]
+			
+			// player1과 player2의 UUID를 추출합니다.
+			let player1 = uuids[0];
+			let player2 = uuids[1];
+			
+			console.log("Player 1 UUID:", player1);
+			console.log("Player 2 UUID:", player2);
 			const response = await fetch(`/match/updatetournamentcustom/${player1}${player2}${match_id}`, {
 			method: "GET",
 			headers: {
@@ -38,12 +50,12 @@ class Main {
 			});
 			if (response.ok) {
 				let data =  await response.json();
-				for (let i = 0; i < data.custom.length; i++) {
-					let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
-					let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
-					let degree = data.custom[i].custom.z;
-					let w = data.custom[i].custom.w;
-					let h = data.custom[i].custom.h;
+				for (let i = 0; i < data.customs.length; i++) {
+					let color = [data.customs[i].r / 255, data.customs[i].g / 255, data.customs[i].b / 255, 1];
+					let pos = [data.customs[i].x, data.customs[i].y, 0, 1];
+					let degree = data.customs[i].z;
+					let w = data.customs[i].w;
+					let h = data.customs[i].h;
 					ObjectManager.addObstacle(Main.objects, color, pos, degree, w, h);
 				}
 			}

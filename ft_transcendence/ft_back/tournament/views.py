@@ -752,6 +752,7 @@ class updateTournamentCustom(APIView):
         except tournament.DoesNotExist:
             return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
         
+        
         tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
         serializer = tournamentMatchSerializer(tournament_match)
 
@@ -770,7 +771,16 @@ class updateTournamentCustom(APIView):
         except tournament.DoesNotExist:
             return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
         
-        tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        print("Debug1")
+        print(tournament_instance) # 토너먼트의 방의 이름
+        print(player1) # 이름
+        print(player2) # 이름
+        try:
+            tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        except tournamentMatch.DoesNotExist:
+            return Response({'error': 'Invalid tournament Match ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        print("Debug2")
         
         # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
         r = request.data.get('r', 0)
@@ -782,8 +792,13 @@ class updateTournamentCustom(APIView):
         w = request.data.get('w', 0.0)
         h = request.data.get('h', 0.0)
         
+
+        try:
+            new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h, tournament=tournament_match)
+        except :
+            return Response({'error': 'Make Error'}, status=status.HTTP_400_BAD_REQUEST)
         # 새로운 custom 객체 생성
-        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h, tournament=tournament_match)
+        
         
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
 

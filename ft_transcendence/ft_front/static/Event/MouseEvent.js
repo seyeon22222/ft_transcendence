@@ -3,8 +3,22 @@ import { Box } from "../phong/Box.js"; // comp
 import { Mat4 } from "../utils/Mat4.js"; // comp
 
 async function sendTournament(objects, id, ws) {
-    let player1 = window.location.hash.slice(2).toLocaleLowerCase().split("/");
-    let player2 = window.location.hash.slice(3).toLocaleLowerCase().split("/");
+    let hash = window.location.hash.slice(1); // "#customt/..."의 '#'을 제거
+    console.log(hash);
+
+    // 해시 값을 슬래시(/)를 기준으로 먼저 분할합니다.
+    let segments = hash.split('/'); // ["customt", "3e4096e9-caac-4c04-9055-91b65d963517_0f6c78a4-eb60-4469-aa97-7da2a75a6269_138"]
+
+        // UUID 부분을 언더스코어(_)로 분할합니다.
+        let uuids = segments[1].split('_'); // ["3e4096e9-caac-4c04-9055-91b65d963517", "0f6c78a4-eb60-4469-aa97-7da2a75a6269", "138"]
+        
+        // player1과 player2의 UUID를 추출합니다.
+        let player1 = uuids[0];
+        let player2 = uuids[1];
+        
+        console.log("Player 1 UUID:", player1);
+        console.log("Player 2 UUID:", player2);
+    
     const csrftoken = Cookies.get('csrftoken');
     for (let i = 6; i < objects.length; i++) {
         let game_results = {
@@ -17,7 +31,7 @@ async function sendTournament(objects, id, ws) {
             'w' : objects[i].width,
             'h' : objects[i].height
         }
-        const response = await fetch(`/match/updatetournamentcustom/${player1}/${player2}/${id}`, {
+        const response = await fetch(`/match/updatetournamentcustom/${player1}${player2}${id}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

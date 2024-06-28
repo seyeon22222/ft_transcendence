@@ -12,6 +12,7 @@ class Main {
   static loop = true;
 
 	static entry(hash, id) {
+		console.log("Test Entry");
     let ws = new WebSocket("wss://" + window.location.host + "/ws/tcustom/" + hash + "/");
 
     window.addEventListener("popstate", function () {
@@ -94,6 +95,7 @@ class Main {
 	}
 
 	static update() {
+		console.log("In custom M", Main.loop);
 		Main.render();
     if (Main.loop)
 		  requestAnimationFrame(Main.update);
