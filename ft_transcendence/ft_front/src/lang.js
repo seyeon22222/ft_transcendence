@@ -542,7 +542,7 @@ async function setLanguage(category) {
 	else
 		langNow = document.getElementById("languageSelector").value;
 	updateTexts(langNow, category);
-	console.log(langNow, category);
+	// console.log(langNow, category);
 }
 
 function updateTexts(langNow, category) {

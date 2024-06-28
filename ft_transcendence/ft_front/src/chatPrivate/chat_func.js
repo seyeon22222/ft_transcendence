@@ -40,7 +40,7 @@ export async function recordMessages(hash) {
     body: JSON.stringify(bodyData),
   });
 
-  console.log("test for response!!!");
+  // console.log("test for response!!!");
 
   if (!response.ok) {
     // alert("Your are not allowed to see this private message channel");

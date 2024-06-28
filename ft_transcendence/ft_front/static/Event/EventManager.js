@@ -29,6 +29,7 @@ export class EventManager {
             for (let i = 0; i < EventManager.mouse_list.length; i++)
                 EventManager.mouse_list[i].destructor();
             EventManager.mouse_list = [];
+            MouseEvent.resetMouseEvent();
         }
         else if (type === 'keyboard'){
             for (let i = 0; i < EventManager.key_list.length; i++)
