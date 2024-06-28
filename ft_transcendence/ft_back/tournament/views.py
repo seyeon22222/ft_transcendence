@@ -718,25 +718,14 @@ class tournamentMatchResultView(APIView):
 
 
 class updateMatchCustom(APIView):
-     def get(self, request, match_id):
-        
-        # match_id를 사용하여 해당 Match 객체 가져오기
+    def get(self, request, match_id):
         match = get_object_or_404(Match, id=match_id)
         serializer = MatchSerializer(match)
-        # print(s)
-        # # match.custom.all()을 통해 연결된 모든 custom 객체 가져오기
-        # custom_objects = match.custom.all()
-        # print(custom_objects)
-        # # Serializer를 사용하여 JSON 형식으로 직렬화
-        # serializer = CustomSerializer(match)
-        # print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
-     
-     def post(self, request, match_id):
-        # match_id를 사용하여 해당 Match 객체 가져오기
+    
+    def post(self, request, match_id):
         match = get_object_or_404(Match, id=match_id)
         
-        # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
         r = request.data.get('r', 0)
         g = request.data.get('g', 0)
         b = request.data.get('b', 0)
@@ -746,15 +735,10 @@ class updateMatchCustom(APIView):
         w = request.data.get('w', 0.0)
         h = request.data.get('h', 0.0)
         
-        # match 객체와 새로운 custom 객체 연결
-        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
-        match.custom.add(new_custom)
-
-        
-        # 변경된 내용 저장
-        # match.save()
+        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h, match=match)
         
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
+
 
 class updateTournamentCustom(APIView):
    def get(self, request, player1, player2, tournament_id):

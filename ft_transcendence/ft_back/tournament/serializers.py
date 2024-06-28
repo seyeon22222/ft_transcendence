@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import tournament, tournamentMatch, tournamentParticipant, Match, MultiMatch, Custom, MatchCustom, MultiMatchCustom, TournamentMatchCustom
+from .models import tournament, tournamentMatch, tournamentParticipant, Match, MultiMatch, Custom, MultiMatchCustom, TournamentMatchCustom
 
 
 class CustomSerializer(serializers.ModelSerializer):
@@ -34,7 +34,7 @@ class tournamentMatchSerializer(serializers.ModelSerializer):
     player1_uuid = serializers.SerializerMethodField()
     player2_uuid = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
-    custom = serializers.SerializerMethodField()
+    # custom = serializers.SerializerMethodField()
 
     class Meta:
         model = tournamentMatch
@@ -62,20 +62,20 @@ class tournamentMatchSerializer(serializers.ModelSerializer):
     def get_name(self, obj):
         return obj.tournament.name
     
-    def get_custom(self, obj):
-        # Match에 연결된 모든 Custom 객체들을 가져와서 MatchCustomSerializer를 통해 직렬화
-        all = tournamentMatch.objects.all()
-        print("tournament all : ", all )
-        tournament_match_customs = TournamentMatchCustom.objects.filter(match=obj)
-        #print("match_customs : ", match_customs)
-        return tournamnetMatchCustomSerializer(tournament_match_customs, many=True).data
+    # def get_custom(self, obj):
+    #     # Match에 연결된 모든 Custom 객체들을 가져와서 MatchCustomSerializer를 통해 직렬화
+    #     all = tournamentMatch.objects.all()
+    #     print("tournament all : ", all )
+    #     tournament_match_customs = TournamentMatchCustom.objects.filter(match=obj)
+    #     #print("match_customs : ", match_customs)
+    #     return tournamnetMatchCustomSerializer(tournament_match_customs, many=True).data
 
-class MatchCustomSerializer(serializers.ModelSerializer):
-    custom = CustomSerializer()  # CustomSerializer를 사용하여 custom 필드 직렬화
+# class MatchCustomSerializer(serializers.ModelSerializer):
+#     custom = CustomSerializer()  # CustomSerializer를 사용하여 custom 필드 직렬화
 
-    class Meta:
-        model = MatchCustom
-        fields = ['custom']
+#     class Meta:
+#         model = MatchCustom
+#         fields = ['custom']
     
 class MatchSerializer(serializers.ModelSerializer):
     player1_username = serializers.SerializerMethodField()
@@ -84,7 +84,7 @@ class MatchSerializer(serializers.ModelSerializer):
     player1_uuid = serializers.SerializerMethodField()
     player2_uuid = serializers.SerializerMethodField()
     match_result = serializers.SerializerMethodField()
-    custom = serializers.SerializerMethodField()
+    customs = CustomSerializer(many=True, read_only=True)
 
     class Meta:
         model = Match
@@ -113,13 +113,13 @@ class MatchSerializer(serializers.ModelSerializer):
     def get_match_result(self, obj):
         return obj.match_result
     
-    def get_custom(self, obj):
-        # Match에 연결된 모든 Custom 객체들을 가져와서 MatchCustomSerializer를 통해 직렬화
-        all = MatchCustom.objects.all()
-        print("Match all : ", all )
-        match_customs = MatchCustom.objects.filter(match=obj)
-        #print("match_customs : ", match_customs)
-        return MatchCustomSerializer(match_customs, many=True).data
+    # def get_custom(self, obj):
+    #     # Match에 연결된 모든 Custom 객체들을 가져와서 MatchCustomSerializer를 통해 직렬화
+    #     all = MatchCustom.objects.all()
+    #     print("Match all : ", all )
+    #     match_customs = MatchCustom.objects.filter(match=obj)
+    #     #print("match_customs : ", match_customs)
+    #     return MatchCustomSerializer(match_customs, many=True).data
 
 
 class MultiMatchCustomSerializer(serializers.ModelSerializer):
@@ -142,7 +142,7 @@ class MultiSerializer(serializers.ModelSerializer):
     player4_uuid  = serializers.SerializerMethodField()
 
     match_result = serializers.SerializerMethodField()
-    custom = serializers.SerializerMethodField()
+    # custom = serializers.SerializerMethodField()
 
     class Meta:
             model = MultiMatch
@@ -202,11 +202,11 @@ class MultiSerializer(serializers.ModelSerializer):
         else:
             return None
         
-    def get_custom(self, obj):
-    # Match에 연결된 모든 Custom 객체들을 가져와서 MatchCustomSerializer를 통해 직렬화
-        all = MultiMatch.objects.all()
-        print("all : ", all )
-        multimatch_customs = MultiMatchCustom.objects.filter(match=obj)
-        #print("match_customs : ", match_customs)
-        return MultiMatchCustomSerializer(multimatch_customs, many=True).data
+    # def get_custom(self, obj):
+    # # Match에 연결된 모든 Custom 객체들을 가져와서 MatchCustomSerializer를 통해 직렬화
+    #     all = MultiMatch.objects.all()
+    #     print("all : ", all )
+    #     multimatch_customs = MultiMatchCustom.objects.filter(match=obj)
+    #     #print("match_customs : ", match_customs)
+    #     return MultiMatchCustomSerializer(multimatch_customs, many=True).data
 

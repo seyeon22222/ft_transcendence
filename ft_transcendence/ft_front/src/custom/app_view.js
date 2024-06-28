@@ -56,13 +56,14 @@ export class View {
 				});
 				if (response.ok) {
 					let data = await response.json();
-					console.log("view data len: ", data.custom.length);
-					for (var i = 0; i < data.custom.length; i++) {
-						let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
-						let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
-						let degree = data.custom[i].custom.z;
-						let w = data.custom[i].custom.w;
-						let h = data.custom[i].custom.h;
+					console.log(data);
+					// console.log("view data len: ", data.custom.length);
+					for (var i = 0; i < data.customs.length; i++) {
+						let color = [data.customs[i].r / 255, data.customs[i].g / 255, data.customs[i].b / 255, 1];
+						let pos = [data.customs[i].x, data.customs[i].y, 0, 1];
+						let degree = data.customs[i].z;
+						let w = data.customs[i].w;
+						let h = data.customs[i].h;
 						ObjectManager.addObstacle(View.objects, color, pos, degree, w, h);
 					}
 				}

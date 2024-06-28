@@ -14,7 +14,7 @@ class Main {
 	Setting.setPipe();
 	Main.cam = Setting.setCam();
 	Main.objects = Setting.setGameMap(false);
-	
+	Main.loop = true;
 	let flag = 1;
 	// WebSocket 연결 시도
 	let ws = new WebSocket(
@@ -35,12 +35,12 @@ class Main {
 		if (response.ok) {
 			let data =  await response.json();
 			console.log("app_m data: ", data);
-			for (let i = 0; i < data.custom.length; i++) {
-				let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
-				let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
-				let degree = data.custom[i].custom.z;
-				let w = data.custom[i].custom.w;
-				let h = data.custom[i].custom.h;
+			for (let i = 0; i < data.customs.length; i++) {
+				let color = [data.customs[i].r / 255, data.customs[i].g / 255, data.customs[i].b / 255, 1];
+				let pos = [data.customs[i].x, data.customs[i].y, 0, 1];
+				let degree = data.customs[i].z;
+				let w = data.customs[i].w;
+				let h = data.customs[i].h;
 				ObjectManager.addObstacle(Main.objects, color, pos, degree, w, h);
 			}
 		}
@@ -116,7 +116,7 @@ class Main {
 				Main.player = window.players;
 				flag = 0;
 			}
-			if (!flag) {
+			if (!flag && Main.loop) {
 				Main.entry();
 				flag = 1;
 			}
