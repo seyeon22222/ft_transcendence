@@ -11,7 +11,7 @@ export class View {
 	static ray = null;
 	static loop = true;
 
-	static entry(hash, id) {
+	static entry(hash, player1_uuid, player2_uuid, id) {
 		//TODO 정보를 받아야함 함수로 만들 것
 		Setting.setPipe();
 		View.objects = Setting.setGameMap(false);
@@ -45,7 +45,7 @@ export class View {
 			console.log("message : " + message);
 			if (message === "complete") {
 				const csrftoken = Cookies.get("csrftoken");
-				const response = await fetch(`/match/updatematchcustom/${id}`, {
+				const response = await fetch(`/match/updatetournamentcustom/${player1_uuid}${player2_uuid}${id}`, {
 				//match serializer 반환값 가져옴
 				method: "GET",
 				headers: {

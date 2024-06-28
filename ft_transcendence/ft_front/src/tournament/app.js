@@ -150,7 +150,7 @@ export async function tournament_view(hash) {
 				if (data.message !== null)
 					showModal('tournament', 'ready_noti');
 				modal.addEventListener('hidden.bs.modal', function () {
-					location.href = `/#tournament/${tournament_name}`;
+					location.href = `/#customt/${tournament_name}`;
 				});
             } else {
                 const error = await response.json();

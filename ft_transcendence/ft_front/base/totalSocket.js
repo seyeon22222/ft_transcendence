@@ -168,7 +168,7 @@ async function t_accept(invitePopup, player1, player2, g_id) {
         url = data.hash;
         console.log(url);
         delete_back_show();
-        window.location.href = `/#gamet/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#customt/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
@@ -194,7 +194,7 @@ async function mul_accept(invitePopup, player1, player2, player3, player4, g_id)
         url = data.hash;
         console.log(url);
         delete_back_show();
-        window.location.href = `/#gamemulti/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#custommulti/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();

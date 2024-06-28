@@ -45,7 +45,7 @@ export class View {
 			console.log("message : " + message);
 			if (message === "complete") {
 				const csrftoken = Cookies.get("csrftoken");
-				const response = await fetch(`/match/updatematchcustom/${id}`, {
+				const response = await fetch(`/match/updatemulticustom/${id}`, {
 				//match serializer 반환값 가져옴
 				method: "GET",
 				headers: {

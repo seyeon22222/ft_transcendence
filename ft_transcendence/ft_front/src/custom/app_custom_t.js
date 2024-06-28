@@ -152,7 +152,7 @@ export async function tcustom_view(hash) {
           if (window.players === 1)
             Main.entry(get_hash, match_id);
           else
-            View.entry(get_hash, match_id);
+            View.entry(get_hash, get_list_hash[0], get_list_hash[1], match_id);
         } else {
           location.href = "/#";
         }
