@@ -747,17 +747,14 @@ class updateTournamentCustom(APIView):
             player2 = MyUser.objects.get(user_id=player2)
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
-        
         try:
-            match = tournamentMatch.objects.get(pk=tournament_id)
-        except tournamentMatch.DoesNotExist:
+            tournament_instance = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
             return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
-        # match.custom.all()을 통해 연결된 모든 custom 객체 가져오기
-        custom_objects = match.custom.all()
         
-        # Serializer를 사용하여 JSON 형식으로 직렬화
-        serializer = tournamentMatchSerializer(custom_objects, many=True)
-        
+        tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        serializer = tournamentMatchSerializer(tournament_match)
+
         # 직렬화된 데이터를 Response로 반환
         return Response(serializer.data, status=status.HTTP_200_OK)
    
@@ -768,11 +765,12 @@ class updateTournamentCustom(APIView):
             player2 = MyUser.objects.get(user_id=player2)
         except MyUser.DoesNotExist:
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
-        
         try:
-            match = tournamentMatch.objects.get(pk=tournament_id)
-        except tournamentMatch.DoesNotExist:
+            tournament_instance = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
             return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
         
         # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
         r = request.data.get('r', 0)
@@ -785,13 +783,7 @@ class updateTournamentCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
-        
-        # match 객체와 새로운 custom 객체 연결
-        match.custom.add(new_custom)
-        
-        # 변경된 내용 저장
-        match.save()
+        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h, tournament=tournament_match)
         
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
 
@@ -800,7 +792,6 @@ class updateMultiCustom(APIView):
     def get(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
         serializer = MultiSerializer(match)
-
         # 직렬화된 데이터를 Response로 반환
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -818,12 +809,6 @@ class updateMultiCustom(APIView):
         h = request.data.get('h', 0.0)
         
         # 새로운 custom 객체 생성
-        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h)
-        
-        # match 객체와 새로운 custom 객체 연결
-        match.custom.add(new_custom)
-        
-        # 변경된 내용 저장
-        match.save()
+        new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h, multi_match=match)
         
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)

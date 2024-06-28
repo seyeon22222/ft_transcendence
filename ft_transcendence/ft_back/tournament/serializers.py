@@ -34,6 +34,7 @@ class tournamentMatchSerializer(serializers.ModelSerializer):
     player1_uuid = serializers.SerializerMethodField()
     player2_uuid = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
+    customs = CustomSerializer(many=True, read_only=True)
     # custom = serializers.SerializerMethodField()
 
     class Meta:
@@ -142,6 +143,7 @@ class MultiSerializer(serializers.ModelSerializer):
     player4_uuid  = serializers.SerializerMethodField()
 
     match_result = serializers.SerializerMethodField()
+    customs = CustomSerializer(many=True, read_only=True)
     # custom = serializers.SerializerMethodField()
 
     class Meta:
