@@ -166,7 +166,7 @@ async function t_accept(invitePopup, player1, player2, g_id) {
     if (response.ok) {
         const data = await response.json();
         url = data.hash;
-        console.log(url);
+        // console.log(url);
         delete_back_show();
         window.location.href = `/#gamet/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';
@@ -192,7 +192,7 @@ async function mul_accept(invitePopup, player1, player2, player3, player4, g_id)
     if (response.ok) {
         const data = await response.json();
         url = data.hash;
-        console.log(url);
+        // console.log(url);
         delete_back_show();
         window.location.href = `/#gamemulti/${url}`; // 게임 페이지로 이동
         invitePopup.style.display = 'none';

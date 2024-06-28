@@ -44,7 +44,7 @@ export class MouseEvent {
     static cor_x = 0;
     static cor_y = 0;
     static obj_idx = 0;
-    static start_flag = false;
+    static start_flag = 0;
 
     static createObject(objects) {
 		objects.push(new Box(Pipeline.gl));
@@ -53,6 +53,16 @@ export class MouseEvent {
 		let loc = Pipeline.gl.getUniformLocation(Pipeline.program.id, "model");
 		MouseEvent.new_object.setModelLoc(loc);
         MouseEvent.obj_idx = objects.length - 1;
+    }
+
+    static resetMouseEvent() {
+        MouseEvent.new_object = null;
+        MouseEvent.m_flag = 0;
+        MouseEvent.c_flag = 0;
+        MouseEvent.cor_x = 0;
+        MouseEvent.cor_y = 0;
+        MouseEvent.obj_idx = 0;
+        MouseEvent.start_flag = 0;
     }
 
     constructor(type, ray = null, button = null, objects = null, id = null, ws = null) {
@@ -109,6 +119,9 @@ export class MouseEvent {
 
     setStart(objects, id, ws) {
         let tmp_event = async () => {
+            if (MouseEvent.start_flag)
+                return;
+            MouseEvent.start_flag = 1;
             if (MouseEvent.new_object) {
                 let max_x = -100, max_y = -100, min_x = 100, min_y = 100;
                 let flag = false;
@@ -147,6 +160,8 @@ export class MouseEvent {
 
     setClick(ray, button, objects) {
         let tmp_event = (event) => {
+            if (MouseEvent.start_flag)
+                return;
             ray.setRay(event.clientX, event.clientY);
             if(MouseEvent.new_object === null) {
                 if (button.collisionRay(ray.ray_des))
@@ -169,7 +184,7 @@ export class MouseEvent {
 
     setMove(ray) {
         let tmp_event = (event) => {
-            if (MouseEvent.new_object === null)
+            if (MouseEvent.new_object === null || MouseEvent.start_flag)
                 return;
             ray.setRay(event.clientX, event.clientY);
             if (MouseEvent.m_flag) {
@@ -189,7 +204,7 @@ export class MouseEvent {
 
     setDown(ray) {
         let tmp_event = (event) => {
-            if (MouseEvent.new_object === null || MouseEvent.m_flag === 1)
+            if (MouseEvent.new_object === null || MouseEvent.m_flag === 1 || MouseEvent.start_flag)
                 return;
             ray.setRay(event.clientX, event.clientY);
             if (MouseEvent.new_object.collisionRay(ray.ray_des))
@@ -202,7 +217,7 @@ export class MouseEvent {
     setUp(objects) {
         const modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
         let tmp_event = () => {
-            if (MouseEvent.new_object === null)
+            if (MouseEvent.new_object === null || MouseEvent.start_flag)
                 return;
             MouseEvent.m_flag = 0;
             MouseEvent.c_flag = 0;
