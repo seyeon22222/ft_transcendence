@@ -21,12 +21,14 @@ class Main {
 		Main.objects = Setting.setGameMap(false);
 		EventManager.setEventKeyboard(Main.cam, ws);
 		EventManager.setScreenEvent();
+		Main.loop = true;
 
 		const Fetch = async () => {
 			const csrftoken = Cookies.get("csrftoken");
 			//updatetournamentcustom/<uuid:player1><uuid:player2><int:tournament_id>
-			const response = await fetch(`/match/updatematchcustom/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
-			//match serializer 반환값 가져옴
+			let player1 = window.location.hash.slice(2).toLocaleLowerCase().split("/");
+    		let player2 = window.location.hash.slice(3).toLocaleLowerCase().split("/");
+			const response = await fetch(`/match/updatetournamentcustom/${player1}${player2}${match_id}`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
@@ -36,7 +38,6 @@ class Main {
 			});
 			if (response.ok) {
 				let data =  await response.json();
-				console.log("app_t data: ", data);
 				for (let i = 0; i < data.custom.length; i++) {
 					let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
 					let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
@@ -120,7 +121,7 @@ class Main {
 					Main.player = window.players;
 					flag = 0;
 				}
-				if (!flag) {
+				if (!flag && Main.loop) {
 					Main.entry();
 					flag = 1;
 				}
@@ -201,7 +202,6 @@ export async function game_t_js(hash) {
 			data.player2_uuid === get_list_hash[1] &&
 			data.match_result == '' //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
 		) {
-			console.log("abc");
 			const response_name = await fetch("user/info", {
 			method: "GET",
 			headers: {
@@ -211,25 +211,24 @@ export async function game_t_js(hash) {
 			credentials: "include",
 			});
 			if (response_name.ok) {
-			//url에 해당 uuid값이 있는지
-			let data = await response_name.json();
-			let get_list_hash = get_hash.split("_");
-			for (let i = 0; i < get_list_hash.length - 1; i++) {
-				if (get_list_hash[i] == data[0].user_id) {
-				window.uuid = data[0].user_id;
-				window.players = i + 1;
-				flag = 1;
+				let data = await response_name.json();
+				let get_list_hash = get_hash.split("_");
+				for (let i = 0; i < get_list_hash.length - 1; i++) {
+					if (get_list_hash[i] == data[0].user_id) {
+					window.uuid = data[0].user_id;
+					window.players = i + 1;
+					flag = 1;
+					}
 				}
-			}
 			if (flag == 1) {
 				Main.webfunc(get_hash, match_id);
 			} else {
 				location.href = "/#";
 			}
 			} else {
-			location.href = "/#";
-			const error = await response_name.json();
-			console.log("user info API 요청 실패", error);
+				location.href = "/#";
+				const error = await response_name.json();
+				console.log("user info API 요청 실패", error);
 			}
 		} 
 		else {
