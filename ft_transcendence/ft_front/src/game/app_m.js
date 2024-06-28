@@ -2,7 +2,6 @@ import { EventManager } from "../../static/Event/EventManager.js";
 import { Setting } from "../../static/graphics/Setting.js";
 import { delete_back_show } from "../utilities.js";
 import { ObjectManager } from "../../static/phong/ObjectManager.js";
-// paddle_1 -> objects[1], paddle_2 -> objects[2], ball -> objects[0], up wall -> objects[3], down wall -> objects[4]
 
 class Main {
 	static objects = [];
@@ -25,7 +24,6 @@ class Main {
 		const Fetch = async () => {
 			const csrftoken = Cookies.get("csrftoken");
 			const response = await fetch(`/match/updatematchcustom/${id}`, {
-			//match serializer 반환값 가져옴
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
@@ -35,7 +33,6 @@ class Main {
 			});
 			if (response.ok) {
 				let data =  await response.json();
-				// console.log("app_m data: ", data);
 				for (let i = 0; i < data.custom.length; i++) {
 					let color = [data.custom[i].custom.r / 255, data.custom[i].custom.g / 255, data.custom[i].custom.b / 255, 1];
 					let pos = [data.custom[i].custom.x, data.custom[i].custom.y, 0, 1];
@@ -140,14 +137,13 @@ class Main {
 	}
 	static update() {
 		Main.render();
-		console.log("app_m loop: ", Main.loop);
+		// console.log("app_m loop: ", Main.loop);
 		if (Main.loop)
 			requestAnimationFrame(Main.update);
 	}
 }
 
 export async function game_m_js(hash) {
-	console.log("app_m start");
 	delete_back_show();
 	const get_hash = hash.slice(1);
 	let flag = 0;
