@@ -130,7 +130,6 @@ class MultiMatchCustomSerializer(serializers.ModelSerializer):
         model = MultiMatchCustom
         fields = ['custom']
 
-
 class MultiSerializer(serializers.ModelSerializer):
     player1_username = serializers.SerializerMethodField()
     player2_username = serializers.SerializerMethodField()

@@ -25,7 +25,7 @@ class Main {
 		const Fetch = async () => {
 			const csrftoken = Cookies.get("csrftoken");
 			//updatetournamentcustom/<uuid:player1><uuid:player2><int:tournament_id>
-			const response = await fetch(`/match/updatematchcustom/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
+			const response = await fetch(`/match/updatetournamentcustom/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
 			//match serializer 반환값 가져옴
 			method: "GET",
 			headers: {
