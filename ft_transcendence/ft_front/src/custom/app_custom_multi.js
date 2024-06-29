@@ -9,39 +9,38 @@ class Main {
 	static add_button;
 	static cam = null;
 	static ray = null;
-  static loop = true;
+  	static loop = true;
 
 	static entry(hash, id) {
-    let ws = new WebSocket("wss://" + window.location.host + "/ws/multicustom/" + hash + "/");
+    	let ws = new WebSocket("wss://" + window.location.host + "/ws/multicustom/" + hash + "/");
 
-    window.addEventListener("popstate", function () {
-      // WebSocket 연결 닫기
-      if (ws && ws.readyState !== WebSocket.CLOSED) {
-        ws.close();
-        ws = null;
-        console.log("popstate : " + hash);
-      }
-      EventManager.deleteEvent('mouse');
-      Main.loop = false;
-    });
-    
-    ws.onopen = () => {
-      let message = {message: window.players};
-      ws.send(JSON.stringify(message));
-    };
-
-    ws.onmessage = async function (e) {
-      let data = JSON.parse(e.data);
-		  let message = data["message"];
-      let time = data["time"];
-
-      if (time != undefined)
-        document.getElementById("time").innerHTML = time;
-      console.log("message : " + message);
-      if (message === 'start' || time == 0) {
-				location.href = "/#gamemulti/" + hash;
+		window.addEventListener("popstate", function () {
+			// WebSocket 연결 닫기
+			if (ws && ws.readyState !== WebSocket.CLOSED) {
+			ws.close();
+			ws = null;
+			console.log("popstate : " + hash);
 			}
-    };
+			EventManager.deleteEvent('mouse');
+			Main.loop = false;
+		});
+    
+		ws.onopen = () => {
+			let message = {message: window.players};
+			ws.send(JSON.stringify(message));
+		};
+
+		ws.onmessage = async function (e) {
+			let data = JSON.parse(e.data);
+			let message = data["message"];
+			let time = data["time"];
+
+			if (time != undefined)
+				document.getElementById("time").innerHTML = time;
+			console.log("message : " + message);
+			if (message === 'start' || time == 0)
+				location.href = "/#gamemulti/" + hash;
+		};
 
 		Setting.setPipe();
 		Main.objects = Setting.setBasicObjects();
