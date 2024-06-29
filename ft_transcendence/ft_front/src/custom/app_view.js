@@ -52,7 +52,7 @@ export class View {
 				});
 				if (response.ok) {
 					let data = await response.json();
-					// console.log("view data len: ", data.custom.length);
+					console.log(data);
 					for (var i = 0; i < data.customs.length; i++) {
 						let color = [data.customs[i].r / 255, data.customs[i].g / 255, data.customs[i].b / 255, 1];
 						let pos = [data.customs[i].x, data.customs[i].y, 0, 1];

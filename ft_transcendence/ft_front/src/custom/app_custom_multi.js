@@ -123,7 +123,7 @@ export async function multicustom_view(hash) {
     console.log(data.player2_uuid, "===", get_list_hash[1]);
     console.log(data.player3_uuid, "===", get_list_hash[2]);
     console.log(data.player4_uuid, "===", get_list_hash[3]);
-    console.log(data.winner_username, "===", "null");
+    console.log(data.match_result, "===", "null");
     if (
       data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
       data.player2_uuid === get_list_hash[1] &&
