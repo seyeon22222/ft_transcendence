@@ -218,7 +218,7 @@ export class MouseEvent {
                 await sendMatch(objects, id, ws);
             else if (location[0] === 'customt')
                 await sendTournament(objects, id, ws);
-            else if (location[0] === 'custommul')
+            else if (location[0] === 'custommulti')
                 await sendMulti(objects, id, ws);
         }
         document.getElementById('start').addEventListener('click', tmp_event);

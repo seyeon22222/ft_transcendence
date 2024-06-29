@@ -136,7 +136,7 @@ class Main {
 
 	static render() {
 		Setting.setRender();
-		Main.cam.setCam();
+		Main.cam.putCam();
 		for (let i = 0; i < Main.objects.length; i++)
 			Main.objects[i].draw(false);
 	}
@@ -149,74 +149,76 @@ class Main {
 }
 
 export async function game_multi_js(hash) {
-  delete_back_show();
-  const get_hash = hash.slice(1);
-  let flag = 0;
-  let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
-  let match_id = get_list_hash[get_list_hash.length - 1]; //
+	delete_back_show();
+	const get_hash = hash.slice(1);
+	let flag = 0;
+	let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
+	let match_id = get_list_hash[get_list_hash.length - 1]; //
 
-  const csrftoken = Cookies.get("csrftoken");
-  console.log("matchview/${match_id}", `/multimatchview/${match_id}`);
-  const response = await fetch(`/match/multimatchview/${match_id}`, {
-    //match serializer 반환값 가져옴
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": csrftoken,
-    },
-    credentials: "include",
-  });
-  if (response.ok) {
-    let data = await response.json();
-    console.log(data.player1_uuid, "===", get_list_hash[0]);
-    console.log(data.player2_uuid, "===", get_list_hash[1]);
-    console.log(data.player3_uuid, "===", get_list_hash[2]);
-    console.log(data.player4_uuid, "===", get_list_hash[3]);
-    console.log(data.winner_username, "===", "null");
-    if (
-      data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
-      data.player2_uuid === get_list_hash[1] &&
-      data.player3_uuid === get_list_hash[2] &&
-      data.player4_uuid === get_list_hash[3] &&
-      data.match_result === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
-    ) {
-      console.log("abc");
-      const response_name = await fetch("user/info", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrftoken,
-        },
-        credentials: "include",
-      });
-      if (response_name.ok) {
-        //url에 해당 uuid값이 있는지
-        let data = await response_name.json();
-        let get_list_hash = get_hash.split("_");
-        window.players = 0;
-        for (let i = 0; i < get_list_hash.length - 1; i++) {
-          if (get_list_hash[i] == data[0].user_id) {
-            window.uuid = data[0].user_id;
-            window.players = i + 1;
-            flag = 1;
-          }
-        }
-        if (flag == 1) {
-          Main.webfunc(get_hash, match_id);
-        } else {
-          location.href = "/#";
-        }
-      } else {
-        location.href = "/#";
-        const error = await response_name.json();
-        console.log("user info API 요청 실패", error);
-      }
-    } else {
-      location.href = "/#";
-    }
-  } else {
-    location.href = "/#";
-    const error = await response.json();
-    console.log("match API 요청 실패", error);
-  }
+	const csrftoken = Cookies.get("csrftoken");
+	console.log("matchview/${match_id}", `/multimatchview/${match_id}`);
+	const response = await fetch(`/match/multimatchview/${match_id}`, {
+	//match serializer 반환값 가져옴
+	method: "GET",
+	headers: {
+		"Content-Type": "application/json",
+		"X-CSRFToken": csrftoken,
+	},
+	credentials: "include",
+	});
+	if (response.ok) {
+	let data = await response.json();
+	console.log(data.player1_uuid, "===", get_list_hash[0]);
+	console.log(data.player2_uuid, "===", get_list_hash[1]);
+	console.log(data.player3_uuid, "===", get_list_hash[2]);
+	console.log(data.player4_uuid, "===", get_list_hash[3]);
+	console.log(data.winner_username, "===", "null");
+	if (
+		data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
+		data.player2_uuid === get_list_hash[1] &&
+		data.player3_uuid === get_list_hash[2] &&
+		data.player4_uuid === get_list_hash[3] &&
+		data.match_result === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
+	) {
+		console.log("abc");
+		const response_name = await fetch("user/info", {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			"X-CSRFToken": csrftoken,
+		},
+		credentials: "include",
+		});
+		if (response_name.ok) {
+			//url에 해당 uuid값이 있는지
+			let data = await response_name.json();
+			let get_list_hash = get_hash.split("_");
+			window.players = 0;
+			for (let i = 0; i < get_list_hash.length - 1; i++) {
+				if (get_list_hash[i] == data[0].user_id) {
+				window.uuid = data[0].user_id;
+				window.players = i + 1;
+				flag = 1;
+				}
+			}
+			if (flag == 1) {
+				Main.webfunc(get_hash, match_id);
+			} else {
+				location.href = "/#";
+			}
+			} else {
+			location.href = "/#";
+			const error = await response_name.json();
+			console.log("user info API 요청 실패", error);
+			}
+		} 
+		else {
+			location.href = "/#";
+		}
+	} 
+	else {
+		location.href = "/#";
+		const error = await response.json();
+		console.log("match API 요청 실패", error);
+	}
 }

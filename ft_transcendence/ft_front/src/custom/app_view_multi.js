@@ -17,7 +17,7 @@ export class View {
 		View.objects = Setting.setGameMap(false);
 		View.cam = Setting.setCam();
 
-		let ws = new WebSocket("wss://" + window.location.host + "/ws/custom/" + hash + "/");
+		let ws = new WebSocket("wss://" + window.location.host + "/ws/multicustom/" + hash + "/");
 		
 		window.addEventListener("popstate", function () {
 			// WebSocket 연결 닫기
