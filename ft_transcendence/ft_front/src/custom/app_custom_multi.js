@@ -93,9 +93,10 @@ class Main {
 	}
 
 	static update() {
-		Main.render();
-    if (Main.loop)
-		  requestAnimationFrame(Main.update);
+		if (Main.loop) {
+			Main.render();
+			requestAnimationFrame(Main.update);
+		}
 	}
 }
 

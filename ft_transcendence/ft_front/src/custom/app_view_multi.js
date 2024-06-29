@@ -84,8 +84,9 @@ export class View {
 	}
 
 	static update() {
-		View.render();
-		if (View.loop)
+		if (View.loop){
+			View.render();
 			requestAnimationFrame(View.update);
+		}
 	}
 }

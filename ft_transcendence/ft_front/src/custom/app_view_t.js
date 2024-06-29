@@ -84,8 +84,11 @@ export class View {
 	}
 
 	static update() {
-		View.render();
-		if (View.loop)
+		console.log("================ app_view_t update() loop : ===== ", View.loop);
+		if (View.loop){
+			
+			View.render();
 			requestAnimationFrame(View.update);
+		}
 	}
 }
