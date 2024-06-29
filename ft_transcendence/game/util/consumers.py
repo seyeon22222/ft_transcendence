@@ -513,7 +513,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        player = text_data_json['pid']
+        player = text_data_json['players']
 
         if self.players == None:
             if (player == 1 or player == 2 or player == 3 or player == 4):

@@ -11,7 +11,7 @@ class CustomConsumer(AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.info = customInfo.CustomInfo()
         self.player = None
-        self.reply = ''
+        self.ready = [False]
         
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -28,7 +28,7 @@ class CustomConsumer(AsyncWebsocketConsumer):
         if self.room_group_name in self.consumers:
             self.consumer = self.consumers[self.room_group_name]
             self.info = self.consumers[self.room_group_name].info
-            self.reply = self.consumers[self.room_group_name].reply
+            self.ready = self.consumers[self.room_group_name].ready
         else:
             self.consumer = self
             self.consumers[self.room_group_name] = self
@@ -51,19 +51,24 @@ class CustomConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        reply = ''
 
         if self.player is None:
             self.player = message
+        
         elif message == 1:
-            self.reply = 'complete'
-        elif message == 2 and self.reply == 'complete':
-            self.reply = 'start'
+            reply = 'complete'
+            self.ready[0]= True
+
+        elif self.ready[0] == True and message == 2:
+            reply = 'start'
             self.info.time = -1
+
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type' : 'send_message',
-                'message' : self.reply
+                'message' : reply
             }
         )
     
@@ -103,7 +108,8 @@ class TCustomConsumer(AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.info = customInfo.CustomInfo()
         self.player = None
-        
+        self.ready = [False]
+
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
         self.room_group_name = f'game_{self.room_name}'
@@ -119,6 +125,7 @@ class TCustomConsumer(AsyncWebsocketConsumer):
         if self.room_group_name in self.consumers:
             self.consumer = self.consumers[self.room_group_name]
             self.info = self.consumers[self.room_group_name].info
+            self.ready = self.consumers[self.room_group_name].ready
         else:
             self.consumer = self
             self.consumers[self.room_group_name] = self
@@ -145,11 +152,24 @@ class TCustomConsumer(AsyncWebsocketConsumer):
 
         if self.player is None:
             self.player = message
+            
         elif message == 1:
             reply = 'complete'
-        elif message == 2:
+            self.ready[0]= True
+
+           
+        elif self.ready[0] == True and message == 2:
             reply = 'start'
             self.info.time = -1
+
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type' : 'send_message',
+                'message' : reply
+            }
+        )
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -194,7 +214,7 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.info = customInfo.CustomInfo()
         self.player = None
-        self.ready = [False, False, False]
+        self.ready = [False, False, False, False]
         
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -211,6 +231,7 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
         if self.room_group_name in self.consumers:
             self.consumer = self.consumers[self.room_group_name]
             self.info = self.consumers[self.room_group_name].info
+            self.ready = self.consumers[self.room_group_name].ready
         else:
             self.consumer = self
             self.consumers[self.room_group_name] = self
@@ -239,13 +260,15 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
             self.player = message
         elif message == 1:
             reply = 'complete'
-        elif message == 2 or message == 3 or message == 4:
-            self.ready[message - 2] = True
+            self.ready[0] = True
+        elif self.ready[0] == True and (message == 2 or message == 3 or message == 4):
+            self.ready[message - 1] = True
 
         count = 0
-        for i in range(0, 3):
+        for i in range(1, 4):
             if self.ready[i] == True:
                 count += 1
+
         if count == 3:
             reply = 'start'
             self.info.time = -1

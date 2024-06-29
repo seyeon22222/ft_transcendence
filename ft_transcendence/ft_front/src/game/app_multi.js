@@ -70,7 +70,7 @@ class Main {
 		});
 
 		ws.onopen = () => {
-			let message = { message: "", pid: window.players};
+			let message = { message: "", players: window.players};
 			ws.send(JSON.stringify(message));
 		}
   

@@ -73,7 +73,7 @@ async function sendMatch(objects, id, ws) {
 
 async function sendMulti(objects, id, ws) {
     const csrftoken = Cookies.get('csrftoken');
-    console.log("sendMulti ===============");
+
     for (let i = 6; i < objects.length; i++) {
         let game_results = {
             'r' : Math.floor(objects[i].color[0] * 255),
