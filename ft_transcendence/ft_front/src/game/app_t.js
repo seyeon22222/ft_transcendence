@@ -118,10 +118,6 @@ class Main {
 			if (score1 == 5 || score2 == 5) {
 				let get_list_hash = get_hash.split("_");
 				is_active = 0;
-				// console.log(
-				// 	"===========href=========",
-				// 	`/#tournament/${get_list_hash[get_list_hash.length - 1]}`
-				// );
 			} 
 			else {
 				if (document.getElementById("game-score"))
@@ -129,14 +125,8 @@ class Main {
 				Main.objects[0].movePos(ball_pos);
 				Main.objects[1].movePos(paddle1_pos);
 				Main.objects[2].movePos(paddle2_pos);
-				if (Main.player == 0) {
+				if (Main.player == 0)
 					Main.player = window.players;
-					flag = 0;
-				}
-				if (!flag && Main.loop) {
-					Main.entry();
-					flag = 1;
-				}
 			}
 
 			if (is_active == 0) {
@@ -168,6 +158,7 @@ class Main {
 				ws = null;
 			}
 		}
+		Main.entry();
 	}
 	static entry() {
 		Main.objects[window.players].setColor([0, 1, 0, 1]);

@@ -9,47 +9,46 @@ class Main {
 	static add_button;
 	static cam = null;
 	static ray = null;
-  static loop = true;
+	static loop = true;
 
 	static entry(hash, id) {
 		console.log("Test Entry");
-    let ws = new WebSocket("wss://" + window.location.host + "/ws/tcustom/" + hash + "/");
+    	let ws = new WebSocket("wss://" + window.location.host + "/ws/tcustom/" + hash + "/");
 
-    window.addEventListener("popstate", function () {
-      // WebSocket 연결 닫기
-      if (ws && ws.readyState !== WebSocket.CLOSED) {
-        ws.close();
-        ws = null;
-        console.log("popstate : " + hash);
-      }
-      EventManager.deleteEvent('mouse');
-      Main.loop = false;
-    });
+    	window.addEventListener("popstate", function () {
+      		// WebSocket 연결 닫기
+      		if (ws && ws.readyState !== WebSocket.CLOSED) {
+        		ws.close();
+        		ws = null;
+        		console.log("popstate : " + hash);
+      		}
+      		EventManager.deleteEvent('mouse');
+    		Main.loop = false;
+    	});
     
-    ws.onopen = () => {
-      let message = {message: window.players};
-      ws.send(JSON.stringify(message));
-    };
+		ws.onopen = () => {
+			let message = {message: window.players};
+			ws.send(JSON.stringify(message));
+		};
 
-    ws.onmessage = async function (e) {
-      let data = JSON.parse(e.data);
-		  let message = data["message"];
-      let time = data["time"];
+    	ws.onmessage = async function (e) {
+    		let data = JSON.parse(e.data);
+			let message = data["message"];
+    		let time = data["time"];
 
-      if (time != undefined)
-        document.getElementById("time").innerHTML = time;
-      console.log("message : " + message);
-      if (message === 'start' || time == 0) {
+      		if (time != undefined)
+        		document.getElementById("time").innerHTML = time;
+      		console.log("message : " + message);
+      		if (message === 'start' || time == 0)
 				location.href = "/#gamet/" + hash;
-			}
-    };
+    	};
 
 		Setting.setPipe();
 		Main.objects = Setting.setBasicObjects();
 		Main.add_button = Setting.setAddButton();
 		Main.cam = Setting.setCam();
 		Main.ray = new Ray(Main.cam);
-
+		Main.loop = true;
 		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects, id, ws);
 		requestAnimationFrame(Main.update);
 	}
@@ -95,10 +94,9 @@ class Main {
 	}
 
 	static update() {
-		console.log("In custom M", Main.loop);
 		Main.render();
-    if (Main.loop)
-		  requestAnimationFrame(Main.update);
+    	if (Main.loop)
+			requestAnimationFrame(Main.update);
 	}
 }
 
