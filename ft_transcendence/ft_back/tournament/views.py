@@ -812,7 +812,7 @@ class updateMultiCustom(APIView):
 
     def post(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
-        
+        print("aaaaaaaaaaaaaaaaaaaaa")
         # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
         r = request.data.get('r', 0)
         g = request.data.get('g', 0)

@@ -11,6 +11,7 @@ class CustomConsumer(AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.info = customInfo.CustomInfo()
         self.player = None
+        self.reply = ''
         
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
@@ -27,6 +28,7 @@ class CustomConsumer(AsyncWebsocketConsumer):
         if self.room_group_name in self.consumers:
             self.consumer = self.consumers[self.room_group_name]
             self.info = self.consumers[self.room_group_name].info
+            self.reply = self.consumers[self.room_group_name].reply
         else:
             self.consumer = self
             self.consumers[self.room_group_name] = self
@@ -49,20 +51,19 @@ class CustomConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        reply = ''
 
         if self.player is None:
             self.player = message
         elif message == 1:
-            reply = 'complete'
-        elif message == 2:
-            reply = 'start'
+            self.reply = 'complete'
+        elif message == 2 and self.reply == 'complete':
+            self.reply = 'start'
             self.info.time = -1
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type' : 'send_message',
-                'message' : reply
+                'message' : self.reply
             }
         )
     
@@ -197,7 +198,7 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
         
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
-        self.room_group_name = f'game_{self.room_name}'
+        self.room_group_name = f'game_{self.room_name[:50]}'
         self.loop = asyncio.get_event_loop()
 
         await self.channel_layer.group_add(

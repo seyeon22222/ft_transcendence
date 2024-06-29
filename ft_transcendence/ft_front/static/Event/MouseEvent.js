@@ -73,6 +73,7 @@ async function sendMatch(objects, id, ws) {
 
 async function sendMulti(objects, id, ws) {
     const csrftoken = Cookies.get('csrftoken');
+    console.log("sendMulti ===============");
     for (let i = 6; i < objects.length; i++) {
         let game_results = {
             'r' : Math.floor(objects[i].color[0] * 255),
@@ -84,6 +85,7 @@ async function sendMulti(objects, id, ws) {
             'w' : objects[i].width,
             'h' : objects[i].height
         }
+        console.log('/match/updatematchcustom/${id}', `/match/updatemulticustom/${id}`);
         const response = await fetch(`/match/updatemulticustom/${id}`, {
             //match serializer 반환값 가져옴
             method: "POST",
@@ -214,11 +216,13 @@ export class MouseEvent {
                 MouseEvent.new_object = null;
                 MouseEvent.obj_idx = 0;
             }
+
+            console.log("loc: ", location[0]);
             if (location[0] === 'customm')
                 await sendMatch(objects, id, ws);
             else if (location[0] === 'customt')
                 await sendTournament(objects, id, ws);
-            else if (location[0] === 'custommul')
+            else if (location[0] === 'custommulti')
                 await sendMulti(objects, id, ws);
         }
         document.getElementById('start').addEventListener('click', tmp_event);
