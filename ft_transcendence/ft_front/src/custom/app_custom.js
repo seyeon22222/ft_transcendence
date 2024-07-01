@@ -127,6 +127,7 @@ export async function custom_view(hash) {
       if (
         data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
         data.player2_uuid === get_list_hash[1] &&
+        data.match_result === '' &&
         data.is_start === false //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
       ) {
         const response_name = await fetch("user/info", {

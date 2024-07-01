@@ -541,11 +541,13 @@ class matchResultView(APIView):
         match_result = request.data.get('match_result')
         is_active = request.data.get('is_active')
 
+        if match.match_result != '':
+            return Response(status=status.HTTP_200_OK)
+
         match.match_date = match_date
         match.match_result = match_result
         match.is_active = is_active
         match.save()
-
         try:
             player1_stat = GameStat.objects.get(user=match.player1)
         except GameStat.DoesNotExist:
@@ -597,6 +599,9 @@ class multimatchResultView(APIView):
         match_date = request.data.get('match_date')
         match_result = request.data.get('match_result')
         is_active = request.data.get('is_active')
+
+        if match.match_result != '':
+            return Response(status=status.HTTP_200_OK)
 
         match.match_date = match_date
         match.match_result = match_result
@@ -746,6 +751,9 @@ class tournamentMatchResultView(APIView):
             return Response({'error': 'Error while handling tournament result'}, status=status.HTTP_400_BAD_REQUEST)
 
         tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        if tournament_match.match_result != '':
+            return Response(status=status.HTTP_200_OK)
+        
         tournament_match.match_date = match_date
         tournament_match.match_result = match_result
         tournament_match.save()

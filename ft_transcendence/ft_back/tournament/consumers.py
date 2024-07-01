@@ -40,8 +40,6 @@ class MatchConsumer(AsyncWebsocketConsumer):
 
 
 class messageConsumer(AsyncWebsocketConsumer):
-    
-
     async def connect(self):
         self.user_id = self.scope['url_route']['kwargs']['user_id']
         self.group_name = f'user_{self.user_id}'
@@ -67,6 +65,7 @@ class messageConsumer(AsyncWebsocketConsumer):
         player2 = data.get('player2')
         g_type = data.get('g_type')
         g_id = data.get('g_id')
+
         if data.get('player3') is not None and data.get('player4') is not None:
             flag = True
             player3 = data.get('player3')

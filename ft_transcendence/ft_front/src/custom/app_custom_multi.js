@@ -127,7 +127,8 @@ export async function multicustom_view(hash) {
       data.player2_uuid === get_list_hash[1] &&
       data.player3_uuid === get_list_hash[2] &&
       data.player4_uuid === get_list_hash[3] &&
-      data.is_start === false //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
+      data.is_start === false &&
+	  data.match_result === ''//winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
     ) {
       const response_name = await fetch("user/info", {
         method: "GET",
