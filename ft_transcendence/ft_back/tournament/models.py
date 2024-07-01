@@ -40,6 +40,7 @@ class tournamentMatch(models.Model):
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1_a')
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2_a')
     match_result = models.CharField(default='', max_length=1)
+    is_start = models.BooleanField(default=False)
     # custom = models.ManyToManyField(Custom, related_name='t_cutom')
 
     def __str__(self):
@@ -75,6 +76,7 @@ class Match(models.Model):
     is_flag = models.BooleanField(default=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requester')
+    is_start = models.BooleanField(default=False)
     # custom = models.ManyToManyField(Custom, through='MatchCustom', related_name='m_custom')
     
     def __str__(self):
@@ -116,6 +118,7 @@ class MultiMatch(models.Model):
     player4 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player4_matches', null=True, blank=True)
     match_result = models.CharField(default='', max_length=1)
     is_active = models.BooleanField(default=True)
+    is_start = models.BooleanField(default=False)
     # custom = models.ManyToManyField(Custom, related_name='mul_custom')
 
     def __str__(self):
@@ -144,7 +147,6 @@ class Custom(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='customs', null=True, blank=True)
     tournament = models.ForeignKey(tournamentMatch, on_delete=models.CASCADE, related_name='customs', null=True, blank=True)
     multi_match = models.ForeignKey(MultiMatch, on_delete=models.CASCADE, related_name='customs', null=True, blank=True)
-
 
     def __str__(self):
         return f"게임 내의 장애물이 생성되었습니다"

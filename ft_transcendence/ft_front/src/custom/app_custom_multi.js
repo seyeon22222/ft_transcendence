@@ -121,19 +121,14 @@ export async function multicustom_view(hash) {
   });
   if (response.ok) {
     let data = await response.json();
-    console.log(data.player1_uuid, "===", get_list_hash[0]);
-    console.log(data.player2_uuid, "===", get_list_hash[1]);
-    console.log(data.player3_uuid, "===", get_list_hash[2]);
-    console.log(data.player4_uuid, "===", get_list_hash[3]);
-    console.log(data.match_result, "===", "null");
+    console.log(data.is_start, "===", "null");
     if (
       data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
       data.player2_uuid === get_list_hash[1] &&
       data.player3_uuid === get_list_hash[2] &&
       data.player4_uuid === get_list_hash[3] &&
-      data.match_result === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
+      data.is_start === false //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
     ) {
-      console.log("abc");
       const response_name = await fetch("user/info", {
         method: "GET",
         headers: {

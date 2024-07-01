@@ -106,6 +106,7 @@ class matchListView(APIView):
         matchs = Match.objects.all()
         serializer = MatchSerializer(matchs, many=True)
         return Response(serializer.data)
+        
     
 class matchDetailView(APIView):
 
@@ -113,6 +114,17 @@ class matchDetailView(APIView):
         match = get_object_or_404(Match, id=match_id)
         serializer = MatchSerializer(match)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, match_id):
+        match = get_object_or_404(Match, id=match_id)
+        flag = request.data.get("is_start")
+        
+        if match.is_start == flag:
+            return Response(status=status.HTTP_200_OK)
+        else:
+            match.is_start = flag
+            match.save()
+        return Response(status=status.HTTP_200_OK)
 
 class tournamentMatchView(APIView):
 
@@ -120,7 +132,7 @@ class tournamentMatchView(APIView):
         tournament_matches = tournamentMatch.objects.all()
         serializer = tournamentMatchSerializer(tournament_matches, many=True)
         return Response(serializer.data)
-
+    
 class tournamentMatchDetailView(APIView):
     
     def get(self, request, player1, player2, tournament_id):
@@ -138,6 +150,28 @@ class tournamentMatchDetailView(APIView):
         tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
         serializer = tournamentMatchSerializer(tournament_match)
         return Response(serializer.data)
+    
+    def post(self, request, player1, player2, tournament_id):
+        try:
+            player1 = MyUser.objects.get(user_id=player1)
+            player2 = MyUser.objects.get(user_id=player2)
+        except MyUser.DoesNotExist:
+            return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            tournament_instance = tournament.objects.get(pk=tournament_id)
+        except tournament.DoesNotExist:
+            return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
+
+        tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        flag = request.data.get("is_start")
+        
+        if tournament_match.is_start == flag:
+            return Response(status=status.HTTP_200_OK)
+        else:
+            tournament_match.is_start = flag
+            tournament_match.save()
+        return Response(status=status.HTTP_200_OK)
 
 class matchView(APIView):
     
@@ -662,7 +696,18 @@ class MultiMatchDetailView(APIView):
     def get(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
         serializer = MultiSerializer(match)
-        return Response(serializer.data, status=status.HTTP_200_OK)    
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, multimatch_id):
+        match = get_object_or_404(MultiMatch, id=multimatch_id)
+        flag = request.data.get("is_start")
+        
+        if match.is_start == flag:
+            return Response(status=status.HTTP_200_OK)
+        else:
+            match.is_start = flag
+            match.save()
+        return Response(status=status.HTTP_200_OK)   
 
 class tournamentDetailView(APIView):
     def get(self, request, tournament_id):
@@ -792,7 +837,6 @@ class updateTournamentCustom(APIView):
         w = request.data.get('w', 0.0)
         h = request.data.get('h', 0.0)
         
-
         try:
             new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h, tournament=tournament_match)
         except :
@@ -812,7 +856,6 @@ class updateMultiCustom(APIView):
 
     def post(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
-        print("aaaaaaaaaaaaaaaaaaaaa")
         # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
         r = request.data.get('r', 0)
         g = request.data.get('g', 0)

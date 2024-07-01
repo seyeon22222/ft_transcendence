@@ -44,6 +44,11 @@ class CustomConsumer(AsyncWebsocketConsumer):
         self.info.player_count -= 1
         if self.info.player_count == 0:
             del self.consumers[self.room_group_name]
+            backend_url = 'http://backend:8000/match/matchview/' + list(self.room_name.split('_'))[-1]
+            params= {
+                    'is_start': True,
+            }
+            response = requests.post(backend_url, json=params)
         if self.info.time != -1 :
             self.info.time = 0
             
@@ -141,6 +146,11 @@ class TCustomConsumer(AsyncWebsocketConsumer):
         self.info.player_count -= 1
         if self.info.player_count == 0:
             del self.consumers[self.room_group_name]
+            backend_url = 'http://backend:8000/match/t_matchview/' + list(self.room_name.split('_'))[0] + list(self.room_name.split('_'))[1] + list(self.room_name.split('_'))[-1]
+            params= {
+                    'is_start': True,
+            }
+            response = requests.post(backend_url, json=params)
         if self.info.time != -1 :
             self.info.time = 0
             
@@ -247,6 +257,11 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
         self.info.player_count -= 1
         if self.info.player_count == 0:
             del self.consumers[self.room_group_name]
+            backend_url = 'http://backend:8000/match/multimatchview/' + list(self.room_name.split('_'))[-1]
+            params= {
+                    'is_start': True,
+            }
+            response = requests.post(backend_url, json=params)
         if self.info.time != -1 :
             self.info.time = 0
             
