@@ -13,6 +13,7 @@ class Main {
 
 	static entry(hash, id) {
     	let ws = new WebSocket("wss://" + window.location.host + "/ws/multicustom/" + hash + "/");
+		Main.loop = true;
 
 		window.addEventListener("popstate", function () {
 			// WebSocket 연결 닫기

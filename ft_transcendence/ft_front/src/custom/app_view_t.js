@@ -16,6 +16,7 @@ export class View {
 		Setting.setPipe();
 		View.objects = Setting.setGameMap(false);
 		View.cam = Setting.setCam();
+		View.loop = true;
 
 		let ws = new WebSocket("wss://" + window.location.host + "/ws/tcustom/" + hash + "/");
 		

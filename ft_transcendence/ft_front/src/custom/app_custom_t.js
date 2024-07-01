@@ -14,6 +14,7 @@ class Main {
 	static entry(hash, id) {
 		console.log("Test Entry");
     	let ws = new WebSocket("wss://" + window.location.host + "/ws/tcustom/" + hash + "/");
+		Main.loop = true;
 
     	window.addEventListener("popstate", function () {
       		// WebSocket 연결 닫기

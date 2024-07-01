@@ -218,7 +218,7 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
         
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['slug_name']
-        self.room_group_name = f'game_{self.room_name[:50]}'
+        self.room_group_name = f'game_{self.room_name[-50:]}'
         self.loop = asyncio.get_event_loop()
 
         await self.channel_layer.group_add(

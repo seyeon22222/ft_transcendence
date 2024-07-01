@@ -46,9 +46,9 @@ export class KeyboardEvent {
                 flag = 1;
             }
             if (event.code === "ArrowRight")
-                cam.rotCam(Math.min(45, Main.camDegree + 1));
+                cam.rotCam(Math.min(45, cam.degree + 1));
             if (event.code === "ArrowLeft")
-                cam.rotCam(Math.max(-45, Main.camDegree - 1));
+                cam.rotCam(Math.max(-45, cam.degree - 1));
             if (flag) ws.send(JSON.stringify(message));
         }
         window.addEventListener('keydown', tmp_event);
