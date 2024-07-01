@@ -47,7 +47,7 @@ class Main {
 		Main.add_button = Setting.setAddButton();
 		Main.cam = Setting.setCam();
 		Main.ray = new Ray(Main.cam);
-
+		Main.loop = true;
 		EventManager.setEventMouse(Main.ray, Main.add_button, Main.objects, id, ws);
 		requestAnimationFrame(Main.update);
 	}
@@ -93,9 +93,10 @@ class Main {
 	}
 
 	static update() {
-		Main.render();
-    if (Main.loop)
-		  requestAnimationFrame(Main.update);
+		if (Main.loop) {
+			Main.render();
+			requestAnimationFrame(Main.update);
+		}
 	}
 }
 
