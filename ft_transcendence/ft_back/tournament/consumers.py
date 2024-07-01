@@ -1,10 +1,19 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from . import tinfo
+from django.shortcuts import get_object_or_404
 
 class MatchConsumer(AsyncWebsocketConsumer):
+    consumers = {}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.tifo = tinfo.Tinfo()
+
     async def connect(self):
         self.tournament_id = self.scope['url_route']['kwargs']['tournament_id']
         self.room_group_name = f'tournament_{self.tournament_id}'
+
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -13,12 +22,24 @@ class MatchConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+        if self.room_group_name in self.consumers:
+            self.tinfo = self.consumers[self.room_group_name].tinfo
+        else:
+            self.consumer = self
+            self.consumers[self.room_group_name] = self
+
+        self.info.player_count += 1
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
 
+        self.tinfo.player_count -= 1
+        if (self.tinfo.player_count == 0):
+            tournament = get_object_or_404(tournament, pk=self.tournament_id)
+            tournament.delete()
+            
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']
