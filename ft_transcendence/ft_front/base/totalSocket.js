@@ -256,4 +256,3 @@ async function mul_accept(invitePopup, player1, player2, player3, player4, g_id)
 
 createInvitePopup();
 check_socket();
-initializeWebsocket();

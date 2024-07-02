@@ -132,7 +132,7 @@ export class MouseEvent {
         else if (type == 'mousedown')
             this.setDown(ray);
         else if (type == 'mouseup')
-            this.setUp(objects);
+            this.setUp(objects, ray);
         else if (type == 'start')
             this.setStart(objects, id, ws);
         else if (type == 'gamestart')
@@ -272,14 +272,17 @@ export class MouseEvent {
         this.m_event = tmp_event;
     }
 
-    setUp(objects) {
+    setUp(objects, ray) {
         const modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
-        let tmp_event = () => {
+        let tmp_event = (event) => {
             if (MouseEvent.new_object === null || MouseEvent.start_flag)
                 return;
+            ray.setRay(event.clientX, event.clientY);
             MouseEvent.m_flag = 0;
             MouseEvent.c_flag = 0;
-            modal.show();
+            
+            if (MouseEvent.new_object.collisionRay(ray.ray_des) === true)
+                modal.show();
         }
         window.addEventListener('mouseup', tmp_event);
         this.m_event = tmp_event;
@@ -318,6 +321,13 @@ export class MouseEvent {
             MouseEvent.new_object = null;
             MouseEvent.obj_idx = 0;
             modal.hide();
+
+            document.getElementById("width").value = 1;
+            document.getElementById("height").value = 1;
+            document.getElementById("degree").value = 0;
+            document.getElementById("red").value = 255;
+            document.getElementById("green").value = 255;
+            document.getElementById("blue").value = 255;
         }
         document.getElementById('save').addEventListener('click', tmp_event);
         this.child1_event = tmp_event;
@@ -327,6 +337,13 @@ export class MouseEvent {
             objects.splice(MouseEvent.obj_idx, 1);
             MouseEvent.new_object = null;
             MouseEvent.obj_idx = 0;
+
+            document.getElementById("width").value = 1;
+            document.getElementById("height").value = 1;
+            document.getElementById("degree").value = 0;
+            document.getElementById("red").value = 255;
+            document.getElementById("green").value = 255;
+            document.getElementById("blue").value = 255;
         }
         document.getElementById('cancel').addEventListener('click', tmp_event);
         this.child2_event = tmp_event;
@@ -337,6 +354,7 @@ export class MouseEvent {
         this.setRed();
         this.setGreen();
         this.setBlue();
+
     }
 
     setWidth() {

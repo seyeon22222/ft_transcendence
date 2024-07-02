@@ -4,6 +4,12 @@ import { EventManager } from "../../static/Event/EventManager.js";
 import { delete_back_show } from "../utilities.js";
 import { View } from "./app_view.js";
 
+function sleep(ms) {
+  const start = new Date().getTime();
+  while (new Date().getTime() < start + ms) {
+  }
+}
+
 class Main {
 	static objects = [];
 	static add_button;
@@ -22,6 +28,7 @@ class Main {
       }
       EventManager.deleteEvent('mouse');
       Main.loop = false;
+      sleep(1000);
     });
     
     ws.onopen = () => {

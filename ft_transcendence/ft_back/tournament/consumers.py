@@ -49,12 +49,6 @@ class MatchConsumer(AsyncWebsocketConsumer):
             return
         elif tournament_temp.completed_matches != 0:
             tournament_temp.delete()
-        
-
-    @database_sync_to_async
-    def delete_tournament(self):
-        tournament_temp = tournament.objects.get(pk=self.tournament_id)
-        tournament_temp.delete()
             
     async def receive(self, text_data):
         data = json.loads(text_data)

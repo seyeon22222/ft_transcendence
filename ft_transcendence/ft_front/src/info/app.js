@@ -11,6 +11,7 @@ export async function info_js() {
   let accept_user;
   let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
   let user_name = user_location[1];
+  let user_lang = document.getElementById("languageSelector").value;
   let data;
   let response;
   let csrftoken;
