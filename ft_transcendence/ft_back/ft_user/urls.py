@@ -3,14 +3,8 @@ from ft_user.views import (
     UserViewSet, User_login, Sign_up,
     Logout, CheckLogin, UserInfoChange, 
     UserImage, SelectUser, UserBlockRequest, 
-    UserBlockCheckRequest, UserBlockReleaseRequest,
-    GetUsersOnlineStatus, LanguageSet
+    UserBlockCheckRequest, UserBlockReleaseRequest, LanguageSet
 )
-# FriendView, 
-#     FriendRejectView ,FriendAcceptView,
-#     FriendDeleteView,
-# ProfileImageUploadView,
-
 app_name = "ft_user"
 
 urlpatterns = [
@@ -24,12 +18,6 @@ urlpatterns = [
     path('user/block_request', UserBlockRequest.as_view(), name='user_block'),
     path('user/block_release_request', UserBlockReleaseRequest.as_view(), name='user_block_release'),
     path('user/block_check_request', UserBlockCheckRequest.as_view(),name='user_block_check_request'),
-    path('user/get_users_online_status/', GetUsersOnlineStatus.as_view(), name='get_users_online_status'),
     path('user/language', LanguageSet.as_view(), name="language_setting"),
     re_path(r'info/', SelectUser.as_view(), name='select_user'),
-    # path('friends', FriendView.as_view(), name='friend'),
-    # path('friends/accept/', FriendAcceptView.as_view(), name='accept'),
-    # path('friends/reject', FriendRejectView.as_view(), name='reject'),
-    # path('friends/delete', FriendDeleteView.as_view(), name='delete'),
-    # path('profile/upload', ProfileImageUploadView.as_view(), name='profile_image_upload'),
 ]

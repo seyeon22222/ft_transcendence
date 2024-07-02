@@ -1,6 +1,6 @@
-import { Setting } from "../../static/graphics/Setting.js"; // comp
-import { Ray } from "../../static/phong/Ray.js"; // comp
-import { EventManager } from "../../static/Event/EventManager.js"; // comp
+import { Setting } from "../../static/graphics/Setting.js";
+import { Ray } from "../../static/phong/Ray.js";
+import { EventManager } from "../../static/Event/EventManager.js";
 import { delete_back_show } from "../utilities.js";
 import { View } from "./app_view.js";
 
@@ -16,7 +16,6 @@ class Main {
     Main.loop = true;
 
     window.addEventListener("popstate", function () {
-      // WebSocket 연결 닫기
       if (ws && ws.readyState !== WebSocket.CLOSED) {
         ws.close();
         ws = null;
@@ -102,16 +101,14 @@ class Main {
 }
 
 export async function custom_view(hash) {
-	//TODO: 분기를 나눠 줄 것 (Main(custom page), View(보는 페이지) 둘 중 어느 것을 실행 시킬 지 결정)
     delete_back_show();
     const get_hash = hash.slice(1);
     let flag = 0;
-    let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
+    let get_list_hash = get_hash.split("_");
     let match_id = get_list_hash[get_list_hash.length - 1]; //
   
     const csrftoken = Cookies.get("csrftoken");
     const response = await fetch(`/match/matchview/${match_id}`, {
-      //match serializer 반환값 가져옴
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -121,14 +118,11 @@ export async function custom_view(hash) {
     });
     if (response.ok) {
       let data = await response.json();
-      // console.log(data.player1_uuid, "===", get_list_hash[0]);
-      // console.log(data.player2_uuid, "===", get_list_hash[1]);
-      // console.log(data.winner_username, "===", "null");
       if (
-        data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
+        data.player1_uuid === get_list_hash[0] &&
         data.player2_uuid === get_list_hash[1] &&
         data.match_result === '' &&
-        data.is_start === false //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
+        data.is_start === false
       ) {
         const response_name = await fetch("user/info", {
           method: "GET",
@@ -139,7 +133,6 @@ export async function custom_view(hash) {
           credentials: "include",
         });
         if (response_name.ok) {
-          //url에 해당 uuid값이 있는지
           let data = await response_name.json();
           let get_list_hash = get_hash.split("_");
           window.players = 0;
@@ -161,7 +154,7 @@ export async function custom_view(hash) {
         } else {
           location.href = "/#";
           const error = await response_name.json();
-          console.log("match API 요청 실패", error);
+          console.error("match API 요청 실패", error);
         }
       } else {
         location.href = "/#";
@@ -169,6 +162,6 @@ export async function custom_view(hash) {
     } else {
       location.href = "/#";
       const error = await response.json();
-      console.log("match API 요청 실패", error);
+      console.error("match API 요청 실패", error);
     }
 }

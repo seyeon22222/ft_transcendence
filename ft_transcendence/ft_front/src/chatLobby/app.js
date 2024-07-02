@@ -3,12 +3,10 @@ import { check_login, delete_back_show, showModal } from "../utilities.js"
 
 export async function chatLobby_js() {
     delete_back_show();
-    // set style
     const style = document.getElementById("style");
     style.innerHTML = set_style();
 
 	setLanguage("chatlobby");
-    // check login status
     const check = await check_login();
     if (check === false) {
         location.href = `/#`;
@@ -19,8 +17,6 @@ export async function chatLobby_js() {
     try {
         const room_list = document.getElementById("room_list");
         const csrftoken = Cookies.get('csrftoken');
-
-        // get room list from backend API
         const response = await fetch('chat/rooms/', {
             method: 'GET',
             headers: {
@@ -32,7 +28,6 @@ export async function chatLobby_js() {
         if (response.ok) {
             data = await response.json();
             room_list.innerHTML = '';
-            // Append data to room_list
             data.forEach(room => {
                 const roomLink = document.createElement('a');
                 roomLink.href = `/#chat/${room.slug}`;
@@ -45,7 +40,6 @@ export async function chatLobby_js() {
         }
 
         const user_list = document.getElementById("user_list");
-        // get user list from backend API
         const res = await fetch('info/', {
             method: 'GET',
             headers: {

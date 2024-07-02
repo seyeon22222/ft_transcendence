@@ -1,8 +1,8 @@
 import { Mat4x4 } from "../utils/Mat4x4.js";
-import { Mesh } from "../graphics/Mesh.js"; // comp
-import { Buffer } from "../graphics/Buffer.js"; // comp
-import { VertexBuffer } from "../graphics/VertexBuffer.js"; // comp
-import { CollisionBox } from "./CollisionBox.js"; // comp
+import { Mesh } from "../graphics/Mesh.js";
+import { Buffer } from "../graphics/Buffer.js";
+import { VertexBuffer } from "../graphics/VertexBuffer.js";
+import { CollisionBox } from "./CollisionBox.js";
 
 export class Sphere {
     constructor (gl) {

@@ -18,7 +18,7 @@ def setObject(data, obstacles):
     obstacles.append(obj)
 
 class GameConsumer(AsyncWebsocketConsumer):
-    consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
+    consumers = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -58,17 +58,12 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.obstacles.append(ball.Box(30, 0.5))
             self.obstacles[1].movePos([0, -8, 0])
             backend_url = 'http://backend:8000/match/updatematchcustom/' + list(self.room_name.split('_'))[-1]
-            params= {
-                    'match_id': list(self.room_name.split('_'))[-1],
-            }
+            params= { 'match_id': list(self.room_name.split('_'))[-1] }
             response = requests.get(backend_url, params=params)
             if response.status_code == 200:
-                # 응답 데이터를 JSON 형식으로 변환
                 data = response.json()
                 for d in data['customs']:
                     setObject(d, self.obstacles)
-            else:
-                print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
 
         await self.send(text_data=json.dumps({
@@ -82,7 +77,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         self.task.cancel()
-        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
         if self.players == 1:
             del self.consumers[self.room_group_name]
             match_result = 2
@@ -100,7 +94,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def send_message(self):
         while self.message_loop:
-            # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -109,7 +102,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             'score2': self.b.point2,
             'is_active':self.b.is_active
             }))
-            # 초 대기
             if self.b.is_active == 0:
                 self.message_loop = False
             await asyncio.sleep(0.001)
@@ -153,7 +145,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             'score2': self.b.point2,
             'is_active' :self.b.is_active
             }))
-            # 초 대기
             await asyncio.sleep(0.001)
     
     async def receive(self, text_data):
@@ -164,19 +155,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self.players == None:
             if (player == 1 or player == 2):
                self.players = player
-            # else:
-            #     if (uuid == (self.room_name.split('_'))[1]):
-            #         self.players = 1
-            #     else: 
-            #         self.players = 2
         else:
-        #     if (uuid == (self.room_name.split('_'))[1]):
-        #         self.players = 1
-        #     else: 
-        #         self.players = 2
-        #     print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
-        # else:
-        #     if player == None
             player = int(player)
         for i in range(0, 2):
             if (message == 'up' and player == i + 1):
@@ -189,7 +168,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.paddles[i].dir[1] = 0
 
 class TGameConsumer(AsyncWebsocketConsumer):
-    consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
+    consumers = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -229,17 +208,12 @@ class TGameConsumer(AsyncWebsocketConsumer):
             self.obstacles.append(ball.Box(30, 0.5))
             self.obstacles[1].movePos([0, -8, 0])
             backend_url = 'http://backend:8000/match/updatetournamentcustom/' + list(self.room_name.split('_'))[0] + list(self.room_name.split('_'))[1] + list(self.room_name.split('_'))[-1]
-            params= {
-                    'match_id': list(self.room_name.split('_'))[-1],
-            }
+            params= { 'match_id': list(self.room_name.split('_'))[-1] }
             response = requests.get(backend_url, params=params)
             if response.status_code == 200:
-                # 응답 데이터를 JSON 형식으로 변환
                 data = response.json()
                 for d in data['customs']:
                     setObject(d, self.obstacles)
-            else:
-                print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
         
         await self.send(text_data=json.dumps({
@@ -272,7 +246,6 @@ class TGameConsumer(AsyncWebsocketConsumer):
 
     async def send_message(self):
         while self.message_loop:
-            # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -283,7 +256,6 @@ class TGameConsumer(AsyncWebsocketConsumer):
             }))
             if self.b.is_active == 0:
                 self.message_loop = False
-            # 초 대기
             await asyncio.sleep(0.001)
 
     async def game_update(self):
@@ -306,8 +278,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
                     'player2': list(self.room_name.split('_'))[1]
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
+                
             elif self.b.point2 == 5:
                 self.b.is_active = 0
                 backend_url = 'http://backend:8000/match/tournamentresult/' + list(self.room_name.split('_'))[-1]
@@ -318,8 +289,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
                     'player2': list(self.room_name.split('_'))[1]
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
+                
             if self.b.is_active == 0:
                 self.game_loop = False
             await self.send(json.dumps({
@@ -330,7 +300,6 @@ class TGameConsumer(AsyncWebsocketConsumer):
             'score2': self.b.point2,
             'is_active' :self.b.is_active
             }))
-            # 초 대기
             await asyncio.sleep(0.001)
     
     async def receive(self, text_data):
@@ -354,7 +323,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
                 self.paddles[i].dir[1] = 0
 
 class MultiGameConsumer(AsyncWebsocketConsumer):
-    consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
+    consumers = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -400,17 +369,12 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             self.obstacles.append(ball.Box(30, 0.5))
             self.obstacles[1].movePos([0, -8, 0])
             backend_url = 'http://backend:8000/match/updatemulticustom/' + list(self.room_name.split('_'))[-1]
-            params= {
-                    'match_id': list(self.room_name.split('_'))[-1],
-            }
+            params= { 'match_id': list(self.room_name.split('_'))[-1] }
             response = requests.get(backend_url, params=params)
             if response.status_code == 200:
-                # 응답 데이터를 JSON 형식으로 변환
                 data = response.json()
                 for d in data['customs']:
                     setObject(d, self.obstacles)
-            else:
-                print(f"Error: {response.status_code}")
             self.task = self.loop.create_task(self.game_update())
         
         await self.send(text_data=json.dumps({
@@ -426,7 +390,6 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         self.task.cancel()
-        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
         if self.players == 1 or self.players == 3:
             del self.consumers[self.room_group_name]
             match_result = 2
@@ -444,7 +407,6 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
 
     async def send_message(self):
         while self.message_loop:
-            # 클라이언트로 메시지 보내기
             await self.send(json.dumps({
             'ball_pos': self.b.pos,
             'paddle1_pos': self.p1.pos,
@@ -457,7 +419,6 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             }))
             if self.b.is_active == 0:
                 self.message_loop = False
-            # 초 대기
             await asyncio.sleep(0.001)
 
     async def game_update(self):
@@ -482,8 +443,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
                     'is_active': False,
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
+                
             elif self.b.point2 == 5:
                 self.b.is_active = 0
                 backend_url = 'http://backend:8000/match/multimatchresult/' + list(self.room_name.split('_'))[-1]
@@ -493,8 +453,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
                     'is_active': False,
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
+                
             if self.b.is_active == 0:
                 self.game_loop = False
             await self.send(json.dumps({
@@ -507,7 +466,6 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
             'score2': self.b.point2,
             'is_active' : self.b.is_active
             }))
-            # 초 대기
             await asyncio.sleep(0.001)
     
     async def receive(self, text_data):
@@ -518,19 +476,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         if self.players == None:
             if (player == 1 or player == 2 or player == 3 or player == 4):
                self.players = player
-            # else:
-            #     if (uuid == (self.room_name.split('_'))[1]):
-            #         self.players = 1
-            #     else: 
-            #         self.players = 2
         else:
-        #     if (uuid == (self.room_name.split('_'))[1]):
-        #         self.players = 1
-        #     else: 
-        #         self.players = 2
-        #     print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
-        # else:
-        #     if player == None
             player = int(player)
         for i in range(0, 4):
             if (message == 'up' and player == i + 1):

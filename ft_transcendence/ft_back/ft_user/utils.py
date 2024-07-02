@@ -1,16 +1,4 @@
-from django.contrib.auth import get_user_model
-from django.contrib.sessions.models import Session
-from django.utils import timezone
 import re
-
-def get_online_users():
-    MyUser = get_user_model()
-    active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
-    user_id_list = []
-    for session in active_sessions:
-        data = session.get_decoded()
-        user_id_list.append(data.get('_auth_user_id', None))
-    return MyUser.objects.filter(user_id__in=user_id_list)
 
 def validate_input(input):
     prohibited_words = ['admin']

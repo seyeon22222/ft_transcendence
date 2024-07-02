@@ -3,7 +3,6 @@ export function matchLobby_html() {
         <div class="p-10 lg:p-20 text-center">
             <h1 class="text-3xl lg:text-6xl text-white" data-translate="tournament_list">토너먼트 매치</h1>
             <div class="w-full flex flex-wrap item-center" id="tournament_list">
-                <!-- 여기에 각 tournament 추가 -->
             </div>
             <div>
                 <br>
@@ -19,7 +18,7 @@ export function matchLobby_html() {
         <div class="p-10 lg:p-20 text-center">
             <h1 class="text-3xl lg:text-6xl text-white" data-translate="two_match_list">2:2 매치</h1>
             <div class="w-full flex flex-wrap item-center" id="multiMatch_list">
-                <!-- 여기에 각 2:2 List 추가 -->
+
             </div>
         </div>
 
@@ -33,7 +32,7 @@ export function matchLobby_html() {
         <div class="p-10 lg:p-20 text-center">
             <h1 class="text-3xl lg:text-6xl text-white" data-translate="one_match_list">1:1 매치</h1>
             <div class="w-full flex flex-wrap item-center" id="match_list">
-                <!-- 여기에 각 match 추가 -->
+
             </div>
         </div>
 

@@ -2,7 +2,6 @@ import { initializeWebsocket, check_socket } from "../../base/totalSocket.js";
 import { showModal } from "../utilities.js";
 
 export function login_js() {
-  // set style
   const style = document.getElementById("style");
   style.innerHTML = `
     body {
@@ -31,7 +30,6 @@ export function login_js() {
 	setLanguage("login");
 	langNow = document.getElementById('languageSelector').value;
 	
-
 	try {
     fetch("user/check_login", {
       method: "GET",
@@ -61,18 +59,16 @@ export function login_js() {
             });
 
             if (response.ok) {
-				// const data = await response.json();
-				const modal = document.querySelector('.modal');
-				showModal('login', 'noti');
-				check_socket();
-				initializeWebsocket();
-				modal.addEventListener('hidden.bs.modal', function () {
-					location.href = "/#";
-				});
+            const modal = document.querySelector('.modal');
+            showModal('login', 'noti');
+            check_socket();
+            initializeWebsocket();
+            modal.addEventListener('hidden.bs.modal', function () {
+              location.href = "/#";
+            });
             } else {
-            	// const error = await response.json();
-				showModal('login', 'err');
-			}
+				      showModal('login', 'err');
+			      }
           } catch (error) {
             console.error("로그인 요청 중 오류 발생 : ", error);
           }

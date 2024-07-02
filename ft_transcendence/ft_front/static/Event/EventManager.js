@@ -1,5 +1,5 @@
-import { MouseEvent } from "./MouseEvent.js"; // comp
-import { KeyboardEvent } from "./KeyboardEvent.js"; // comp
+import { MouseEvent } from "./MouseEvent.js";
+import { KeyboardEvent } from "./KeyboardEvent.js";
 import { ScreenEvent } from "./ScreenEvent.js";
 
 export class EventManager {

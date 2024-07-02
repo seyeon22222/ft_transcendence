@@ -5,7 +5,6 @@ import { check_socket } from '../../base/totalSocket.js';
 import { delete_back_show, showModal } from '../utilities.js';
 
 let i_socket;
-let user_lang;
 
 export async function home_js() {
     if (i_socket) {
@@ -14,12 +13,11 @@ export async function home_js() {
     }
     delete_back_show();
     try {
-        // set css style
         const style = document.getElementById("style");
         style.innerHTML = home_style_html();
 
         const check = await check_login();
-        if (check === true) { // login
+        if (check === true) {
             const container = document.getElementById("buttons-container");
             container.innerHTML = home_login_html();
 
@@ -46,8 +44,6 @@ function matchmaking_button_eventhandler(button) {
     button.addEventListener('click', async function() {
         try {
             const csrftoken = Cookies.get('csrftoken');
-            
-            // 현재 유저의 정보를 API를 통해 받아옴
             const response = await fetch('user/info', {
                 method: 'GET',
                 headers: {
@@ -85,8 +81,6 @@ function mulmatchmaking_button_eventhandler(button) {
     button.addEventListener('click', async function() {
         try {
             const csrftoken = Cookies.get('csrftoken');
-            
-            // 현재 유저의 정보를 API를 통해 받아옴
             const response = await fetch('user/info', {
                 method: 'GET',
                 headers: {
@@ -120,7 +114,6 @@ function mulmatchmaking_button_eventhandler(button) {
     });
 }
 
-// logout 버튼 클릭시 이벤트 등록, 로그아웃 후 홈 화면 새롭게 렌더링
 function logout_button_eventhandler(button) {
     button.addEventListener('click', async function() {
         try {
@@ -155,7 +148,6 @@ function logout_button_eventhandler(button) {
     })
 }
 
-// home 화면에 login, signup 버튼을 추가
 function home_logout_html() {
     return `
         <a href="/#login" class="btn btn-primary" data-translate="login">로그인</a>
@@ -163,7 +155,6 @@ function home_logout_html() {
     `;
 }
 
-// home 화면에 profile, chatting, tournament, logout 버튼을 추가
 function home_login_html() {
     return `
         <a href="/#profile" class="btn btn-primary" data-translate="my_profile">내 프로필</a>
@@ -175,7 +166,6 @@ function home_login_html() {
     `;
 }
 
-// home 화면의 css style을 추가
 function home_style_html() {
     return `
     body {

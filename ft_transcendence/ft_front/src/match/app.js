@@ -16,9 +16,6 @@ export async function match_view(hash) {
     const Button = document.getElementById("button_container");
     match_render(data);
     makeButton(Button, matchId, data, player_data);
-  } else {
-    // const error = await response.json();
-    // alert(error);
   }
 }
 
@@ -36,8 +33,8 @@ function makeButton(Button, matchId, data, player_data) {
       Button.appendChild(startButton);
     
     startButton.addEventListener("click", (event) => start_match(event, matchId, data));
-  } else {
-    const existingButton = document.getElementById("match_start_button");
+    } else {
+      const existingButton = document.getElementById("match_start_button");
       if (existingButton) {
           existingButton.removeEventListener("click", start_match);
           Button.removeChild(existingButton);
@@ -57,11 +54,6 @@ async function start_match(event, matchId, data) {
       credentials: 'include',
       body: JSON.stringify({ player1: data.player1, player2: data.player2, id : matchId, is_flag : false}),
   });
-  if (response.ok) {
-      console.log(`${data.player1_username}와 ${data.player2_username}에게 게임 초대가 전송되었습니다.`);
-  } else {
-    //   alert('게임 초대 전송에 실패했습니다.');
-  }
 }
 
 function match_render(data) {

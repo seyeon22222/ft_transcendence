@@ -1,7 +1,6 @@
 import { EventManager } from "../../static/Event/EventManager.js";
 import { Setting } from "../../static/graphics/Setting.js";
 import { ObjectManager } from "../../static/phong/ObjectManager.js";
-// paddle_1 -> objects[1], paddle_2 -> objects[2], ball -> objects[0], up wall -> objects[3], down wall -> objects[4]
 import { delete_back_show } from "../utilities.js";
 
 class Main {
@@ -12,7 +11,6 @@ class Main {
 
 	static async webfunc(get_hash, match_id) {
 		let flag = 1;
-		// WebSocket 연결 시도
 		let ws = new WebSocket(
 			"wss://" + window.location.host + "/ws/tgame/" + get_hash + "/"
 		);
@@ -25,21 +23,12 @@ class Main {
 
 		const Fetch = async () => {
 			const csrftoken = Cookies.get("csrftoken");
-			let hash = window.location.hash.slice(1); // "#customt/..."의 '#'을 제거
-			console.log(hash);
-
-			// 해시 값을 슬래시(/)를 기준으로 먼저 분할합니다.
-			let segments = hash.split('/'); // ["customt", "3e4096e9-caac-4c04-9055-91b65d963517_0f6c78a4-eb60-4469-aa97-7da2a75a6269_138"]
-
-			// UUID 부분을 언더스코어(_)로 분할합니다.
-			let uuids = segments[1].split('_'); // ["3e4096e9-caac-4c04-9055-91b65d963517", "0f6c78a4-eb60-4469-aa97-7da2a75a6269", "138"]
-			
-			// player1과 player2의 UUID를 추출합니다.
+			let hash = window.location.hash.slice(1);
+			let segments = hash.split('/');
+			let uuids = segments[1].split('_');
 			let player1 = uuids[0];
 			let player2 = uuids[1];
 			
-			console.log("Player 1 UUID:", player1);
-			console.log("Player 2 UUID:", player2);
 			const response = await fetch(`/match/updatetournamentcustom/${player1}${player2}${match_id}`, {
 			method: "GET",
 			headers: {
@@ -65,12 +54,10 @@ class Main {
 		function sleep(ms) {
 			const start = new Date().getTime();
 			while (new Date().getTime() < start + ms) {
-			// 아무것도 하지 않고 대기
 			}
 		}
 
 		window.addEventListener("popstate", function () {
-			// WebSocket 연결 닫기
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
 			ws.close();
 			sleep(1000);
@@ -91,7 +78,6 @@ class Main {
 		}
 
 		ws.onclose = () => {
-			console.log("ws close : " + get_hash);
 		};
 
 		ws.onmessage = async function (e) {
@@ -116,7 +102,6 @@ class Main {
 			let is_active = data["is_active"];
 
 			if (score1 == 5 || score2 == 5) {
-				let get_list_hash = get_hash.split("_");
 				is_active = 0;
 			} 
 			else {
@@ -132,7 +117,6 @@ class Main {
 			if (is_active == 0) {
 				let get_list_hash = get_hash.split("_");
 				let match_id = get_list_hash[get_list_hash.length - 1];
-				console.log(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`);
 				const csrftoken_t = Cookies.get("csrftoken");
 				const response_t = await fetch(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
 					method: "GET",
@@ -145,7 +129,6 @@ class Main {
 				if (response_t.ok) {
 					let data = await response_t.json();
 					let name_t = data.name;
-					console.log("name_t", name_t);
 					await closeWebSocket();
 					location.href = `/#tournament/${name_t}`;
 				}
@@ -181,13 +164,11 @@ export async function game_t_js(hash) {
 	delete_back_show();
 	const get_hash = hash.slice(1);
 	let flag = 0;
-	let get_list_hash = get_hash.split("_"); //get_hash '_'를 기준으로 split
-	let match_id = get_list_hash[get_list_hash.length - 1]; //
+	let get_list_hash = get_hash.split("_");
+	let match_id = get_list_hash[get_list_hash.length - 1];
 
 	const csrftoken = Cookies.get("csrftoken");
-	console.log("t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}", `/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`);
 	const response = await fetch(`/match/t_matchview/${get_list_hash[0]}${get_list_hash[1]}${match_id}`, {
-	//match serializer 반환값 가져옴
 	method: "GET",
 	headers: {
 		"Content-Type": "application/json",
@@ -197,13 +178,10 @@ export async function game_t_js(hash) {
 	});
 	if (response.ok) {
 		let data = await response.json();
-		console.log(data.player1_uuid, "===", get_list_hash[0]);
-		console.log(data.player2_uuid, "===", get_list_hash[1]);
-		console.log(data.match_result, "===", "null");
 		if (
-			data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
+			data.player1_uuid === get_list_hash[0] &&
 			data.player2_uuid === get_list_hash[1] &&
-			data.match_result == '' //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
+			data.match_result == ''
 		) {
 			const response_name = await fetch("user/info", {
 			method: "GET",
@@ -218,9 +196,9 @@ export async function game_t_js(hash) {
 				let get_list_hash = get_hash.split("_");
 				for (let i = 0; i < get_list_hash.length - 1; i++) {
 					if (get_list_hash[i] == data[0].user_id) {
-					window.uuid = data[0].user_id;
-					window.players = i + 1;
-					flag = 1;
+						window.uuid = data[0].user_id;
+						window.players = i + 1;
+						flag = 1;
 					}
 				}
 			if (flag == 1) {
@@ -231,7 +209,7 @@ export async function game_t_js(hash) {
 			} else {
 				location.href = "/#";
 				const error = await response_name.json();
-				console.log("user info API 요청 실패", error);
+				console.error("user info API 요청 실패", error);
 			}
 		} 
 		else {
@@ -241,6 +219,6 @@ export async function game_t_js(hash) {
 	else {
 		location.href = "/#";
 		const error = await response.json();
-		console.log("match API 요청 실패", error);
+		console.error("match API 요청 실패", error);
 	}
 }

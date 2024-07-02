@@ -1,6 +1,6 @@
-import { Pipeline } from "./Pipeline.js"; // comp
-import { Cam } from "../phong/Cam.js"; // comp
-import { DefaultFramebuffer } from "./DefaultFramebuffer.js"; // comp
+import { Pipeline } from "./Pipeline.js";
+import { Cam } from "../phong/Cam.js";
+import { DefaultFramebuffer } from "./DefaultFramebuffer.js";
 import { ObjectManager } from "../phong/ObjectManager.js";
 
 export class Setting {

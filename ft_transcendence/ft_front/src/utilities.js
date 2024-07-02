@@ -1,8 +1,3 @@
-/*
-    check whether current user is login or not
-    if login, return true. else, return false.
-*/
-
 export async function check_login() {
   try {
     const csrftoken = Cookies.get('csrftoken');
@@ -17,7 +12,6 @@ export async function check_login() {
     if (response.status === 301) {
       return false;
     }
-    // initializeWebsocket();
     return true;
   } catch (error) {
     console.error('로그인 여부 확인 중 오류 발생 : ', error);
@@ -25,10 +19,7 @@ export async function check_login() {
 }
 
 export function change_date(matchDateStr) {
-  // 문자열을 Date 객체로 변환
   const matchDate = new Date(matchDateStr);
-
-  // 연도, 월, 일, 시간, 분을 추출
   const year = matchDate.getFullYear();
   const month = String(matchDate.getMonth() + 1).padStart(2, '0');
   const day = String(matchDate.getDate()).padStart(2, '0');
@@ -76,6 +67,5 @@ export function showModal(category, body) {
 	const modalBody = document.querySelector('.modal .modal-body p');
 	modalBody.innerText = window.lang[langNow][category][body];
 	modalBody.setAttribute('data-translate', body);
-	// console.log(window.lang[langNow][category][body]);
 	modal.show();
 }

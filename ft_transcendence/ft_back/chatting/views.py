@@ -96,8 +96,6 @@ class PrivateRoomDetailView(APIView):
         return Response({'room': private_room_serializer.data, 'messages': message_serializer.data})
 
     def post(self, request):
-        print(request)
-        print(request.data)
         username = request.data.get('username')
         slug = request.data.get('slug')
 
@@ -121,8 +119,6 @@ class PrivateRoomUserListView(APIView):
         else:
             return Response(status=404)
 
-
-    
 class PrivateRoomListView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -5,13 +5,11 @@ export function chatLobby_html() {
             <div class="list_div">
                 <h1 class="text-3xl lg:text-6xl text-white" data-translate="room_list">채팅방 목록</h1>
                 <div class="w-full flex flex-wrap item-center" id="room_list">
-                    <!-- 여기에 각 room 추가 -->
                 </div>
             </div>
             <div class="list_div">
                 <h1 class="text-3xl lg:text-6xl text-white" data-translate="user_list">유저 목록</h1>
                 <div class="w-full flex flex-wrap item-center" id="user_list">
-                    <!-- 여기에 각 user link 추가 -->
                 </div>
             </div>
         </div>

@@ -1,7 +1,6 @@
 import { formatDateTime } from "../info/info_func.js";
 import { change_date, showModal } from "../utilities.js";
 
-// 유저 프로필에서 변경사항 저장 버튼 이벤트 핸들러 등록
 export async function dataChange(changeData, csrftoken) {
   changeData.addEventListener("click", async function (event) {
     event.preventDefault();
@@ -14,7 +13,6 @@ export async function dataChange(changeData, csrftoken) {
       );
       formData.append("email", document.getElementById("email_input").value);
 
-      // 새로운 이미지가 등록됬을 경우 해당 이미지로, 없으면 기존 이미지 사용
       if (document.getElementById("new_image_input").files[0]) {
         formData.append(
           "profile_picture",
@@ -27,7 +25,6 @@ export async function dataChange(changeData, csrftoken) {
         );
       }
 
-      // API 요청 - 유저 정보 변경
       const response = await fetch("user/change_info", {
         method: "POST",
         headers: {
@@ -36,31 +33,27 @@ export async function dataChange(changeData, csrftoken) {
         body: formData,
       });
 
-      // 변경 성공시, 홈 화면으로 이동
       if (response.ok) {
-		const modal = document.querySelector('.modal');
-		showModal('profile', 'change_noti');
-		modal.addEventListener('hidden.bs.modal', function () {
-			location.href = "/#";
-		});
+      const modal = document.querySelector('.modal');
+      showModal('profile', 'change_noti');
+      modal.addEventListener('hidden.bs.modal', function () {
+			  location.href = "/#";
+		  });
       } else {
-		showModal('profile', 'change_err');
+		    showModal('profile', 'change_err');
       }
     } catch (error) {
-      console.log("Profile 변경 중 오류 발생 : ", error);
+      console.error("Profile 변경 중 오류 발생 : ", error);
     }
   });
 }
 
-// 유저 프로필에서 이미지 불러와 HTML에 렌더링
 export async function image_view(data, csrftoken) {
   const imageContainer = document.getElementById("profile-image");
   imageContainer.innerHTML = "";
 
-  // 유저에게 등록된 이미지가 있다면
   if (data[0].profile_picture) {
     const img = document.createElement("img");
-    // API 요청 - 유저 프로필 이미지 요청
     const response = await fetch(data[0].profile_picture, {
       method: "GET",
       headers: {
@@ -79,7 +72,6 @@ export async function image_view(data, csrftoken) {
   }
 }
 
-// 유저 프로필에서 게임 스탯 불러와 HTML에 렌더링
 export function game_stat_view(data) {
 	
   const gamestatus = document.getElementById("game_status");
@@ -109,7 +101,6 @@ export function game_stat_view(data) {
   statElements.forEach((element) => gamestatus.appendChild(element));
 }
 
-// 유저 프로필에서 매치 정보 불러와 HTML에 렌더링
 export function match_info_view(data) {
   const match_info = document.getElementById("match_info");
 
@@ -124,7 +115,6 @@ export function match_info_view(data) {
 	else
 		element.innerHTML = `<span data-translate=${keyword[label]}>${label}</span><span>: ${value}</span>`;
 	return element;
-	//Win Lose
   };
 
   const matchData = data[0].match_info[0] || {
@@ -144,7 +134,6 @@ export function match_info_view(data) {
   infoElements.forEach((element) => match_info.appendChild(element));
 }
 
-// 1:1 매치 수락 또는 거절에 대한 이벤트 핸들러 등록
 async function respondToMatch(matchId, response, self_data, csrftoken) {
   const now = new Date();
   const startDate = formatDateTime(new Date(now.getTime() + 300));
@@ -155,7 +144,6 @@ async function respondToMatch(matchId, response, self_data, csrftoken) {
     start_date: startDate,
   };
 
-  // API 요청 - 매치 정보 확인 후 수락 / 거절
   const responseFetch = await fetch(`/match/response/${matchId}`, {
     method: "POST",
     headers: {
@@ -167,20 +155,17 @@ async function respondToMatch(matchId, response, self_data, csrftoken) {
 
   if (responseFetch.ok) {
     const data = await responseFetch.json();
-    console.log(`Match ${response}ed:`, data);
-    fetchMatchList(self_data, csrftoken); // 목록을 새로 고침
+    fetchMatchList(self_data, csrftoken);
   } else {
     const error = await responseFetch.json();
-    console.log(error);
+    console.error(error);
   }
 }
 
-// 자신이 신청한 걸 제외한 1:1 매치 리스트와 수락/거절 버튼 및 이벤트핸들러 등록
 export async function match_list_view(self_data, match_data, csrftoken) {
   const matchListContainer = document.getElementById("1:1_Match_List");
   matchListContainer.innerHTML = "";
   match_data.forEach((match) => {
-    // 자기 자신이 신청한 1:1 매치 제외한 리스트에 대해, html에 삽입
     if (
       match.status === "pending" &&
       self_data[0].user_id !== match.requester
@@ -196,14 +181,12 @@ export async function match_list_view(self_data, match_data, csrftoken) {
     }
   });
 
-  // 모든 1:1 매치에 대해 수락 시 이벤트 핸들러 등록
   document.querySelectorAll(".accept-button").forEach((button) => {
     button.addEventListener("click", () =>
       respondToMatch(button.dataset.matchId, "accept", self_data, csrftoken)
     );
   });
 
-  // 모든 1:1 매치에 대해 거절 시 이벤트 핸들러 등록
   document.querySelectorAll(".reject-button").forEach((button) => {
     button.addEventListener("click", () =>
       respondToMatch(button.dataset.matchId, "reject", self_data, csrftoken)
@@ -211,9 +194,7 @@ export async function match_list_view(self_data, match_data, csrftoken) {
   });
 }
 
-// 유저 프로필에서 일대일 매치 리스트 목록을 불러와 HTML에 렌더링
 export async function fetchMatchList(user_data, csrftoken) {
-  // API 요청 - 현재 유저가 참여한 모든 매치 정보를 요청
   const response = await fetch("match/selfview", {
     method: "GET",
     headers: {
@@ -225,10 +206,9 @@ export async function fetchMatchList(user_data, csrftoken) {
 
   if (response.ok) {
     const match_data = await response.json();
-    // 1:1 매치 리스트 목록을 HTML에 렌더링, 수락/거절 이벤트핸들러 등록
     match_list_view(user_data, match_data, csrftoken);
   } else {
     const error = await response.json();
-    console.log(error);
+    console.error(error);
   }
 }

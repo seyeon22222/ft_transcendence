@@ -11,7 +11,7 @@ export async function select_image_view(data) {
         headers: {
             'X-CSRFToken': csrftoken,
         },
-        credentials: 'include',
+        	credentials: 'include',
         });
         if (response.ok) {
         const imageBlob = await response.blob();

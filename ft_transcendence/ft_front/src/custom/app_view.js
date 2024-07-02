@@ -1,4 +1,4 @@
-import { Setting } from "../../static/graphics/Setting.js"; // comp
+import { Setting } from "../../static/graphics/Setting.js";
 import { EventManager } from "../../static/Event/EventManager.js";
 import { MouseEvent } from "../../static/Event/MouseEvent.js";
 import { ObjectManager } from "../../static/phong/ObjectManager.js";
@@ -19,7 +19,6 @@ export class View {
 		let ws = new WebSocket("wss://" + window.location.host + "/ws/custom/" + hash + "/");
 		
 		window.addEventListener("popstate", function () {
-			// WebSocket 연결 닫기
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
 				ws.close();
 				ws = null;
@@ -52,7 +51,6 @@ export class View {
 				});
 				if (response.ok) {
 					let data = await response.json();
-					console.log(data);
 					for (var i = 0; i < data.customs.length; i++) {
 						let color = [data.customs[i].r / 255, data.customs[i].g / 255, data.customs[i].b / 255, 1];
 						let pos = [data.customs[i].x, data.customs[i].y, 0, 1];
