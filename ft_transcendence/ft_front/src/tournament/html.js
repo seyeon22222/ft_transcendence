@@ -153,15 +153,31 @@ export function tournament_html() {
                 </div>
             </div>
 
-            <div>
-                <input type="text" id="nickname_input" placeholder="별칭을 입력하세요">
-                <button type="button" id="tournament_button">토너먼트 신청</button>
-            </div>
+
+            <form class="mb-5" id="apply_form">
+                    <input type="text" data-translate-placeholder="nick_input" placeholder="별칭을 입력하세요" id="nickname_input" required>
+                    <button type="submit" id="tournament_button" data-translate="apply">토너먼트 신청</button>
+            </form>
 
             <div id="button_container">
-                <button type="button" id="tournament_start">토너먼트 시작</button>
+                <button type="button" id="tournament_start" data-translate="start">토너먼트 시작</button>
             </div>
 
         </div>
+		<div class="modal_container" id="modal_container">
+			<div class="modal" tabindex="-1" style="display: none; color: black;">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title"></h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
+						</div>
+						<div class="modal-body">
+							<p></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
     `;
 }

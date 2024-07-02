@@ -1,32 +1,19 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .serializers import (
-    UserSerializer,
-)
-    # FriendSerializer,
-    # FriendSerializer,
+from .serializers import UserSerializer
 from .models import MyUser
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from ft_user.models import MyUser, Block
-from ft_user.models import MyUser, Block
 from ft_user.forms import signForm
-from django.views.generic import View
-from django.views.generic import View
-from django.http import JsonResponse
-import base64
 import os
 from django.http import HttpResponse
 from django.core.files.storage import default_storage
 from .utils import get_online_users, validate_input, validate_password, validate_email
 
-# Create your views here.
-
 class UserViewSet(APIView):
     permission_classes = [IsAuthenticated]
-
 
     def get_queryset(self):
         return MyUser.objects.filter(user_id=self.request.user.user_id)
@@ -61,10 +48,6 @@ class SelectUser(APIView):
 #         serializer.is_vaild(raise_exception=True)
 #         friend_request = serializer.save()
 #         return Response({"message" : "친구 신청을 보냈습니다"}, status = status.HTTP_201_CREATED)
-    def get(self, request):
-        queryset = MyUser.objects.all()
-        serializer = UserSerializer(queryset, many=True)
-        return Response(serializer.data)
 
 # class FriendView(APIView):
 #     permission_classes = [IsAuthenticated]
@@ -160,7 +143,6 @@ class SelectUser(APIView):
 
 class User_login(APIView):
 
-
     queryset = MyUser.objects.all()
     serializer_class = UserSerializer
     
@@ -168,7 +150,6 @@ class User_login(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
-        # need to check
         check, message = validate_input(username)
         if not check:
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
@@ -177,24 +158,18 @@ class User_login(APIView):
         if not check:
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
 
-        # authenticate user
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            print("로그인 성공")
             login(request, user)
             return Response({'message': "로그인 성공"}, status=status.HTTP_200_OK)
         else:
-            print("로그인 실패")
             return Response({'message': "로그인 실패"}, status=status.HTTP_400_BAD_REQUEST)
 
 class Sign_up(APIView):
 
-
     def post(self, request):
-        form = signForm(request.POST, request.FILES)  # Include request.FILES for handling file uploads
-
-        form = signForm(request.POST, request.FILES)  # Include request.FILES for handling file uploads
+        form = signForm(request.POST, request.FILES)
 
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -202,7 +177,6 @@ class Sign_up(APIView):
             email = form.cleaned_data['email']
             profile_picture = request.FILES.get('profile_picture')
 
-            # validate user input
             valid, message = validate_input(username)
             if not valid:
                 return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
@@ -215,7 +189,6 @@ class Sign_up(APIView):
             if not valid:
                 return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
 
-            # create user
             user = MyUser.objects.create_user(username, email=email, password=password)
             if profile_picture:
                 user.profile_picture = profile_picture
@@ -223,14 +196,10 @@ class Sign_up(APIView):
                 user.profile_picture = profile_picture
             user.save()
             return Response({'message': "유저 생성 완료"}, status=status.HTTP_200_OK)
-            return Response({'message': "유저 생성 완료"}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': "유저 생성 실패"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({'message': "유저 생성 실패"}, status=status.HTTP_400_BAD_REQUEST)
 
 class Logout(APIView):
-    permission_classes = [IsAuthenticated]
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -253,25 +222,9 @@ class UserImage(APIView):
         with open(image_path, 'rb') as f:
             image_data = f.read()
         return HttpResponse(image_data, content_type="image/jpeg")
- 
-# class ProfileImageUploadView(View):
-#     def post(self, request):
-#         profile_picture = request.FILES.get('profile_picture')
-#         if profile_picture:
-#             filename = f"{request.user.id}_{profile_picture.name}"
-#             file_path = os.path.join('profile_pictures', filename)
-#             with open(file_path, 'wb+') as f:
-#                 for chunk in profile_picture.chunks():
-#                     f.write(chunk)
-#             return JsonResponse({'filename': filename})
-#         else:
-#             return JsonResponse({'error': 'No image file provided'}, status=400)
-        
+       
 class UserInfoChange(APIView):
     permission_classes = [IsAuthenticated]
-
-    # def get_queryset(self):
-    #     return MyUser.objects.filter(user_id=self.request.user.user_id)
 
     def post(self, request):
         user = request.user
@@ -290,7 +243,6 @@ class UserInfoChange(APIView):
                 user.username = username
 
             if email:
-                # 들어온 정보가 이메일 형식인지 확인
                 check, message = validate_email(email)
                 if not check:
                     return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
@@ -306,65 +258,6 @@ class UserInfoChange(APIView):
         else:
             return Response({'message': '유저 정보가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-# #seycheon_block
-# class UserBlockRequest(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         apply_user_id = request.data.get('apply_user')
-#         accept_user_id = request.data.get('accept_user')
-
-#         try:
-#             apply_user = MyUser.objects.get(username=apply_user_id)
-#             accept_user = MyUser.objects.get(username=accept_user_id)
-#         except MyUser.DoesNotExist:
-#             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
-        
-#         if apply_user.block_list.filter(username=accept_user_id).exists():
-#             return Response({'message': 'User already in black list'}, status=status.HTTP_200_OK)
-        
-#         apply_user.block_list.add(accept_user)
-#         return Response({'message': 'User added to black list'}, status=status.HTTP_200_OK)
-    
-
-# #seycheon_block
-# class UserBlockReleaseRequest(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         apply_user_id = request.data.get('apply_user')
-#         accept_user_id = request.data.get('accept_user')
-
-#         try:
-#             apply_user = MyUser.objects.get(username=apply_user_id)
-#             accept_user = MyUser.objects.get(username=accept_user_id)
-#         except MyUser.DoesNotExist:
-#             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
-        
-#         if apply_user.block_list.filter(username=accept_user_id).exists():
-#             apply_user.block_list.remove(accept_user)
-            
-#         return Response({'message': 'User added to black list'}, status=status.HTTP_200_OK)
-
-# #seycheon_block
-# class UserBlockCheckRequest(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         apply_user_id = request.data.get('apply_user')
-#         accept_user_id = request.data.get('accept_user')
-
-#         try:
-#             apply_user = MyUser.objects.get(username=apply_user_id)
-#             accept_user = MyUser.objects.get(username=accept_user_id)
-#         except MyUser.DoesNotExist:
-#             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         if apply_user.block_list.filter(username=accept_user_id).exists() or accept_user.block_list.filter(username=apply_user_id).exists():
-#             return Response({'error': 'One of the users has blocked the other'}, status=301) # 400 or 404를 하면 콘솔창에 에러가 발생했다고 나와서 임시로 상태 바꿈
-
-#         return Response({'message': 'Users are not blocking each other'}, status=status.HTTP_200_OK)
-
 class UserBlockRequest(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -379,7 +272,7 @@ class UserBlockRequest(APIView):
             return Response({'error': 'Invalid user IDs'}, status=status.HTTP_400_BAD_REQUEST)
         
         if Block.objects.filter(blocker=apply_user, blocked=accept_user).exists():
-            return Response({'message': 'User already in block list'}, status=status.HTTP_200_OK)
+            return Response({'message': 'User already in block list'}, status=status.HTTP_400_BAD_REQUEST)
         
         Block.objects.create(blocker=apply_user, blocked=accept_user)
         return Response({'message': 'User added to block list'}, status=status.HTTP_200_OK)

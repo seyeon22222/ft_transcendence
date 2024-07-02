@@ -35,5 +35,47 @@ export function change_date(matchDateStr) {
   const hour = String(matchDate.getHours()).padStart(2, '0');
   const minute = String(matchDate.getMinutes()).padStart(2, '0');
 
-  return `${year}년 ${month}월 ${day}일 ${hour}시 ${minute}분`;
+  return `${year}.${month}.${day} ${hour}:${minute}`;
+}
+
+export async function check_language() {
+	if (await check_login() === true) {
+		let data;
+		const csrftoken = Cookies.get('csrftoken');
+		const lang_res = await fetch(`user/language`, {
+			method : 'GET',
+			headers : {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken,
+			},
+			credentials: 'include',
+		});
+
+		if (lang_res.ok) {
+			data = await lang_res.json();
+			return data[0].language;
+		}
+	}
+	return document.getElementById('languageSelector').value;
+}
+
+export function delete_back_show() {
+	const modalBack = document.querySelector('.modal-backdrop');
+	if (modalBack) {
+		modalBack.classList.remove('modal-backdrop');
+	}
+	const bodyElement = document.querySelector('body');
+	bodyElement.classList.remove('modal-open');
+	bodyElement.style.overflow = '';
+	bodyElement.style.paddingRight = '';
+}
+
+export function showModal(category, body) {
+	const langNow = document.getElementById("languageSelector").value;
+	const modal = new bootstrap.Modal(document.querySelector('.modal'));
+	const modalBody = document.querySelector('.modal .modal-body p');
+	modalBody.innerText = window.lang[langNow][category][body];
+	modalBody.setAttribute('data-translate', body);
+	// console.log(window.lang[langNow][category][body]);
+	modal.show();
 }

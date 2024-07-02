@@ -1,6 +1,6 @@
 import router from "../../base/router.js"
 import { formatDateTime } from "../info/info_func.js";
-import { check_login } from "../utilities.js"
+import { check_login, showModal } from "../utilities.js"
 
 export async function matchLobby_view() {
 
@@ -13,6 +13,7 @@ export async function matchLobby_view() {
 
     let data;
     try {
+		setLanguage("matchlobby");
         const container = document.getElementById("tournament_list");
         const csrftoken = Cookies.get('csrftoken');
         const response = await fetch('match/list', {
@@ -64,6 +65,8 @@ export async function matchLobby_view() {
             });
         }
 
+
+		// 1:1 매치 리스트 출력 부분
         const matchContainer = document.getElementById("match_list");
         const matchcsrftoken = Cookies.get('csrftoken');
         const matchresponse = await fetch('match/matchview', {
@@ -136,55 +139,18 @@ export async function matchLobby_view() {
 
             if (res.ok) {
                 const data = await res.json();
-                alert(`tournament ${data.name} is created!`);
-                router();
+				const modal = document.querySelector('.modal');
+				const newModal = new bootstrap.Modal(modal);
+				const modalBody = document.querySelector('.modal .modal-body p');
+				modalBody.innerHTML = `<span>'${data.name}' </span><span data-translate="tournament_create">${window.lang[langNow].matchlobby.tournament_create}</span>`;
+				newModal.show();
+				modal.addEventListener('hidden.bs.modal', function () {
+					router();
+				});
             } else {
                 const data = await res.json();
-                alert(data.error);
-            }
-        })
-
-        const multiCreateForm = document.getElementById("multiMatch_form");
-        multiCreateForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            let data;
-            const csrftoken = Cookies.get('csrftoken');
-            const response_t = await fetch('user/info', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken,
-                },
-                credentials: 'include',
-            });
-            if (response_t.ok) {
-                data = await response_t.json();
-            } else {
-                const error = await response_t.json();
-                console.error('API 요청 실패', error);
-            }
-
-            const multiMatch_name = document.getElementById("multiMatch_name").value;
-            const name = data[0].user_id;
-            const formData = new FormData();
-            formData.append('multiMatch', multiMatch_name);
-            formData.append('username', name);
-            
-            const m_res = await fetch('match/multimatchList', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                },
-                body: formData
-            });
-
-            if (m_res.ok) {
-                const data = await m_res.json();
-                alert(`2:2 Match ${data.name} is created!`);
-                router();
-            } else {
-                const data = await m_res.json();
-                alert(data.error);
+                // alert(data.error);
+				showModal('matchlobby', 'create_err');
             }
         })
     } catch(error) {

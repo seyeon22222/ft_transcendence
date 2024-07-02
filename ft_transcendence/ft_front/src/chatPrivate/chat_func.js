@@ -1,3 +1,5 @@
+import { showModal } from "../utilities.js";
+
 export async function recordMessages(hash) {
   const slug = hash.slice(1);
   let message_data;
@@ -38,11 +40,15 @@ export async function recordMessages(hash) {
     body: JSON.stringify(bodyData),
   });
 
-  console.log("test for response!!!");
+  // console.log("test for response!!!");
 
   if (!response.ok) {
-    alert("Your are not allowed to see this private message channel");
-    location.href = `/#chatlobby`;
+    // alert("Your are not allowed to see this private message channel");
+	const modal = document.querySelector('.modal');
+	showModal('chatprivate', 'notallow_err');
+	modal.addEventListener('hidden.bs.modal', function () {
+		location.href = `/#chatlobby`;
+	});
   }
 
   // get previous messages
@@ -100,9 +106,13 @@ export async function recordMessages(hash) {
       console.error("Message data is not an array:", message_data);
     }
   } else {
-    const error = await messageResponse.json();
-    console.error("API error", error);
-    alert("채팅방에 대한 잘못된 접근입니다");
-    location.href = "/#chatlobby";
+    // const error = await messageResponse.json();
+    // console.error("API error", error);
+    // alert("채팅방에 대한 잘못된 접근입니다");
+	const modal = document.querySelector('.modal');
+	showModal('chatprivate', 'wrongconnect_err');
+	modal.addEventListener('hidden.bs.modal', function () {
+		location.href = "/#chatlobby";
+	});
   }
 }

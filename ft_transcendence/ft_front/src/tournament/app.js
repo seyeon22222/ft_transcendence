@@ -1,10 +1,20 @@
 import { formatDateTime } from "../info/info_func.js";
-import { check_login } from "../utilities.js"
+import { check_login, showModal } from "../utilities.js"
+
+window.addEventListener("popstate", function (event) {
+    // WebSocket 연결 닫기
+    if (window.t_socket && window.t_socket.readyState !== WebSocket.CLOSED && location.href !== window.prevUrl) {
+        window.t_socket.close();
+        window.t_socket = null;
+    }
+});
 
 export async function tournament_view(hash) {
+    window.prevUrl = location.href;
     // set style
     const style = document.getElementById("style");
     style.innerHTML = tournament_style();
+	setLanguage('tournament');
 
     // socket 초기화
     if (window.t_socket) {
@@ -39,17 +49,30 @@ export async function tournament_view(hash) {
     window.t_socket = new WebSocket(
         `wss://${window.location.host}/ws/tournament/${tournament_id}/`
     );
+
+    // debug
+    console.log("tournament socket : ");
+    console.log(window.t_socket);
+
     window.t_socket.onopen = function(e) {
         console.log("window.t_socket open");
     }
     window.t_socket.onmessage = async function(e) {
         const data = JSON.parse(e.data);
-        // console.log(data.message);
+        console.log("window.t_socket message : ", data.message);
 
-        // 필요한 DOM 업데이트 로직
-        const result = await updateTournamentInfo(arr);
-        const { player, tournament_id } = result;
-        
+        const current_hash = window.location.hash;
+        console.log(current_hash);
+
+        if (current_hash !== `#tournament/${tournament_name}`) {
+            console.log("hash not matched");
+            return;
+        } else {
+            // 필요한 DOM 업데이트 로직
+            console.log("hash matched");
+            const result = await updateTournamentInfo(arr);
+            // const { player, tournament_id } = result;
+        }
     };
     // console.log(player);
     window.t_socket.onclose = function(e) {
@@ -74,7 +97,7 @@ export async function tournament_view(hash) {
             console.error('API 요청 실패', error);
         }
     } catch (error) {
-        alert(error);
+        // alert(error);
     }
     const tournament_start = document.getElementById("tournament_start");
     if (tournament_start !== null)
@@ -84,6 +107,15 @@ export async function tournament_view(hash) {
     const apply_button = document.getElementById('tournament_button');
     apply_button.addEventListener("click", async (event) => {
         event.preventDefault();
+        const nicknameInput = document.getElementById('nickname_input');
+        const nickname = nicknameInput.value;
+
+        if (nickname.length === 0) {
+            // alert("닉네임을 입력해주세요.");
+			showModal('tournament', 'nick_noti');
+            nicknameInput.value = '';
+            return;
+        }
         const game_csrftoken = Cookies.get('csrftoken');
         const game_check = await fetch(`match/t_list/${tournament_id}`, {
             method: 'GET',
@@ -95,15 +127,14 @@ export async function tournament_view(hash) {
         });
         if (game_check.ok) {
             const game_data = await game_check.json();
-            if (game_data.is_active === false) {
-                alert('해당 토너먼트는 이미 시작되었습니다.');
+            if (game_data.is_active === false || game_data.is_flag === false) {
+				showModal('tournament', 'already_noti');
                 return ;
             }
         }
-        const nickname = document.getElementById('nickname_input').value;
         try {
             if (player.length >= 8) {
-                alert("최대 인원(8명)을 초과했습니다.");
+				showModal('tournament', 'over_noti');
                 return;
             }
             const formData = {
@@ -123,14 +154,23 @@ export async function tournament_view(hash) {
             });
             if (response.ok) {
                 const data = await response.json();
-                document.getElementById('nickname_input').value = '';
-                location.href = `/#tournament/${tournament_name}`;
+                const modal = document.querySelector('.modal');
+				document.getElementById('nickname_input').value = '';
+				if (data.message !== null)
+					showModal('tournament', 'ready_noti');
+				modal.addEventListener('hidden.bs.modal', function () {
+					location.href = `/#tournament/${tournament_name}`;
+				});
             } else {
                 const error = await response.json();
-                console.log(error);
+				// message = Invalid user_id
+				// message = 중복 신청 할 수 없습니다
+				// alert(error.message)
+                // console.log(error);
+				showModal('tournament', 'dupready_noti');
             }
         } catch (error) {
-            alert(error);
+            // alert(error);
         }
     });
 }
@@ -156,70 +196,117 @@ async function startTournament(tournament_id) {
         },
         credentials: 'include',
     });
-    await fetch(`match/t_list/${tournament_id}`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrftoken,
-    },
-    body : JSON.stringify({is_active : true})
-    });
     if (response.ok) {
-
         const data = await response.json();
+        if (data.is_active === false || data.is_flag === false) {
+            showModal('tournament', 'already_noti');
+            return;
+        }
         const players = data.participants;
         
-        // 만약 참가자가 홀수인 경우, 마지막 참가자를 부전승 처리
-        if (players.length % 2 !== 0) {
-            const byePlayer = players[players.length - 1];
-            await handleByePlayer(byePlayer, players);
-            for (let i = 0; i < players.length - 1; i += 2) {
-                const player1 = players[i];
-                const player2 = players[i + 1];
-                await sendGameInvitation(tournament_id, player1, player2);
+        if (players.length < 2) {
+            showModal('tournament', 'under_noti');
+            return;
             }
+        await fetch(`match/t_list/${tournament_id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body : JSON.stringify({is_active : true, is_flag : false})
+        });
+
+        // 부전승 처리, 짝수여도 부전승 필요함
+        const result = await handleByePlayer(players);
+
+        // result : 토너먼트 시작시 게임을 해야 되는 인원 수 (2,4,8 중 하나)
+        for (let i = 0; i < result; i += 2) {
+            const player1 = players[i];
+            const player2 = players[i + 1];
+
+            await createTournamentMatch(tournament_id, player1, player2);
+            await sendGameInvitation(tournament_id, player1, player2);
         }
-        else {
-            // 2. 매칭될 인원에게 게임 접속 메시지 전송
-            for (let i = 0; i < players.length; i += 2) {
-                const player1 = players[i];
-                const player2 = players[i + 1];
-                await sendGameInvitation(tournament_id, player1, player2);
-            }
-        }
+        
+        // // 만약 참가자가 홀수인 경우, 마지막 참가자를 부전승 처리
+        // if (players.length % 2 !== 0) {
+        //     const byePlayer = players[players.length - 1];
+        //     await handleByePlayer(byePlayer, players);
+        //     for (let i = 0; i < players.length - 1; i += 2) {
+        //         const player1 = players[i];
+        //         const player2 = players[i + 1];
+
+        //         await createTournamentMatch(tournament_id, player1, player2);        
+        //         await sendGameInvitation(tournament_id, player1, player2);
+        //     }
+        // }
+        // else {
+        //     // 2. 매칭될 인원에게 게임 접속 메시지 전송
+        //     for (let i = 0; i < players.length; i += 2) {
+        //         const player1 = players[i];
+        //         const player2 = players[i + 1];
+
+        //         await createTournamentMatch(tournament_id, player1, player2);
+        //         await sendGameInvitation(tournament_id, player1, player2);
+        //     }
+        // }
     } else {
-        alert('토너먼트 정보를 불러오는 데 실패했습니다.');
+		showModal('tournament', 'loading_err');
     }
 }
 
 // 부전승 처리 함수
-async function handleByePlayer(player, players) {
+async function handleByePlayer(players) {
     let level;
     let nickname;
+    let nickname2;
     let index;
-    let user_id = player.player;  // Assuming username is part of the player object
-    let tournament_id = player.tournament;
+    let index2;
+    let user_id = players[players.length - 1].player;  // Assuming username is part of the player object
+    let user_id2;
+    let tournament_id = players[players.length - 1].tournament;
+    let change_two_flag = false;
     if (players.length === 3) {
         const semi_final = document.getElementById("semi_final2");
-        semi_final.innerHTML = player.nickname;
+        semi_final.innerHTML = players[players.length - 1].nickname;
         level = 2;
-        nickname = player.nickname;
-        index = player.index;
-    } else if (players.length === 5) {
+        nickname = players[players.length - 1].nickname;
+        index = players[players.length - 1].index;
+        change_two_flag = false;
+    } else if (players.length === 5) { // 마지막 한명은 결승까지 진출
         const quarter_final = document.getElementById("quarter_final3");
-        quarter_final.innerHTML = player.nickname;
-        level = 4;
-        nickname = player.nickname;
-        index = player.index;
-    } else if (players.length === 7) {
-        const quarter_final = document.getElementById("quarter_final5");
-        quarter_final.innerHTML = player.nickname;
-        level = 4;
-        nickname = player.nickname;
-        index = player.index;
+        quarter_final.innerHTML = players[players.length - 1].nickname;
+        const semi_final = document.getElementById("semi_final2");
+        semi_final.innerHTML = players[players.length - 1].nickname;
+        level = 2;
+        nickname = players[players.length - 1].nickname;
+        index = players[players.length - 1].index;
+        change_two_flag = false;
+    } else if (players.length === 6) { // 끝의 두명은 4강으로 진출
+        const quarter_final3 = document.getElementById("quarter_final3");
+        const quarter_final4 = document.getElementById("quarter_final4");
+        quarter_final3.innerHTML = players[players.length - 2].nickname;
+        quarter_final4.innerHTML = players[players.length - 1].nickname;
+        level = 3;
+        nickname = players[players.length - 1].nickname;
+        nickname2 = players[players.length - 2].nickname;
+        index = players[players.length - 1].index;
+        index2 = players[players.length - 2].index;
+        user_id2 = players[players.length - 2].player;
+        change_two_flag = true;
+    } else if (players.length === 7) { // 끝의 한명은 4강으로 진출
+        const quarter_final4 = document.getElementById("quarter_final4");
+        quarter_final4.innerHTML = players[players.length - 1].nickname;
+        level = 3;
+        nickname = players[players.length - 1].nickname;
+        index = players[players.length - 1].index;
+        change_two_flag = false;
+    } else { // 부전승 처리할 필요 없음
+        return players.length; // return 2, 4, 8
     }
 
-    const formData = {
+    let formData = {
         user_id: user_id,
         nickname: nickname,
         index: index,
@@ -240,8 +327,38 @@ async function handleByePlayer(player, players) {
         console.log(`${nickname}는 부전승 처리되었습니다.`);
     } else {
         const error = await response.json();
-        console.error('부전승 처리 실패:', error);
+        // console.error('부전승 처리 실패:', error);
     }
+
+    // 2명의 부전승 처리가 필요한 경우를 처리
+    if (change_two_flag) {
+        formData = {
+            user_id: user_id2,
+            nickname: nickname2,
+            index: index2,
+            level: level
+        };
+        console.log(formData);
+        const response2 = await fetch(`match/matchapply/${tournament_id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (response2.ok) {
+            console.log(`${nickname2}는 부전승 처리되었습니다.`);
+        } else {
+            const error = await response2.json();
+            console.error('부전승 처리 실패:', error);
+        }
+
+        return 4; // player 6일때만 호출됨, 8강 경기는 처음 4명만 진행
+    }
+
+    return players.length - 1; // return 2, 4, 6
 }
 
 // 게임 초대 전송 함수
@@ -249,7 +366,7 @@ async function handleByePlayer(player, players) {
 async function sendGameInvitation(tournament_id, player1, player2) {
     console.log("invite ",player1, player2);
     const csrftoken = Cookies.get('csrftoken');
-    const response = await fetch(`match/invite/${tournament_id}`, {
+    const response = await fetch(`match/invite_t/${tournament_id}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -261,32 +378,52 @@ async function sendGameInvitation(tournament_id, player1, player2) {
     if (response.ok) {
         // alert(`${player1.nickname}와 ${player2.nickname}에게 게임 초대가 전송되었습니다.`);
     } else {
-        alert('게임 초대 전송에 실패했습니다.');
+        // alert('게임 초대 전송에 실패했습니다.');
     }
 }
 
-// 게임 결과 처리 함수
-async function handleGameResult(player1, player2, result) {
- const csrftoken = Cookies.get('csrftoken');
- const response = await fetch(`match/result`, {
-     method: 'POST',
-     headers: {
-         'Content-Type': 'application/json',
-         'X-CSRFToken': csrftoken,
-     },
-     credentials: 'include',
-     body: JSON.stringify({ player1: player1.id, player2: player2.id, result }),
- });
+// 토너먼트의 각각의 매치 생성에 사용하는 함수
+async function createTournamentMatch(tournament_id, player1, player2) {
+    const csrftoken = Cookies.get('csrftoken');
+    const t_response = await fetch(`match/t_request`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body : JSON.stringify({tournament_id : tournament_id, apply_user : player1.player, accept_user : player2.player})
+    });
 
- if (response.ok) {
-     const data = await response.json();
-     alert(`${data.winner.nickname}가 승리하였습니다.`);
-     // 다음 게임 시작 로직 추가
-     await startNextRound();
- } else {
-     alert('게임 결과 처리에 실패했습니다.');
- }
+    if (t_response.ok) {
+        const t_data = await t_response.json();
+        console.log('토너먼트 매치 생성 성공' + t_response.status);
+    } else {
+        console.error('토너먼트 매치 생성 실패' + t_response.status);
+    }    
 }
+
+// 게임 결과 처리 함수
+// async function handleGameResult(player1, player2, result) {
+//  const csrftoken = Cookies.get('csrftoken');
+//  const response = await fetch(`match/result`, {
+//      method: 'POST',
+//      headers: {
+//          'Content-Type': 'application/json',
+//          'X-CSRFToken': csrftoken,
+//      },
+//      credentials: 'include',
+//      body: JSON.stringify({ player1: player1.id, player2: player2.id, result }),
+//  });
+
+//  if (response.ok) {
+//      const data = await response.json();
+//      alert(`${data.winner.nickname}가 승리하였습니다.`);
+//      // 다음 게임 시작 로직 추가
+//      await startNextRound();
+//  } else {
+//      alert('게임 결과 처리에 실패했습니다.');
+//  }
+// }
 
 // 다음 라운드 게임 시작 함수
 async function startNextRound() {
@@ -325,7 +462,11 @@ async function updateTournamentInfo(arr) {
                 break;
             }
         }
-        player = player.sort((a, b) => a.index - b.index);
+        console.log("DEBUG FOR PLAYER");
+        console.log(player);
+        player = player.sort((a, b) => a.id - b.id);
+        console.log(player);
+
         const oper_csrftoken = Cookies.get('csrftoken');
         const oper_response = await fetch('user/info', {
             method: 'GET',
@@ -344,18 +485,18 @@ async function updateTournamentInfo(arr) {
                 tournament_start.innerHTML = '';
             }
         } else {
-            alert("API error");
+            // alert("API error");
             location.href = '/#';
         }
 
-        if (player_check(player) === true) {
-            tour_view(player);
-        } else {
+        tour_view(player);
+        // 모든 참가자가 level 0인 경우 (default) true
+        if (player_check(player) === false) {
             tourstart_view(player);
         }
     } else {
         const error = await response.json();
-        alert(error);
+        // alert(error);
     }
 
     return { player, tournament_id };
@@ -375,29 +516,40 @@ function player_check(player) {
     return true;
 }
 
+/*
+    토너먼트 대진표 초기화, 가장 바닥 라운드 그려주기
+*/
 function tour_view(player) {
     console.log("tour_view", player);
-    if (player.length > 4 && player.length <= 8) {
-        for (let i = 1; i <= 4; ++i) {
-            const quarter_final = document.getElementById(`quarter_final${i}`);
-            quarter_final.innerHTML = '';
-        }
+
+    // clear previous info
+    const final = document.getElementById(`final`);
+    final.innerHTML = '';
+    for (let i = 1; i <= 2; ++i) {
+        const semi_final = document.getElementById(`semi_final${i}`);
+        semi_final.innerHTML = '';
+    }
+    for (let i = 1; i <= 4; ++i) {
+        const quarter_final = document.getElementById(`quarter_final${i}`);
+        quarter_final.innerHTML = '';
+    }
+    for (let i = 1; i <= 8; ++i) {
+        const round_16 = document.getElementById(`Round_8_${i}`);
+        round_16.innerHTML = '';
+    }
+
+    if (player.length > 4 && player.length <= 8) { // 5~8
         for (let i = 1; i <= player.length; ++i) {
             const round_16 = document.getElementById(`Round_8_${i}`);
             round_16.innerHTML = player[i - 1].nickname;
         }
-
-    } else if (player.length > 2 && player.length <= 4) {
-        for (let i = 1; i <= 2; ++i) {
-            const semi_final = document.getElementById(`semi_final${i}`);
-            semi_final.innerHTML = '';
-        }
+    } else if (player.length > 2 && player.length <= 4) { // 3~4
         for (let i = 1; i <= player.length; ++i) {
             const quarter_final = document.getElementById(`quarter_final${i}`);
             quarter_final.innerHTML = player[i - 1].nickname;
         }
     } else {
-        for (let i = 1; i <= player.length; ++i) {
+        for (let i = 1; i <= player.length; ++i) { // 1~2
             const semi_final = document.getElementById(`semi_final${i}`);
             semi_final.innerHTML = player[i - 1].nickname;
         }
@@ -405,17 +557,91 @@ function tour_view(player) {
 }
 
 function tourstart_view(player) {
-    
-    tour_view(player);
-    
-    if (player.length <= 2) {
-        player_2(player);
-    } else if (player.length <= 4) {
-        player_4(player);
-    } else if (player.length <= 8) {
-        player_8(player);
+    console.log("tourstart_view");
+    /* 
+        어차피 player는 index 순서대로 정렬되어 있음
+        index를 알면 플레이어 level에 따라 어디어디에 삽입되어야 하는지 간단한 수식으로 계산 가능 
+    */
+    for (let i = 1; i <= player.length; ++i) {
+        if (player[i - 1].level === 1) {
+            const final_html = document.getElementById(`final`);
+            final_html.innerHTML = player[i - 1].nickname;
+
+            if (player.length > 2) {
+                if (player.length > 4) {
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
+                    semifinal_html.innerHTML = player[i - 1].nickname;
+                } else {
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 2)}`); // player[1,2] -> semi_final1, player[3,4] -> semi_final2
+                    semifinal_html.innerHTML = player[i - 1].nickname;
+                }
+            }
+
+            if (player.length > 4) {
+                if (player.length === 6) {
+                    if (i <= 4) { // player 1, player 2, player 3, player 4
+                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2
+                        quarterfinal_html.innerHTML = player[i - 1].nickname;
+                    } else if (i === 5) { // player 5
+                        const semifinal_html = document.getElementById(`quarter_final3`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    } else { // player 6
+                        const semifinal_html = document.getElementById(`quarter_final4`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    }
+                } else { // player 5, player 6
+                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
+                    quarterfinal_html.innerHTML = player[i - 1].nickname;
+                }
+            }
+        } else if (player[i - 1].level === 2) {
+            if (player.length > 2) {
+                if (player.length > 4) {
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
+                    semifinal_html.innerHTML = player[i - 1].nickname;
+                } else {
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 2)}`); // player[1,2] -> semi_final1, player[3,4] -> semi_final2
+                    semifinal_html.innerHTML = player[i - 1].nickname;
+                }
+            }
+            
+            if (player.length > 4) {
+                if (player.length === 6) {
+                    if (i <= 4) { // player 1, player 2, player 3, player 4
+                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2
+                        quarterfinal_html.innerHTML = player[i - 1].nickname;
+                    } else if (i === 5) { // player 5
+                        const semifinal_html = document.getElementById(`quarter_final3`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    } else { // player 6
+                        const semifinal_html = document.getElementById(`quarter_final4`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    }
+                } else { // player 5, player 6
+                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
+                    quarterfinal_html.innerHTML = player[i - 1].nickname;
+                }
+            }
+        } else if (player[i - 1].level === 3) {
+            if (player.length > 4) {
+                if (player.length === 6) {
+                    if (i <= 4) { // player 1, player 2, player 3, player 4
+                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2
+                        quarterfinal_html.innerHTML = player[i - 1].nickname;
+                    } else if (i === 5) { // player 5
+                        const semifinal_html = document.getElementById(`quarter_final3`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    } else { // player 6
+                        const semifinal_html = document.getElementById(`quarter_final4`);
+                        semifinal_html.innerHTML = player[i - 1].nickname;
+                    }
+                } else { // player 5, player 6
+                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
+                    quarterfinal_html.innerHTML = player[i - 1].nickname;
+                }
+            }
+        }
     }
-    
 }
 
 function player_2(player) {
@@ -454,10 +680,9 @@ function player_4(player) {
     }
 }
 
-
 function player_8(player) {
     for (let i = 1; i <= player.length; ++i) {
-        if (player[i - 1].level === 4) {
+        if (player[i - 1].level === 3) {
             let quarter_final;
             if (player[i - 1].index <= 2) {
                 quarter_final = document.getElementById(`quarter_final1`);

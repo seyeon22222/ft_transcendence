@@ -17,8 +17,8 @@ export async function match_view(hash) {
     match_render(data);
     makeButton(Button, matchId, data, player_data);
   } else {
-    const error = await response.json();
-    alert(error);
+    // const error = await response.json();
+    // alert(error);
   }
 }
 
@@ -32,7 +32,8 @@ function makeButton(Button, matchId, data, player_data) {
     const startButton = document.createElement("button");
     startButton.innerHTML = "매치 시작";
     startButton.id = "match_start_button";
-    Button.appendChild(startButton);
+    if (data.is_flag !== false)
+      Button.appendChild(startButton);
     
     startButton.addEventListener("click", (event) => start_match(event, matchId, data));
   } else {
@@ -46,7 +47,6 @@ function makeButton(Button, matchId, data, player_data) {
 
 async function start_match(event, matchId, data) {
   event.preventDefault();
-  console.log("qqq",data);
   const csrftoken = Cookies.get('csrftoken');
   const response = await fetch(`match/invite_m/${matchId}`, {
       method: 'POST',
@@ -55,12 +55,12 @@ async function start_match(event, matchId, data) {
           'X-CSRFToken': csrftoken,
       },
       credentials: 'include',
-      body: JSON.stringify({ player1: data.player1, player2: data.player2, id : matchId}),
+      body: JSON.stringify({ player1: data.player1, player2: data.player2, id : matchId, is_flag : false}),
   });
   if (response.ok) {
       console.log(`${data.player1_username}와 ${data.player2_username}에게 게임 초대가 전송되었습니다.`);
   } else {
-      alert('게임 초대 전송에 실패했습니다.');
+    //   alert('게임 초대 전송에 실패했습니다.');
   }
 }
 
@@ -79,11 +79,14 @@ function match_render(data) {
     player2.innerHTML = player2_name;
   }
 
-  if (data.match_result !== "") {
+  if (data.match_result !== null) {
     const winner = document.getElementById("final");
     if (winner) {
-      let winner_name;
-      data.match_result === 1 ? winner_name = player1_name : winner_name = player2_name;
+      let winner_name = data.match_result;
+      if (data.match_result == 1)
+        winner_name = player1_name;
+      else if (data.match_result == 2)
+        winner_name = player2_name;
       winner.innerHTML = winner_name;
     }
   }

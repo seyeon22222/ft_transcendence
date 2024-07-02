@@ -7,13 +7,7 @@ from .models import Room, Message, PrivateRoom, PrivateMessage
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
-    # debug
-    print("chatConsumer called") 
-    
-    # 동기식 연결
     async def connect(self): 
-        # debug
-        print("chatConsumer connect") 
         
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
@@ -27,19 +21,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code = None):
 
-        # debug
-        print("chatConsumer disconnect") 
-
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
 
-    # Receive message from WebSocket
     async def receive(self, text_data):
-
-        # debug
-        print("chatConsumer receive") 
 
         data = json.loads(text_data)
         message = data["message"]
@@ -48,7 +35,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.save_message(username, room, message)
 
-        # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -58,15 +44,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
-    # Receive message from room group
     async def chat_message(self, event):
-
-        # debug
-        print("chatConsumer chat message") 
 
         message = event["message"]
         username = event["username"]
-        # Send message to WebSocket
+
         await self.send(text_data=json.dumps({
             "message": message,
             "username": username
@@ -74,9 +56,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def save_message(self, username, room, message):
-
-        # debug
-        print("chatConsumer save message") 
 
         user = MyUser.objects.get(username=username)
         room = Room.objects.get(slug=room)
@@ -85,13 +64,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 class PrivateChatConsumer(AsyncWebsocketConsumer):
 
-    # debug
-    print("PrivateChatConsumer called") 
-    
-    # 동기식 연결
     async def connect(self): 
-        # debug
-        print("PrivatechatConsumer connect") 
         
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
@@ -105,19 +78,12 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code = None):
 
-        # debug
-        print("PrivateChatConsumer disconnect") 
-
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
 
-    # Receive message from WebSocket
     async def receive(self, text_data):
-
-        # debug
-        print("PrivateChatConsumer receive") 
 
         data = json.loads(text_data)
         message = data["message"]
@@ -126,7 +92,6 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):
 
         await self.save_message(username, room, message)
 
-        # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -136,15 +101,11 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
-    # Receive message from room group
     async def chat_message(self, event):
-
-        # debug
-        print("PrivateChatConsumer chat message") 
 
         message = event["message"]
         username = event["username"]
-        # Send message to WebSocket
+
         await self.send(text_data=json.dumps({
             "message": message,
             "username": username
@@ -153,13 +114,7 @@ class PrivateChatConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def save_message(self, username, room, message):
 
-        # debug
-        print("PrivateChatConsumer save message") 
-
         user = MyUser.objects.get(username=username)
         room = PrivateRoom.objects.get(slug=room)
-
-        print(user)
-        print(room)
 
         PrivateMessage.objects.create(user=user, room=room, content=message)

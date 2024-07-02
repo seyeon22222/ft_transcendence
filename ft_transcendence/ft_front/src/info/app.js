@@ -4,13 +4,15 @@ import {
   select_match_info_view,
   formatDateTime,
 } from "./info_func.js";
-import { check_login } from "../utilities.js";
+
+import { check_login, showModal } from "../utilities.js";
 
 export async function info_js() {
   let apply_user;
   let accept_user;
   let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
   let user_name = user_location[1];
+  let user_lang = document.getElementById("languageSelector").value;
   let data;
   let response;
   let csrftoken;
@@ -97,8 +99,13 @@ export async function info_js() {
 		color: #000; /* Set text color to black */
 		margin-bottom: 20px; /* Space between cards */
 	}
+	.modal {
+		color: #000;
+		display: none;
+	}
   `;
-	setLanguage("info");
+
+	// delete_back_show();
 
     // check login status
     const check = await check_login();
@@ -141,13 +148,19 @@ export async function info_js() {
         select_image_view(element);
         select_game_stat_view(element);
         select_match_info_view(element);
+        setLanguage("info");
       }
     });
     if (!flag) {
-      alert("해당 유저가 없습니다");
-      location.href = "/#";
+		const infoModal = document.querySelector('.modal');
+		showModal('info', 'nouser_err');
+		infoModal.addEventListener('hidden.bs.modal', function () {
+			location.href = '/#';
+		});
     }
   }
+
+
   let temp_data;
   const requestMatchButton = document.getElementById("match_button");
   requestMatchButton.addEventListener("click", async (event) => {
@@ -164,6 +177,7 @@ export async function info_js() {
       });
       if (req_response.ok) {
         temp_data = await req_response.json();
+		user_lang = temp_data[0].language;
       } else {
         const error = await req_response.json();
         console.error("API 요청 실패", error);
@@ -172,8 +186,8 @@ export async function info_js() {
       console.error("API 요청 실패", error);
     }
     if (temp_data[0].username === accept_user) {
-      alert("자기 자신에게는 매치 신청이 불가능합니다!!");
-      return;
+    	showModal('info', 'selfmatch_err');
+		return;
     }
     apply_user = temp_data[0].username;
     const match_name = apply_user + " vs " + accept_user;
@@ -189,7 +203,7 @@ export async function info_js() {
       name: match_name,
     };
 
-    const mat_response = await fetch("/match/request", {
+    const mat_response = await fetch("/match/m_request", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -199,17 +213,22 @@ export async function info_js() {
     });
 
     if (mat_response.ok) {
-      alert("매치 신청 성공!");
-      location.href = "/#";
+		// location.href = "/#";
+		const modal = document.querySelector('.modal');
+		showModal('info', 'match_req');
+		modal.addEventListener('hidden.bs.modal', function () {
+			location.href = "/#";
+		});
+
     } else {
-      const error = await mat_response.json();
-      console.log(error);
-    }
+    	// const error = await mat_response.json();
+    	// console.log(error);
+		showModal('info', 'match_req_err');
+	}
   });
 
   const applyChat = document.getElementById("chat_button");
   applyChat.addEventListener("click", async (event) => {
-    event.preventDefault();
     try {
       csrftoken = Cookies.get("csrftoken");
       response = await fetch(`user/info`, {
@@ -231,8 +250,8 @@ export async function info_js() {
     }
 
     if (temp_data[0].username === accept_user) {
-      alert("자기 자신에게는 채팅 신청이 불가능합니다!!");
-      return;
+		showModal('info', 'selfchat_err');
+		return ;
     }
 
     // get private room and check duplicate
@@ -270,9 +289,7 @@ export async function info_js() {
 
         if (response.status === 200) {
           console.log("already private chatting exists");
-
           data = await response.json();
-
           const slug = data.slug;
           location.href = "/#chatprivate/" + slug;
         } // 404 - no private room
@@ -297,7 +314,7 @@ export async function info_js() {
         console.error("API failed : ", error);
       }
     } else {
-      alert("채팅 차단 상태입니다!");
+		showModal('info', 'is_blocked');
     }
   });
 
@@ -325,8 +342,9 @@ export async function info_js() {
       console.error("API 요청 실패", error);
     }
     if (temp_data[0].username === accept_user) {
-      alert("자기 자신에게는 채팅 차단 신청이 불가능합니다!!");
-      return;
+		// location.href = "/#";
+		showModal('info', 'selfblock_err');
+    	return;
     }
     apply_user = temp_data[0].username;
 
@@ -346,11 +364,11 @@ export async function info_js() {
     });
 
     if (block_response.ok) {
-      alert("채팅 차단 성공!");
-      location.href = "/#";
+		showModal('info', 'block_noti');
     } else {
-      const error = await block_response.json();
-      console.log(error);
+		// const error = await block_response.json();
+		// console.log(error);
+		showModal('info', 'block_err');
     }
   });
 
@@ -380,8 +398,8 @@ export async function info_js() {
       console.error("API 요청 실패", error);
     }
     if (temp_data[0].username === accept_user) {
-      alert("자기 자신에게는 차단 해제가 불가능합니다!!");
-      return;
+		showModal('info', 'selfunblock_err');
+    	return;
     }
     apply_user = temp_data[0].username;
 
@@ -401,46 +419,47 @@ export async function info_js() {
     });
 
     if (block_release_response.ok) {
-      alert("차단 해제 성공!");
+		showModal('info', 'unblock_noti');
     } else {
-      const error = await block_release_response.json();
-      console.log(error);
+		// const error = await block_release_response.json();
+		// console.log(error);
+		showModal('info', 'unblock_err');
     }
   });
 }
 
 //seycheon_online_status // 온라인 상태를 주기적으로 업데이트하는 함수
-async function updateOnlineStatus() {
-  let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
-  let user_name = user_location[1];
+// async function updateOnlineStatus() {
+//   let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
+//   let user_name = user_location[1];
 
-  await fetch("/user/get_users_online_status")
-    .then((response) => response.json())
-    .then((data) => {
-      const onlineStatusDiv = document.getElementById("online_status_value");
-      if (onlineStatusDiv) {
-        // 요소가 있는 경우에만 작업을 수행합니다.
-        // API에서 반환된 사용자 목록에서 사용자 이름이 있는지 확인합니다.
-        console.log(data.online_users);
-        const isOnline = data.online_users.some((user) => {
-          const username = user;
-          console.log("11111", username);
-          if (username) {
-            console.log(username.trim(), user_name.trim());
-            return username.trim() === user_name.trim(); // 사용자 이름에서 공백 제거 후 비교
-          }
-          return false;
-        });
-        console.log(isOnline);
-        onlineStatusDiv.innerHTML = `현재 접속 상태: ${
-          isOnline ? "online" : "offline"
-        }`;
-      } else {
-        console.error("Element with ID 'online_status_value' not found.");
-      }
-    })
-    .catch((error) => console.error("Error fetching online users:", error));
-}
+//   await fetch("/user/get_users_online_status")
+//     .then((response) => response.json())
+//     .then((data) => {
+//       const onlineStatusDiv = document.getElementById("online_status_value");
+//       if (onlineStatusDiv) {
+//         // 요소가 있는 경우에만 작업을 수행합니다.
+//         // API에서 반환된 사용자 목록에서 사용자 이름이 있는지 확인합니다.
+//         console.log(data.online_users);
+//         const isOnline = data.online_users.some((user) => {
+//           const username = user;
+//           console.log("11111", username);
+//           if (username) {
+//             console.log(username.trim(), user_name.trim());
+//             return username.trim() === user_name.trim(); // 사용자 이름에서 공백 제거 후 비교
+//           }
+//           return false;
+//         });
+//         console.log(isOnline);
+//         onlineStatusDiv.innerHTML = `현재 접속 상태: ${
+//           isOnline ? "online" : "offline"
+//         }`;
+//       } else {
+//         console.error("Element with ID 'online_status_value' not found.");
+//       }
+//     })
+//     .catch((error) => console.error("Error fetching online users:", error));
+// }
 
 //seycheon_online_status 페이지 로드 시 및 주기적으로 업데이트
 // function checkProfileFormAndRun() {

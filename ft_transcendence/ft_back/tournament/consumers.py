@@ -1,7 +1,17 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from . import tinfo
+from django.shortcuts import get_object_or_404
+from .models import tournament
+from channels.db import database_sync_to_async
 
 class MatchConsumer(AsyncWebsocketConsumer):
+    consumers = {}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.info = tinfo.Tinfo()
+
     async def connect(self):
         self.tournament_id = self.scope['url_route']['kwargs']['tournament_id']
         self.room_group_name = f'tournament_{self.tournament_id}'
@@ -13,12 +23,41 @@ class MatchConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+        if self.room_group_name in self.consumers:
+            self.info = self.consumers[self.room_group_name].info
+        else:
+            self.consumer = self
+            self.consumers[self.room_group_name] = self
+
+        self.info.player_count += 1
+
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
 
+        self.info.player_count -= 1
+
+        if (self.info.player_count == 0):
+            del self.consumers[self.room_group_name]
+            await self.select_tournament()            
+            # await self.delete_tournament()
+
+    @database_sync_to_async
+    def select_tournament(self):
+        tournament_temp = tournament.objects.get(pk=self.tournament_id)
+        if tournament_temp.is_active == False and tournament_temp.completed_matches > 0:
+            return
+        elif tournament_temp.completed_matches != 0:
+            tournament_temp.delete()
+        
+
+    @database_sync_to_async
+    def delete_tournament(self):
+        tournament_temp = tournament.objects.get(pk=self.tournament_id)
+        tournament_temp.delete()
+            
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']
@@ -58,13 +97,31 @@ class messageConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
+        flag = False
         data = json.loads(text_data)
         message = data['message']
         player1 = data.get('player1')
         player2 = data.get('player2')
         g_type = data.get('g_type')
         g_id = data.get('g_id')
-        await self.send(text_data=json.dumps({
+
+        if data.get('player3') is not None and data.get('player4') is not None:
+            flag = True
+            player3 = data.get('player3')
+            player4 = data.get('player4')
+        if flag == True:
+            await self.send(text_data=json.dumps({
+            'type' : 'message',
+            'message': message,
+            'player1' : player1,
+            'player2' : player2,
+            'player3' : player3,
+            'player4' : player4,
+            'g_type' : g_type,
+            'g_id' : g_id,
+        }))
+        else :
+            await self.send(text_data=json.dumps({
             'type' : 'message',
             'message': message,
             'player1' : player1,
@@ -74,12 +131,29 @@ class messageConsumer(AsyncWebsocketConsumer):
         }))
 
     async def message(self, event):
+        flag = False
         message = event['message']
         player1 = event.get('player1')
         player2 = event.get('player2')
         g_type = event.get('g_type')
         g_id = event.get('g_id')
-        await self.send(text_data=json.dumps({
+        if event.get('player3') is not None and event.get('player4') is not None:
+            flag = True
+            player3 = event.get('player3')
+            player4 = event.get('player4')
+        if flag == True:
+            await self.send(text_data=json.dumps({
+            'type' : 'message',
+            'message': message,
+            'player1' : player1,
+            'player2' : player2,
+            'player3' : player3,
+            'player4' : player4,
+            'g_type' : g_type,
+            'g_id' : g_id,
+        }))
+        else:
+            await self.send(text_data=json.dumps({
             'type' : 'message',
             'message': message,
             'player1' : player1,

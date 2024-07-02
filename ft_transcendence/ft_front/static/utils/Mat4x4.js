@@ -1,3 +1,5 @@
+let MIN = 0.0000000001;
+
 export class Mat4x4 {
 	static identityMat() {
         let mat = [
@@ -137,14 +139,14 @@ export class Mat4x4 {
 		return res;
 	}
 
-	static camMatrix(normalizedLook, normalizedUp, pos) {
-		normalizedLook = normalizeVec(normalizedLook);
-		normalizedUp = normalizeVec(normalizedUp);
-		let xaxis = crossProduct(normalizedUp, normalizedLook);
+	static camMatrix(forward, Up, pos) {
+		forward = normalizeVec(forward);
+		Up = normalizeVec(Up);
+		let xaxis = crossProduct(Up, forward);
 		xaxis = normalizeVec(xaxis);
-		let yaxis = crossProduct(normalizedLook, xaxis);
+		let yaxis = crossProduct(forward, xaxis);
 		yaxis = normalizeVec(yaxis);
-		let zaxis = [normalizedLook[0], normalizedLook[1], normalizedLook[2]];
+		let zaxis = [forward[0], forward[1], forward[2]];
 		let res = [
 			xaxis[0], xaxis[1], xaxis[2], pos[0],
 			yaxis[0], yaxis[1], yaxis[2], pos[1],
@@ -182,15 +184,145 @@ export class Mat4x4 {
 		}
 		return res;
 	}
+
+	static invMat4(m)
+	{
+		let inv = Mat4x4.identityMat();
+		let invOut = Mat4x4.identityMat();
+		let det;
+		let i;
+
+		inv[0] = m[5]  * m[10] * m[15] - 
+				m[5]  * m[11] * m[14] - 
+				m[9]  * m[6]  * m[15] + 
+				m[9]  * m[7]  * m[14] +
+				m[13] * m[6]  * m[11] - 
+				m[13] * m[7]  * m[10];
+
+		inv[1] = -m[1]  * m[10] * m[15] + 
+				m[1]  * m[11] * m[14] + 
+				m[9]  * m[2] * m[15] - 
+				m[9]  * m[3] * m[14] - 
+				m[13] * m[2] * m[11] + 
+				m[13] * m[3] * m[10];
+
+		inv[2] = m[1]  * m[6] * m[15] - 
+				m[1]  * m[7] * m[14] - 
+				m[5]  * m[2] * m[15] + 
+				m[5]  * m[3] * m[14] + 
+				m[13] * m[2] * m[7] - 
+				m[13] * m[3] * m[6];
+
+		inv[3] = -m[1] * m[6] * m[11] + 
+				m[1] * m[7] * m[10] + 
+				m[5] * m[2] * m[11] - 
+				m[5] * m[3] * m[10] - 
+				m[9] * m[2] * m[7] + 
+				m[9] * m[3] * m[6];
+
+		inv[4] = -m[4]  * m[10] * m[15] + 
+				m[4]  * m[11] * m[14] + 
+				m[8]  * m[6]  * m[15] - 
+				m[8]  * m[7]  * m[14] - 
+				m[12] * m[6]  * m[11] + 
+				m[12] * m[7]  * m[10];
+
+		inv[5] = m[0]  * m[10] * m[15] - 
+				m[0]  * m[11] * m[14] - 
+				m[8]  * m[2] * m[15] + 
+				m[8]  * m[3] * m[14] + 
+				m[12] * m[2] * m[11] - 
+				m[12] * m[3] * m[10];
+
+		inv[6] = -m[0]  * m[6] * m[15] + 
+				m[0]  * m[7] * m[14] + 
+				m[4]  * m[2] * m[15] - 
+				m[4]  * m[3] * m[14] - 
+				m[12] * m[2] * m[7] + 
+				m[12] * m[3] * m[6];
+
+		inv[7] = m[0] * m[6] * m[11] - 
+				m[0] * m[7] * m[10] - 
+				m[4] * m[2] * m[11] + 
+				m[4] * m[3] * m[10] + 
+				m[8] * m[2] * m[7] - 
+				m[8] * m[3] * m[6];
+
+		inv[8] = m[4]  * m[9] * m[15] - 
+				m[4]  * m[11] * m[13] - 
+				m[8]  * m[5] * m[15] + 
+				m[8]  * m[7] * m[13] + 
+				m[12] * m[5] * m[11] - 
+				m[12] * m[7] * m[9];
+
+		inv[9] = -m[0]  * m[9] * m[15] + 
+				m[0]  * m[11] * m[13] + 
+				m[8]  * m[1] * m[15] - 
+				m[8]  * m[3] * m[13] - 
+				m[12] * m[1] * m[11] + 
+				m[12] * m[3] * m[9];
+
+		inv[10] = m[0]  * m[5] * m[15] - 
+				m[0]  * m[7] * m[13] - 
+				m[4]  * m[1] * m[15] + 
+				m[4]  * m[3] * m[13] + 
+				m[12] * m[1] * m[7] - 
+				m[12] * m[3] * m[5];
+
+		inv[11] = -m[0] * m[5] * m[11] + 
+				m[0] * m[7] * m[9] + 
+				m[4] * m[1] * m[11] - 
+				m[4] * m[3] * m[9] - 
+				m[8] * m[1] * m[7] + 
+				m[8] * m[3] * m[5];
+
+		inv[12] = -m[4]  * m[9] * m[14] + 
+				m[4]  * m[10] * m[13] +
+				m[8]  * m[5] * m[14] - 
+				m[8]  * m[6] * m[13] - 
+				m[12] * m[5] * m[10] + 
+				m[12] * m[6] * m[9];
+
+		inv[13] = m[0]  * m[9] * m[14] - 
+				m[0]  * m[10] * m[13] - 
+				m[8]  * m[1] * m[14] + 
+				m[8]  * m[2] * m[13] + 
+				m[12] * m[1] * m[10] - 
+				m[12] * m[2] * m[9];
+
+		inv[14] = -m[0]  * m[5] * m[14] + 
+				m[0]  * m[6] * m[13] + 
+				m[4]  * m[1] * m[14] - 
+				m[4]  * m[2] * m[13] - 
+				m[12] * m[1] * m[6] + 
+				m[12] * m[2] * m[5];
+
+		inv[15] = m[0] * m[5] * m[10] - 
+				m[0] * m[6] * m[9] - 
+				m[4] * m[1] * m[10] + 
+				m[4] * m[2] * m[9] + 
+				m[8] * m[1] * m[6] - 
+				m[8] * m[2] * m[5];
+
+		det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+		det = 1.0 / det;
+
+		for (i = 0; i < 16; i++) {
+			invOut[i] = inv[i] * det;
+			if (Math.abs(invOut[i]) < MIN)
+				invOut[i] = 0;
+		}
+
+		return invOut;
+	}
 }
 
 
 export function crossProduct(vec1, vec2) {
-	let res = new Array(4);
+	let res = [0, 0, 0];
 	res[0] = vec1[1] * vec2[2] - vec1[2] * vec2[1];
 	res[1] = vec1[2] * vec2[0] - vec1[0] * vec2[2];
 	res[2] = vec1[0] * vec2[1] - vec1[1] * vec2[0];
-	res[3] = 0
 	return res;
 }
 

@@ -1,6 +1,6 @@
 from django.db import models
 from ft_user.models import MyUser
-
+    
 class tournament(models.Model):
 
     name = models.CharField(max_length=100)
@@ -9,7 +9,9 @@ class tournament(models.Model):
     is_active = models.BooleanField(default=False)
     participant = models.ManyToManyField(MyUser, through='TournamentParticipant', related_name='tournaments')
     operator = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='operator')
-
+    completed_matches = models.IntegerField(default=0)
+    is_flag = models.BooleanField(default=True)
+    
     def __str__(self):
         return self.name
 
@@ -24,7 +26,7 @@ class tournamentParticipant(models.Model):
 
     tournament = models.ForeignKey(tournament, on_delete=models.CASCADE, related_name='participants')
     player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player')
-    nickname = models.CharField(max_length=100)  # 별칭 필드 추가
+    nickname = models.CharField(max_length=100)
     level = models.IntegerField(choices=level_choice, default=0)
     index = models.IntegerField(default=0)
 
@@ -37,11 +39,26 @@ class tournamentMatch(models.Model):
     match_date = models.DateTimeField(null=True)
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1_a')
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2_a')
-    match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
+    match_result = models.CharField(default='', max_length=1)
+    is_start = models.BooleanField(default=False)
+    # custom = models.ManyToManyField(Custom, related_name='t_cutom')
 
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.tournament.name}"
 
+
+class TournamentMatchCustom(models.Model):
+    match = models.ForeignKey(tournamentMatch, on_delete=models.CASCADE)
+    # custom = models.ForeignKey(Custom, on_delete=models.CASCADE)
+
+    # class Meta:
+    #     # 중복을 허용하지 않음
+    #     unique_together = ('match', 'custom')
+
+    def __str__(self):
+        return f'{self.match.name} - {self.custom.id}'
+
+    
 class Match(models.Model):
 
     STATUS_CHOICES = [
@@ -54,14 +71,28 @@ class Match(models.Model):
     match_date = models.DateTimeField(null=True)
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1')
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2')
-    match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
-    is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
+    match_result = models.CharField(default='', max_length=1)
+    is_active = models.BooleanField(default=True)
+    is_flag = models.BooleanField(default=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requester')
-
+    is_start = models.BooleanField(default=False)
+    # custom = models.ManyToManyField(Custom, through='MatchCustom', related_name='m_custom')
+    
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.name}"
 
+# class MatchCustom(models.Model):
+#     match = models.ForeignKey(Match, on_delete=models.CASCADE)
+#     custom = models.ForeignKey(Custom, on_delete=models.CASCADE)
+
+#     class Meta:
+#         # 중복을 허용하지 않음
+#         unique_together = ('match', 'custom')
+
+#     def __str__(self):
+#         return f'{self.match.name} - {self.custom.id}'
+    
 class matchmaking(models.Model):
 
     pending_player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='pending_player')
@@ -69,17 +100,53 @@ class matchmaking(models.Model):
     def __str__(self):
         return f"{self.pending_player.username} is waiting for matchmaking"
 
+class multimatchmaking(models.Model):
+    pending_player = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='multipending_player')
+    await_player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='await_player1', null=True, blank=True)
+    await_player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='await_player2', null=True, blank=True)
+    await_player3 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='await_player3', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.pending_player.username} is waiting for matchmaking"
 
 class MultiMatch(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, default='')
     match_date = models.DateTimeField(null=True)
     player1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player1_matches', null=True, blank=True)
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2_matches', null=True, blank=True)
     player3 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player3_matches', null=True, blank=True)
     player4 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player4_matches', null=True, blank=True)
-    match_result = models.CharField(default='', max_length=1) # ex) 1은 1의 승리, 2는 2의 승리
-    is_active = models.BooleanField(default=True) # 게임을 진행하고 나면 false로 변경해줘야함(그래야 나중에 1:1매칭을 다시 할 수 있음)
-    requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requested_matches')
+    match_result = models.CharField(default='', max_length=1)
+    is_active = models.BooleanField(default=True)
+    is_start = models.BooleanField(default=False)
+    # custom = models.ManyToManyField(Custom, related_name='mul_custom')
 
     def __str__(self):
         return f"{self.player1.username}, {self.player2.username}, {self.player3.username}, {self.player4.username} in {self.name}"
+
+class MultiMatchCustom(models.Model):
+    match = models.ForeignKey(MultiMatch, on_delete=models.CASCADE)
+    # custom = models.ForeignKey(Custom, on_delete=models.CASCADE)
+
+    # class Meta:
+    #     # 중복을 허용하지 않음
+    #     unique_together = ('match', 'custom')
+
+    def __str__(self):
+        return f'{self.match.name} - {self.custom.id}'
+
+class Custom(models.Model):
+    r = models.IntegerField(default=0)
+    g = models.IntegerField(default=0)
+    b = models.IntegerField(default=0)
+    x = models.FloatField(default=0.0)
+    y = models.FloatField(default=0.0)
+    z = models.FloatField(default=0.0)
+    w = models.FloatField(default=0.0)
+    h = models.FloatField(default=0.0)
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='customs', null=True, blank=True)
+    tournament = models.ForeignKey(tournamentMatch, on_delete=models.CASCADE, related_name='customs', null=True, blank=True)
+    multi_match = models.ForeignKey(MultiMatch, on_delete=models.CASCADE, related_name='customs', null=True, blank=True)
+
+    def __str__(self):
+        return f"게임 내의 장애물이 생성되었습니다"

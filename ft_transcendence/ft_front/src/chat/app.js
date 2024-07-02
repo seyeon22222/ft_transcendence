@@ -1,5 +1,5 @@
-import { recordMessage } from "./chat_func.js";
-import { check_login } from "../utilities.js"
+import { recordMessage } from "./chat_func.js"
+import { check_login, showModal } from "../utilities.js"
 
 let chatSocket; // 기존 WebSocket 연결을 추적할 변수
 export async function chat_js(hash) {
@@ -9,6 +9,12 @@ export async function chat_js(hash) {
       location.href = `/#`;
       return;
   }
+
+  // set style
+  const style = document.getElementById("style");
+  style.innerHTML = set_style();
+
+  setLanguage('chat');
 
   //seycheon_block
   const temp_csrftoken = Cookies.get("csrftoken");
@@ -85,6 +91,14 @@ export async function chat_js(hash) {
           data.username,
           csrftoken
         );
+
+        const current_hash = window.location.hash;
+        if (current_hash.split("/")[0] !== "#chat" && chatSocket) {
+          chatSocket.close();
+          chatSocket = null;
+          return;
+        }
+
         if (!isBlocked) {
           //-----------------------
           const messages_div = document.getElementById("chat-messages");
@@ -124,7 +138,7 @@ export async function chat_js(hash) {
           messages_div.appendChild(messageWrapper);
           messages_div.scrollTop = messages_div.scrollHeight;
         } else {
-          alert("메시지를 입력하세요");
+		  showModal('chat', 'nomsg_err');
         }
       }
     }; //seycheon_block
@@ -137,7 +151,7 @@ export async function chat_js(hash) {
       const message = messageInputDOM.value;
 
       if (message === "") {
-        alert("메시지를 입력하세요");
+		showModal('chat', 'nomsg_err');
       } else {
         chatSocket.send(
           JSON.stringify({
@@ -189,3 +203,68 @@ async function checkBlockStatus(apply_user, accept_user, temp_csrftoken) {
   }
 }
 //-----------------------
+
+
+function set_style() {
+  return `
+    body {
+        background-color: #333; /* Dark gray background */
+        color: white;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+    h1 {
+        font-size: 3rem; /* Larger font size for the title */
+        font-weight: 700; /* Thicker font weight for the title */
+        text-align: center; /* Center the title */
+        padding: 20px; /* Add padding around the title */
+    }
+    .image-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+    .image-container img {
+        max-width: 40%; /* Smaller image size */
+        height: auto;
+    }
+
+    #room_list, #user_list {
+        flex: 1;
+        padding: 10px;
+    }
+
+    .list_div {
+        border: 2px solid white; /* adding outline to divs */
+        padding: 10px; /* optional, for spacing */
+        margin: 50px; /* optional, for spacing */
+        min-width: 200px; /* optional, to ensure a minimum width */
+        border-radius: 30px;
+    }
+    
+    #room_form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    
+    input[type="text"] {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .room-link {
+        background-color: teal;
+        color: white;
+    }
+    
+    button {
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #ffc107;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+  `
+}

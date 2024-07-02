@@ -1,72 +1,11 @@
 import router from "../../base/router.js"
-import { check_login } from "../utilities.js"
+import { check_login, delete_back_show, showModal } from "../utilities.js"
 
 export async function chatLobby_js() {
-
+    delete_back_show();
     // set style
     const style = document.getElementById("style");
-    style.innerHTML = 
-    `
-    body {
-        background-color: #333; /* Dark gray background */
-        color: white;
-        font-family: 'Noto Sans KR', sans-serif;
-    }
-    h1 {
-        font-size: 3rem; /* Larger font size for the title */
-        font-weight: 700; /* Thicker font weight for the title */
-        text-align: center; /* Center the title */
-        padding: 20px; /* Add padding around the title */
-    }
-    .image-container {
-        text-align: center;
-        margin: 20px 0;
-    }
-    .image-container img {
-        max-width: 40%; /* Smaller image size */
-        height: auto;
-    }
-
-    #room_list, #user_list {
-        flex: 1;
-        padding: 10px;
-    }
-
-    .list_div {
-        border: 2px solid white; /* adding outline to divs */
-        padding: 10px; /* optional, for spacing */
-        margin: 50px; /* optional, for spacing */
-        min-width: 200px; /* optional, to ensure a minimum width */
-        border-radius: 30px;
-    }
-    
-    #room_form {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-    }
-    
-    input[type="text"] {
-        margin-bottom: 10px;
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-    .room-link {
-        background-color: teal;
-        color: white;
-    }
-    
-    button {
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #ffc107;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-    `;
+    style.innerHTML = set_style();
 
 	setLanguage("chatlobby");
     // check login status
@@ -149,17 +88,83 @@ export async function chatLobby_js() {
 
             if (res.ok) {
                 const data = await res.json();
-                alert(`Room ${data.name} is created!`);
-                // location.href = '/#chatLobby';
-                router();
+				const modal = document.querySelector('.modal');
+				const newModal = new bootstrap.Modal(modal);
+				const modalBody = document.querySelector('.modal .modal-body p');
+				modalBody.innerHTML = `<span>'${data.name}' </span><span data-translate="noti">${window.lang[langNow].chatlobby.noti}</span>`;
+				newModal.show();
+				modal.addEventListener('hidden.bs.modal', function () {
+					router();
+				});
             } else {
-                const data = await res.json();
-                alert(data.error);
+				showModal('chatlobby', 'err');
             }
         })
-		// setLanguage(document.getElementById("languageSelector").value, "chatlobby");
-
     } catch(error) {
         console.error('chatLobby.app Error occurs : ', error);
     }
+}
+
+function set_style() {
+    return `
+    body {
+        background-color: #333; /* Dark gray background */
+        color: white;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+    h1 {
+        font-size: 3rem; /* Larger font size for the title */
+        font-weight: 700; /* Thicker font weight for the title */
+        text-align: center; /* Center the title */
+        padding: 20px; /* Add padding around the title */
+    }
+    .image-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+    .image-container img {
+        max-width: 40%; /* Smaller image size */
+        height: auto;
+    }
+
+    #room_list, #user_list {
+        flex: 1;
+        padding: 10px;
+    }
+
+    .list_div {
+        border: 2px solid white; /* adding outline to divs */
+        padding: 10px; /* optional, for spacing */
+        margin: 50px; /* optional, for spacing */
+        min-width: 200px; /* optional, to ensure a minimum width */
+        border-radius: 30px;
+    }
+    
+    #room_form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    
+    input[type="text"] {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .room-link {
+        background-color: teal;
+        color: white;
+    }
+    
+    button {
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #ffc107;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    `;
 }

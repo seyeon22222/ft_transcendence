@@ -1,5 +1,5 @@
 import { recordMessages } from "./chat_func.js";
-import { check_login } from "../utilities.js"
+import { check_login, showModal } from "../utilities.js"
 
 let chatSocket; // 기존 WebSocket 연결을 추적할 변수
 
@@ -10,6 +10,8 @@ export async function chatPrivate_js(hash) {
       location.href = `/#`;
       return;
   }
+
+  setLanguage('chatprivate');
 
   // get current private room's two username
   const slug = hash.slice(1);
@@ -45,9 +47,13 @@ export async function chatPrivate_js(hash) {
     });
 
     if (block_response.status !== 200) {
-      alert("상대방이 차단한 사용자입니다.");
-      location.href = `/#`;
-      return;
+		// alert("상대방이 차단한 사용자입니다.");
+		const modal = document.querySelector('.modal');
+		showModal('chatprivate', 'isblock_err');
+		modal.addEventListener('hidden.bs.modal', function () {
+			location.href = `/#`;
+			return;
+		});
     }
 
   } else {
@@ -109,6 +115,15 @@ export async function chatPrivate_js(hash) {
     chatSocket.onmessage = function (e) {
       const data = JSON.parse(e.data);
       if (data.message) {
+
+        // if current hash is not chatprivate, close websocket
+        const current_hash = window.location.hash;
+        if (current_hash.split("/")[0] !== "#chatprivate" && chatSocket) {
+          chatSocket.close();
+          chatSocket = null;
+          return;
+        }
+
         const messages_div = document.getElementById("chat-messages");
         const messageWrapper = document.createElement("div");
         messageWrapper.classList.add(
@@ -147,7 +162,7 @@ export async function chatPrivate_js(hash) {
         messages_div.appendChild(messageWrapper);
         messages_div.scrollTop = messages_div.scrollHeight;
       } else {
-        alert("메시지를 입력하세요");
+		showModal('chatprivate', 'nomsg_err');
       }
     };
 
@@ -159,7 +174,7 @@ export async function chatPrivate_js(hash) {
       const message = messageInputDOM.value;
 
       if (message === "") {
-        alert("메시지를 입력하세요");
+        showModal('chatprivate', 'nomsg_err');
       } else {
         chatSocket.send(
           JSON.stringify({
