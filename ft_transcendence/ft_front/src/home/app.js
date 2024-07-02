@@ -135,6 +135,10 @@ function logout_button_eventhandler(button) {
             });
 
             if (response.ok) {
+                if (window.i_socket !== null) {
+                    window.i_socket.close();
+                    window.i_socket = null;
+                }
 				const modal = document.querySelector('.modal');
 				showModal('home', 'logout_noti');
 				modal.addEventListener('hidden.bs.modal', function () {

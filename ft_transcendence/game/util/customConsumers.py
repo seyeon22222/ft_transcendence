@@ -1,6 +1,7 @@
 import json
 import asyncio
 import requests
+from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import customInfo
 
@@ -50,9 +51,18 @@ class CustomConsumer(AsyncWebsocketConsumer):
             }
             response = requests.post(backend_url, json=params)
         if self.info.time != -1 :
-            self.info.time = 0
-            
-    
+            if self.player == 1:
+                match_result = 2
+            elif self.player == 2:
+                match_result = 1
+            backend_url = 'http://backend:8000/match/matchresult/' + list(self.room_name.split('_'))[-1]
+            game_results = {
+                'match_date': datetime.now().isoformat(),
+                'match_result': match_result,
+                'is_active': False,
+            }
+            response = requests.post(backend_url, json=game_results)
+
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
@@ -152,7 +162,18 @@ class TCustomConsumer(AsyncWebsocketConsumer):
             }
             response = requests.post(backend_url, json=params)
         if self.info.time != -1 :
-            self.info.time = 0
+            if self.player == 1:
+                match_result = 2
+            elif self.player == 2:
+                match_result = 1
+            backend_url = 'http://backend:8000/match/tournamentresult/' + list(self.room_name.split('_'))[-1]
+            game_results = {
+                    'match_date': datetime.now().isoformat(),
+                    'match_result': match_result,
+                    'player1': list(self.room_name.split('_'))[0],
+                    'player2': list(self.room_name.split('_'))[1]
+                }
+            response = requests.post(backend_url, json=game_results)
             
     
     async def receive(self, text_data):
@@ -263,7 +284,17 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
             }
             response = requests.post(backend_url, json=params)
         if self.info.time != -1 :
-            self.info.time = 0
+            if self.player == 1 or self.player == 3:
+                match_result = 2
+            elif self.player == 2 or self.player == 4:
+                match_result = 1
+            backend_url = 'http://backend:8000/match/multimatchresult/' + list(self.room_name.split('_'))[-1]
+            game_results = {
+                'match_date': datetime.now().isoformat(),
+                'match_result': match_result,
+                'is_active': False,
+            }
+            response = requests.post(backend_url, json=game_results)
             
     
     async def receive(self, text_data):
