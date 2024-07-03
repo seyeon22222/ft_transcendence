@@ -108,7 +108,7 @@ export async function multicustom_view(hash) {
   let flag = 0;
   let get_list_hash = get_hash.split("_");
   let match_id = get_list_hash[get_list_hash.length - 1];
-
+  setLanguage("custom");
   const csrftoken = Cookies.get("csrftoken");
   const response = await fetch(`/match/multimatchview/${match_id}`, {
     method: "GET",

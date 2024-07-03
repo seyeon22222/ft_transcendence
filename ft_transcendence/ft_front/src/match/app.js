@@ -29,6 +29,8 @@ function makeButton(Button, matchId, data, player_data) {
     const startButton = document.createElement("button");
     startButton.innerHTML = "매치 시작";
     startButton.id = "match_start_button";
+    startButton.className = "match_start_button";
+    startButton.setAttribute('data-translate', 'match_start_button');
     if (data.is_flag !== false)
       Button.appendChild(startButton);
     

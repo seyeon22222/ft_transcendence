@@ -135,6 +135,15 @@ window.lang = {
 			noti: "채팅방 생성 완료",
 			err: "채팅방 생성 실패",
 		},
+		match: {
+			homebtn: "홈",
+			langbtn: "언어",
+			match_start_button: "매치 시작",
+		},
+		multi: {
+			homebtn: "홈",
+			langbtn: "언어",
+		},
 		matchlobby: {
 			homebtn: "홈",
 			langbtn: "언어",
@@ -166,7 +175,21 @@ window.lang = {
 			accept: "수락",
 			err: "경고",
 			noti: "알림",
-		}
+		},
+		custom: {
+			homebtn: "홈",
+			langbtn: "언어",
+			startbtn: "시작",
+			title: "설정",
+			width: "너비",
+			height: "높이",
+			degree: "각도",
+			red: "빨강[0~255]",
+			green: "초록[0~255]",
+			blue: "파랑[0~255]",
+			save: "저장",
+			cancel: "취소",
+		},
 	},
 	en: {
 		home: {
@@ -304,6 +327,15 @@ window.lang = {
 			noti: "Chat room creation complete",
 			err: "Failed to create a chat room",
 		},
+		match: {
+			homebtn : "Home",
+			langbtn: "Language",
+			match_start_button: "Match Start",
+		},
+		multi: {
+			homebtn : "Home",
+			langbtn: "Language",
+		},
 		matchlobby: {
 			homebtn: "Home",
 			langbtn: "Language",
@@ -334,6 +366,20 @@ window.lang = {
 			match_complete: "Matching Completed: ",
 			accept: "Accept",
 			err: "ERROR",
+		},
+		custom: {
+			homebtn : "Home",
+			langbtn: "Language",
+			startbtn: "Start",
+			title: "Setting",
+			width: "width",
+			height: "height",
+			degree: "degree",
+			red: "red[0~255]",
+			green: "green[0~255]",
+			blue: "blue[0~255]",
+			save: "save",
+			cancel: "cancel",
 		}
 	},
 	ja: {
@@ -472,6 +518,15 @@ window.lang = {
 			noti: "チャットルーム作成完了",
 			err: "チャットルーム作成失敗",
 		},
+		match: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+			match_start_button: "マッチ開始",
+		},
+		multi: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+		},
 		matchlobby: {
 			homebtn: "ホーム",
 			langbtn: "言語",
@@ -502,7 +557,21 @@ window.lang = {
 			match_complete: "マッチング完了: ",
 			accept: "受諾",
 			err: "エラー",
-		}
+		},
+		custom: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+			startbtn: "スタート",
+			title: "設定",
+			width: "幅 ",
+			height: "高度",
+			degree: "角度",
+			red: "赤色[0~255]",
+			green: "緑色[0~255]",
+			blue: "青色[0~255]",
+			save: "貯蔵",
+			cancel: "キャンセル",
+		},
 	}
 };
 
@@ -605,5 +674,7 @@ language.addEventListener("change", async (event) => {
 	category = user_location[0];
 	if (category.length === 0)
 		category = "home";
+	if (category === "customm" || category === "customt" || category === "custommul")
+		category = "custom";
 	setLanguage(category);
 });

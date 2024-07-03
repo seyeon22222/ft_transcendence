@@ -273,17 +273,19 @@ export class MouseEvent {
     }
 
     setUp(objects, ray) {
-        const modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
+        
+        const modal = this.settingModal();
         let tmp_event = (event) => {
             if (MouseEvent.new_object === null || MouseEvent.start_flag)
                 return;
             ray.setRay(event.clientX, event.clientY);
             MouseEvent.m_flag = 0;
             MouseEvent.c_flag = 0;
-            
+
             if (MouseEvent.new_object.collisionRay(ray.ray_des) === true)
                 modal.show();
         }
+
         window.addEventListener('mouseup', tmp_event);
         this.m_event = tmp_event;
 
@@ -432,5 +434,22 @@ export class MouseEvent {
         this.input_types.push('blue');
         this.input_events.push(tmp_event);
         document.getElementById('blue').addEventListener('input', tmp_event);
+    }
+
+    settingModal() {
+        const langNow = document.getElementById("languageSelector").value;
+        const modal = new bootstrap.Modal(document.querySelector('.modal'));
+        const keyword = {
+            '.modal-title' : 'title', '.width' : 'width', 
+            '.height' : 'height', '.degree' : 'degree',
+            '.red' : 'red', '.green' : 'green', '.blue': 'blue',
+            '.save' : 'save', '.cancel' : 'cancel'};
+        Object.entries(keyword).forEach(([key, value]) => {
+            const set = document.querySelector(`${key}`);
+            set.innerText = window.lang[langNow]['custom'][`${value}`];
+            set.setAttribute('data-translate', `${value}`);
+        });
+        
+        return modal;
     }
 }
