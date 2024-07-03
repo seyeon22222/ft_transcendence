@@ -59,7 +59,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         self.task.cancel()
-        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
         if self.players == 1:
             del self.consumers[self.room_group_name]
             match_result = 2
@@ -141,19 +140,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self.players == None:
             if (player == 1 or player == 2):
                self.players = player
-            # else:
-            #     if (uuid == (self.room_name.split('_'))[1]):
-            #         self.players = 1
-            #     else: 
-            #         self.players = 2
         else:
-        #     if (uuid == (self.room_name.split('_'))[1]):
-        #         self.players = 1
-        #     else: 
-        #         self.players = 2
-        #     print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
-        # else:
-        #     if player == None
             player = int(player)
         for i in range(0, 2):
             if (message == 'up' and player == i + 1):
@@ -219,7 +206,6 @@ class TGameConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         
         self.task.cancel()
-        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
         if self.players == 1:
             del self.consumers[self.room_group_name]
             match_result = 2
@@ -272,8 +258,6 @@ class TGameConsumer(AsyncWebsocketConsumer):
                     'player2': list(self.room_name.split('_'))[1]
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
             elif self.b.point2 == 5:
                 self.b.is_active = 0
                 backend_url = 'http://backend:8000/match/tournamentresult/' + list(self.room_name.split('_'))[-1]
@@ -284,8 +268,6 @@ class TGameConsumer(AsyncWebsocketConsumer):
                     'player2': list(self.room_name.split('_'))[1]
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
             if self.b.is_active == 0:
                 self.game_loop = False
             await self.send(json.dumps({
@@ -307,19 +289,7 @@ class TGameConsumer(AsyncWebsocketConsumer):
         if self.players == None:
             if (player == 1 or player == 2):
                self.players = player
-            # else:
-            #     if (uuid == (self.room_name.split('_'))[1]):
-            #         self.players = 1
-            #     else: 
-            #         self.players = 2
         else:
-        #     if (uuid == (self.room_name.split('_'))[1]):
-        #         self.players = 1
-        #     else: 
-        #         self.players = 2
-        #     print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
-        # else:
-        #     if player == None
             player = int(player)
         for i in range(0, 2):
             if (message == 'up' and player == i + 1):
@@ -392,7 +362,6 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         self.task.cancel()
-        print("=======================================self.players : " + str(self.players) + " self.is_active : " + str(self.b.is_active) + "=====================")
         if self.players == 1 or self.players == 3:
             del self.consumers[self.room_group_name]
             match_result = 2
@@ -448,8 +417,6 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
                     'is_active': False,
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
             elif self.b.point2 == 5:
                 self.b.is_active = 0
                 backend_url = 'http://backend:8000/match/multimatchresult/' + list(self.room_name.split('_'))[-1]
@@ -459,8 +426,6 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
                     'is_active': False,
                 }
                 response = requests.post(backend_url, json=game_results)
-                # print(response.status_code)
-                # print(response.text)
             if self.b.is_active == 0:
                 self.game_loop = False
             await self.send(json.dumps({
@@ -484,19 +449,7 @@ class MultiGameConsumer(AsyncWebsocketConsumer):
         if self.players == None:
             if (player == 1 or player == 2 or player == 3 or player == 4):
                self.players = player
-            # else:
-            #     if (uuid == (self.room_name.split('_'))[1]):
-            #         self.players = 1
-            #     else: 
-            #         self.players = 2
         else:
-        #     if (uuid == (self.room_name.split('_'))[1]):
-        #         self.players = 1
-        #     else: 
-        #         self.players = 2
-        #     print('uuid: ' + uuid + " ===== "+(self.room_name.split('_'))[1] + " ===== " + str(self.players))
-        # else:
-        #     if player == None
             player = int(player)
         for i in range(0, 4):
             if (message == 'up' and player == i + 1):

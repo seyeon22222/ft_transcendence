@@ -101,22 +101,6 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
             }
         }
     }, 1000);
-
-    const acceptBtn = document.getElementById('acceptBtn');
-    acceptBtn.onclick = async function(event) {
-        event.preventDefault();
-        acceptBtn.textContent = ``;
-        clearInterval(intervalId);
-        if (g_type === 'm')
-            m_accept(invitePopup, g_id);
-        else if (g_type === 't')
-            t_accept(invitePopup, player1, player2, g_id);
-        else if (g_type === 'mul') {
-            const player3 = data.player3;
-            const player4 = data.player4;
-            mul_accept(invitePopup, player1, player2, player3, player4, g_id);
-        }
-    }
 }
 
 async function m_accept(invitePopup, g_id) {

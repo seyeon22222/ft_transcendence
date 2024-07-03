@@ -1,6 +1,15 @@
 import { check_login, showModal } from "../utilities.js"
 
+window.addEventListener("popstate", function (event) {
+    // WebSocket 연결 닫기
+    if (window.t_socket && window.t_socket.readyState !== WebSocket.CLOSED && location.href !== window.prevUrl) {
+        window.t_socket.close();
+        window.t_socket = null;
+    }
+});
+
 export async function tournament_view(hash) {
+    window.prevUrl = location.href;
     const style = document.getElementById("style");
     style.innerHTML = tournament_style();
 	setLanguage('tournament');

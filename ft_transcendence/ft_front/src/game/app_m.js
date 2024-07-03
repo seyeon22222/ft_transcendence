@@ -38,11 +38,13 @@ class Main {
 
   static score1 = 0;
   static score2 = 0;
+  static loop = true;
 
   static webfunc(get_hash) {
     Main.ball = new Ball();
     Main.stick1 = new Stick([-15, 1.5, 0]);
     Main.stick2 = new Stick([15, 1.5, 0]);
+    Main.loop = true;
     console.log(Main.players);
     let flag = 1;
     // WebSocket 연결 시도
@@ -69,6 +71,7 @@ class Main {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("keyup", handleKeyUp);
       window.removeEventListener("keydown", handleKeyDown);
+      Main.loop = false;
     });
 
 		const handleResize = () => {
@@ -147,35 +150,24 @@ class Main {
       let score2 = data["score2"];
       let is_active = data["is_active"];
 
-      if (score1 == 5 || score2 == 5) {
-        let get_list_hash = get_hash.split("_");
-        // is_active = 0;
-        console.log(
-          "===========href=========",
-          `/#match/${get_list_hash[get_list_hash.length - 1]}`
-        );
-      } 
-      else {
-        document.getElementById("game-score").innerHTML =
-          score1 + " : " + score2;
-        for (let i = 0; i < 3; i++) {
+      document.getElementById("game-score").innerHTML = score1 + " : " + score2;
+      for (let i = 0; i < 3; i++) {
           Main.stick1.pos[i] = paddle1_pos[i];
           Main.stick2.pos[i] = paddle2_pos[i];
           Main.ball.pos[i] = ball_pos[i];
-        }
-        if (Main.players == 0) {
+      }
+      if (Main.players == 0) {
           Main.players = window.players;
           flag = 0;
-        }
-        if (!flag) {
+      }
+      if (!flag) {
           Main.entry();
           flag = 1;
-        }
-
-        }
+      }
       if (is_active == 0) {
         let get_list_hash = get_hash.split("_");
         await closeWebSocket();
+        Main.loop = false;
         location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
       }
     }
@@ -413,7 +405,8 @@ class Main {
   }
   static update() {
     Main.render();
-    requestAnimationFrame(Main.update);
+    if (Main.loop)
+      requestAnimationFrame(Main.update);
   }
 }
 
