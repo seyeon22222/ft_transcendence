@@ -63,7 +63,7 @@ class Main {
 				sleep(1000);
 				ws = null;
 			}
-			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && window.prevhref !== location.href) {
+			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && location.href !== window.tournament_url && window.prevhref !== location.href) {
 				window.tournament_socket.close();
 				window.tournament_socket = null;
 			}
@@ -202,20 +202,20 @@ export async function game_t_js(hash) {
 			if (flag == 1) {
 				Main.webfunc(get_hash, match_id);
 			} else {
-				location.href = "/#";
+				location.href = window.tournament_url;
 			}
 			} else {
-				location.href = "/#";
+				location.href = window.tournament_url;
 				const error = await response_name.json();
 				console.error("user info API 요청 실패", error);
 			}
 		} 
 		else {
-			location.href = "/#";
+			location.href = window.tournament_url;
 		}
 	} 
 	else {
-		location.href = "/#";
+		location.href = window.tournament_url;
 		const error = await response.json();
 		console.error("match API 요청 실패", error);
 	}

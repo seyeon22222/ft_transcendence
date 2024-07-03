@@ -101,6 +101,7 @@ class Main {
 					Main.player = window.players;
 			}
 			if (is_active == 0) {
+				let get_list_hash = get_hash.split("_");
 				location.href = `/#match/${get_list_hash[get_list_hash.length - 1]}`;
 			}
 		}

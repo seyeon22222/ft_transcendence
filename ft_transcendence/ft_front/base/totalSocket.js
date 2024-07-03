@@ -41,6 +41,7 @@ export async function initializeWebsocket() {
         window.uuid = data[0].user_id;
 
         window.tournament_socket = null;
+        window.tournament_url = null;
 
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
         window.i_socket = new WebSocket(
@@ -51,67 +52,6 @@ export async function initializeWebsocket() {
         };
 
         window.i_socket.onclose = function(event) {
-            if (window.g_type === 'm') {
-                let matchResult = 1;
-                if (window.uuid_p1 == window.uuid)
-                    matchResult = 2;
-                else if (window.uuid_p2 == window.uuid)
-                    matchResult = 1;
-                let game_results = {
-                    match_date: new Date().toISOString(),
-                    match_result: matchResult,
-                    is_active: false
-                }
-                const response = fetch(`/match/matchresult/${window.g_id}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrftoken,
-                    },
-                    body: JSON.stringify(game_results),
-                });
-            }
-            else if (window.g_type === 't') {
-                let matchResult = 1;
-                if (window.uuid_p1 == window.uuid)
-                    matchResult = 2;
-                else if (window.uuid_p2 == window.uuid)
-                    matchResult = 1;
-                let game_results = {
-                    match_date: new Date().toISOString(),
-                    match_result: matchResult,
-                    player1: window.uuid_p1,
-                    player2: window.uuid_p2
-                }
-                const response = fetch(`/match/tournamentresult/${window.g_id}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrftoken,
-                    },
-                    body: JSON.stringify(game_results),
-                });
-            }
-            else if (window.g_type === 'mul') {
-                let matchResult = 1;
-                if (window.uuid_p1 == window.uuid || window.uuid_p3 == window.uuid)
-                    matchResult = 2;
-                else if (window.uuid_p2 == window.uuid || window.uuid_p4 == window.uuid)
-                    matchResult = 1;
-                let game_results = {
-                    match_date: new Date().toISOString(),
-                    match_result: matchResult,
-                    is_active: false
-                }
-                const response = fetch(`/match/multimatchresult/${window.g_id}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrftoken,
-                    },
-                    body: JSON.stringify(game_results),
-                });
-            }
         };
 
         window.i_socket.onmessage = function (e) {

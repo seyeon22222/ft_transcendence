@@ -20,7 +20,7 @@ class Main {
         		ws.close();
         		ws = null;
       		}
-			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && window.prevhref !== location.href) {
+			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && location.href !== window.tournament_url && window.prevhref !== location.href) {
 				window.tournament_socket.close();
 				window.tournament_socket = null;
 			}
@@ -153,21 +153,21 @@ export async function tcustom_view(hash) {
           else
             View.entry(get_hash, get_list_hash[0], get_list_hash[1], match_id);
         } else {
-          location.href = "/#";
+          location.href = window.tournament_url;
         }
       }
       else {
-        location.href = "/#";
+        location.href = window.tournament_url;
         const error = await response_name.json();
         console.error("UserInfo API 요청 실패", error);
 			}
 		} 
 		else {
-			location.href = "/#";
+			location.href = window.tournament_url;
 		}
 	} 
 	else {
-		location.href = "/#";
+		location.href = window.tournament_url;
 		const error = await response.json();
 		console.error("tournament match API 요청 실패", error);
 	}

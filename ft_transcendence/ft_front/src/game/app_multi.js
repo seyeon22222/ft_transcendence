@@ -108,6 +108,7 @@ class Main {
 				}
 			}
 			if (is_active == 0) {
+				let get_list_hash = get_hash.split("_");
 				location.href = `/#multi/2:2 Match ${get_list_hash[get_list_hash.length - 1]}`;
 			}
 		};

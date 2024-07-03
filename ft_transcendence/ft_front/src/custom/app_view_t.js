@@ -24,7 +24,7 @@ export class View {
 				ws.close();
 				ws = null;
 			}
-			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && window.prevhref !== location.href) {
+			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && location.href !== window.tournament_url && window.prevhref !== location.href) {
 				window.tournament_socket.close();
 				window.tournament_socket = null;
 			}

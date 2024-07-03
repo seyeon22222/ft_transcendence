@@ -1,22 +1,17 @@
 import { check_login, showModal } from "../utilities.js"
 
 window.addEventListener("popstate", function () {
-    if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && location.href !== window.prevUrl && window.prevhref !== location.href) {
+    if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && location.href !== window.tournament_url && window.prevhref !== location.href) {
         window.tournament_socket.close();
         window.tournament_socket = null;
     }
 });
 
 export async function tournament_view(hash) {
-    window.prevUrl = location.href;
+    window.tournament_url = location.href;
     const style = document.getElementById("style");
     style.innerHTML = tournament_style();
 	setLanguage('tournament');
-
-    if (window.tournament_socket) {
-        window.tournament_socket.close();
-        window.tournament_socket = null;
-    }
 
     const check = await check_login();
     if (check === false) {
@@ -39,13 +34,12 @@ export async function tournament_view(hash) {
     const result = await updateTournamentInfo(arr);
     const { player, tournament_id: updatedTournamentId } = result;
     tournament_id = updatedTournamentId;
-
-    window.tournament_socket = new WebSocket(
-        `wss://${window.location.host}/ws/tournament/${tournament_id}/`
-    );
+    if (window.tournament_socket == null)
+        window.tournament_socket = new WebSocket(`wss://${window.location.host}/ws/tournament/${tournament_id}/`);
 
     window.tournament_socket.onopen = function(e) {
     }
+
     window.tournament_socket.onmessage = async function(e) {
         const data = JSON.parse(e.data);
 

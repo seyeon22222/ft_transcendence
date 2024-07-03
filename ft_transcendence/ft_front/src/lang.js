@@ -609,6 +609,7 @@ async function setLanguage(category) {
 }
 
 function updateTexts(langNow, category) {
+	console.log(category);
 	document.querySelectorAll('[data-translate]').forEach(element => {
 		const key = element.getAttribute('data-translate');
 		element.innerText = lang[langNow][category][key];
@@ -674,7 +675,7 @@ language.addEventListener("change", async (event) => {
 	category = user_location[0];
 	if (category.length === 0)
 		category = "home";
-	if (category === "customm" || category === "customt" || category === "custommul")
+	if (category === "customm" || category === "customt" || category === "custommulti")
 		category = "custom";
 	setLanguage(category);
 });
