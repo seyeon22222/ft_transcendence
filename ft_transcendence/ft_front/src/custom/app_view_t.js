@@ -24,6 +24,10 @@ export class View {
 				ws.close();
 				ws = null;
 			}
+			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && window.prevhref !== location.href) {
+				window.tournament_socket.close();
+				window.tournament_socket = null;
+			}
 			EventManager.deleteEvent("mouse");
 			View.loop = false;
 		});
@@ -63,6 +67,7 @@ export class View {
 				}
 			}
 			if (message === 'start' || time == 0) {
+				window.prevhref = "https://127.0.0.1:8000/#gamet/" + hash;
 				location.href = "/#gamet/" + hash;
 			}
     }

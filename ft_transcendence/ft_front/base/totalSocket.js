@@ -40,6 +40,8 @@ export async function initializeWebsocket() {
         const user_id = data[0].user_id;
         window.uuid = data[0].user_id;
 
+        window.tournament_socket = null;
+
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
         window.i_socket = new WebSocket(
             protocol + "//" + window.location.host + "/ws/message/" + user_id + "/"
@@ -223,6 +225,7 @@ async function t_accept(invitePopup, player1, player2, g_id) {
         const data = await response.json();
         url = data.hash;
         delete_back_show();
+        window.prevhref = `https://127.0.0.1:8000/#customt/${url}`;
         window.location.href = `/#customt/${url}`;
         invitePopup.style.display = 'none';
     } else {
@@ -256,3 +259,4 @@ async function mul_accept(invitePopup, player1, player2, player3, player4, g_id)
 
 createInvitePopup();
 check_socket();
+initializeWebsocket();

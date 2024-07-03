@@ -1,9 +1,9 @@
 import { check_login, showModal } from "../utilities.js"
 
 window.addEventListener("popstate", function () {
-    if (window.t_socket && window.t_socket.readyState !== WebSocket.CLOSED && location.href !== window.prevUrl) {
-        window.t_socket.close();
-        window.t_socket = null;
+    if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && location.href !== window.prevUrl && window.prevhref !== location.href) {
+        window.tournament_socket.close();
+        window.tournament_socket = null;
     }
 });
 
@@ -13,9 +13,9 @@ export async function tournament_view(hash) {
     style.innerHTML = tournament_style();
 	setLanguage('tournament');
 
-    if (window.t_socket) {
-        window.t_socket.close();
-        window.t_socket = null;
+    if (window.tournament_socket) {
+        window.tournament_socket.close();
+        window.tournament_socket = null;
     }
 
     const check = await check_login();
@@ -40,13 +40,13 @@ export async function tournament_view(hash) {
     const { player, tournament_id: updatedTournamentId } = result;
     tournament_id = updatedTournamentId;
 
-    window.t_socket = new WebSocket(
+    window.tournament_socket = new WebSocket(
         `wss://${window.location.host}/ws/tournament/${tournament_id}/`
     );
 
-    window.t_socket.onopen = function(e) {
+    window.tournament_socket.onopen = function(e) {
     }
-    window.t_socket.onmessage = async function(e) {
+    window.tournament_socket.onmessage = async function(e) {
         const data = JSON.parse(e.data);
 
         const current_hash = window.location.hash;
@@ -58,7 +58,8 @@ export async function tournament_view(hash) {
         }
     };
 
-    window.t_socket.onclose = function(e) {
+    window.tournament_socket.onclose = function(e) {
+        console.log('웹소켓 연결 끊김');
     };
 
     let t_data;

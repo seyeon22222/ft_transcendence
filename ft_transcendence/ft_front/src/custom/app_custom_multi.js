@@ -17,8 +17,8 @@ class Main {
 
 		window.addEventListener("popstate", function () {
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
-			ws.close();
-			ws = null;
+				ws.close();
+				ws = null;
 			}
 			EventManager.deleteEvent('mouse');
 			Main.loop = false;
@@ -37,10 +37,6 @@ class Main {
 			if (time != undefined)
 				document.getElementById("time").innerHTML = time;
 			if (message === 'start' || time == 0)
-				if (ws && ws.readyState !== WebSocket.CLOSED) {
-					ws.close();
-					ws = null;
-				  }
 				location.href = "/#gamemulti/" + hash;
 		};
 
@@ -126,7 +122,7 @@ export async function multicustom_view(hash) {
       data.player3_uuid === get_list_hash[2] &&
       data.player4_uuid === get_list_hash[3] &&
       data.is_start === false &&
-	  data.match_result === ''
+	  data.match_result === null
     ) {
       const response_name = await fetch("user/info", {
         method: "GET",

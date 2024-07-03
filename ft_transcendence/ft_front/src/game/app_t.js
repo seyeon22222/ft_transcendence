@@ -59,9 +59,13 @@ class Main {
 
 		window.addEventListener("popstate", function () {
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
-			ws.close();
-			sleep(1000);
-			ws = null;
+				ws.close();
+				sleep(1000);
+				ws = null;
+			}
+			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && window.prevhref !== location.href) {
+				window.tournament_socket.close();
+				window.tournament_socket = null;
 			}
 			Main.player = 0;
 			EventManager.deleteEvent("keyboard");
@@ -129,18 +133,12 @@ class Main {
 				if (response_t.ok) {
 					let data = await response_t.json();
 					let name_t = data.name;
-					await closeWebSocket();
+					window.prevhref = `https://127.0.0.1:8000/#tournament/${name_t}`;
 					location.href = `/#tournament/${name_t}`;
 				}
 			}
 		}
 
-		async function closeWebSocket() {
-			if (ws) {
-				ws.close();
-				ws = null;
-			}
-		}
 		Main.entry();
 	}
 	static entry() {

@@ -20,6 +20,10 @@ class Main {
         		ws.close();
         		ws = null;
       		}
+			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && window.prevhref !== location.href) {
+				window.tournament_socket.close();
+				window.tournament_socket = null;
+			}
       		EventManager.deleteEvent('mouse');
     		Main.loop = false;
     	});
@@ -36,12 +40,10 @@ class Main {
 
       		if (time != undefined)
         		document.getElementById("time").innerHTML = time;
-      		if (message === 'start' || time == 0)
-				if (ws && ws.readyState !== WebSocket.CLOSED) {
-					ws.close();
-					ws = null;
-				  }
+      		if (message === 'start' || time == 0){
+				window.prevhref = "https://127.0.0.1:8000/#gamet/" + hash;
 				location.href = "/#gamet/" + hash;
+			}
     	};
 
 		Setting.setPipe();
