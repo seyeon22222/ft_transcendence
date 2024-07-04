@@ -129,7 +129,8 @@ export async function chat_js(hash) {
           messages_div.appendChild(messageWrapper);
           messages_div.scrollTop = messages_div.scrollHeight;
         } else {
-		  showModal('chat', 'nomsg_err');
+          // 주석 채팅을 차단당하거나 차단한 사람이 같은 채팅방에 있는 경우 메시지 입력시 팝업메시지가 나옴
+		      // showModal('chat', 'nomsg_err');
         }
       }
     };

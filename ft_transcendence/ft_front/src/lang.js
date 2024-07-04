@@ -169,6 +169,7 @@ window.lang = {
 			dupready_noti: "중복 신청 할 수 없습니다",
 			under_noti: "토너먼트 참가자가 부족합니다",
 			loading_err: "토너먼트 정보를 불러오는데 실패했습니다",
+			no_leader: "방장이 참가하지 않았습니다",
 		},
 		message: {
 			match_complete: "매칭 완료: ",
@@ -361,6 +362,7 @@ window.lang = {
 			dupready_noti: "You can't make a duplicate application",
 			under_noti: "There are not enough participants in the tournament",
 			loading_err: "Failed to load tournament information",
+			no_leader: "The room leader has not joined",
 		},
 		message: {
 			match_complete: "Matching Completed: ",
@@ -552,6 +554,7 @@ window.lang = {
 			dupready_noti: "重複申請はできません",
 			under_noti: "トーナメント参加者が不足しています",
 			loading_err: "トーナメント情報の読み込みに失敗しました",
+			no_leader: "部屋長は参加しませんでした",
 		},
 		message: {
 			match_complete: "マッチング完了: ",

@@ -174,11 +174,30 @@ async function startTournament(tournament_id) {
             return;
         }
         const players = data.participants;
-        
+        let no_flag = true;
+        const response_name = await fetch("user/info", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken,
+            },
+            credentials: "include",
+        });
+        if (response_name.ok) {
+            let data = await response_name.json();
+            for (let i = 0; i < players.length; ++i) {
+                if (players[i].player == data[0].user_id)
+                    no_flag = false;
+            }
+        }
         if (players.length < 2) {
             showModal('tournament', 'under_noti');
             return;
             }
+        if (no_flag) {
+            showModal('tournament', 'no_leader');
+            return;
+        }
         await fetch(`match/t_list/${tournament_id}`, {
             method: 'POST',
             headers: {
