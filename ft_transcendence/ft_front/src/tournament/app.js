@@ -1,23 +1,17 @@
 import { check_login, showModal } from "../utilities.js"
 
-window.addEventListener("popstate", function (event) {
-    // WebSocket 연결 닫기
-    if (window.t_socket && window.t_socket.readyState !== WebSocket.CLOSED && location.href !== window.prevUrl) {
-        window.t_socket.close();
-        window.t_socket = null;
+window.addEventListener("popstate", function () {
+    if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && location.href !== window.tournament_url && window.prevhref !== location.href) {
+        window.tournament_socket.close();
+        window.tournament_socket = null;
     }
 });
 
 export async function tournament_view(hash) {
-    window.prevUrl = location.href;
+    window.tournament_url = location.href;
     const style = document.getElementById("style");
     style.innerHTML = tournament_style();
 	setLanguage('tournament');
-
-    if (window.t_socket) {
-        window.t_socket.close();
-        window.t_socket = null;
-    }
 
     const check = await check_login();
     if (check === false) {
@@ -40,27 +34,26 @@ export async function tournament_view(hash) {
     const result = await updateTournamentInfo(arr);
     const { player, tournament_id: updatedTournamentId } = result;
     tournament_id = updatedTournamentId;
+    if (window.tournament_socket == null)
+        window.tournament_socket = new WebSocket(`wss://${window.location.host}/ws/tournament/${tournament_id}/`);
 
-    window.t_socket = new WebSocket(
-        `wss://${window.location.host}/ws/tournament/${tournament_id}/`
-    );
-
-    window.t_socket.onopen = function(e) {
-        console.log("window.t_socket open");
+    window.tournament_socket.onopen = function(e) {
     }
 
-    window.t_socket.onmessage = async function() {
+    window.tournament_socket.onmessage = async function(e) {
+        const data = JSON.parse(e.data);
 
         const current_hash = window.location.hash;
 
-        if (current_hash !== `#tournament/${tournament_name}`)
+        if (current_hash !== `#tournament/${tournament_name}`) {
             return;
-        else
-            await updateTournamentInfo(arr);
+        } else {
+            const result = await updateTournamentInfo(arr);
+        }
     };
 
-    window.t_socket.onclose = function(e) {
-        console.log('window.t_socket closed');
+    window.tournament_socket.onclose = function(e) {
+        console.log('웹소켓 연결 끊김');
     };
 
     let t_data;
@@ -76,19 +69,19 @@ export async function tournament_view(hash) {
         });
         if (response_t.ok) {
             t_data = await response_t.json();
+        } else {
+            const error = await response_t.json();
+            console.error('API 요청 실패', error);
         }
     } catch (error) {
-        
+        console.error(error);
     }
     const tournament_start = document.getElementById("tournament_start");
     if (tournament_start !== null)
         tournament_start.addEventListener("click", (event) => startTournamentListener(event, tournament_id));
 
-    const apply_button = document.getElementById('tournament_button');
-    tournament_apply(apply_button, tournament_id, player, tournament_name, t_data);
-}
 
-function tournament_apply(apply_button, tournament_id, player, tournament_name, t_data) {
+    const apply_button = document.getElementById('tournament_button');
     apply_button.addEventListener("click", async (event) => {
         event.preventDefault();
         const nicknameInput = document.getElementById('nickname_input');
@@ -99,7 +92,6 @@ function tournament_apply(apply_button, tournament_id, player, tournament_name, 
             nicknameInput.value = '';
             return;
         }
-
         const game_csrftoken = Cookies.get('csrftoken');
         const game_check = await fetch(`match/t_list/${tournament_id}`, {
             method: 'GET',
@@ -109,16 +101,13 @@ function tournament_apply(apply_button, tournament_id, player, tournament_name, 
             },
             credentials: 'include',
         });
-
         if (game_check.ok) {
             const game_data = await game_check.json();
-
             if (game_data.is_active === false || game_data.is_flag === false) {
 				showModal('tournament', 'already_noti');
                 return ;
             }
         }
-
         try {
             if (player.length >= 8) {
 				showModal('tournament', 'over_noti');
@@ -145,14 +134,15 @@ function tournament_apply(apply_button, tournament_id, player, tournament_name, 
 				document.getElementById('nickname_input').value = '';
 				if (data.message !== null)
 					showModal('tournament', 'ready_noti');
-				modal.addEventListener('hidden.bs.modal', function () {
+				    modal.addEventListener('hidden.bs.modal', function () {
 					location.href = `/#tournament/${tournament_name}`;
 				});
             } else {
+                const error = await response.json();
 				showModal('tournament', 'dupready_noti');
             }
         } catch (error) {
-            
+            console.error(error);
         }
     });
 }
@@ -184,9 +174,28 @@ async function startTournament(tournament_id) {
             return;
         }
         const players = data.participants;
-        
+        let no_flag = true;
+        const response_name = await fetch("user/info", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken,
+            },
+            credentials: "include",
+        });
+        if (response_name.ok) {
+            let data = await response_name.json();
+            for (let i = 0; i < players.length; ++i) {
+                if (players[i].player == data[0].user_id)
+                    no_flag = false;
+            }
+        }
         if (players.length < 2) {
             showModal('tournament', 'under_noti');
+            return;
+            }
+        if (no_flag) {
+            showModal('tournament', 'no_leader');
             return;
         }
         await fetch(`match/t_list/${tournament_id}`, {
@@ -199,7 +208,6 @@ async function startTournament(tournament_id) {
         });
 
         const result = await handleByePlayer(players);
-
         for (let i = 0; i < result; i += 2) {
             const player1 = players[i];
             const player2 = players[i + 1];
@@ -222,6 +230,7 @@ async function handleByePlayer(players) {
     let user_id2;
     let tournament_id = players[players.length - 1].tournament;
     let change_two_flag = false;
+
     if (players.length === 3) {
         const semi_final = document.getElementById("semi_final2");
         semi_final.innerHTML = players[players.length - 1].nickname;
@@ -284,6 +293,7 @@ async function handleByePlayer(players) {
             index: index2,
             level: level
         };
+
         const response2 = await fetch(`match/matchapply/${tournament_id}`, {
             method: 'POST',
             headers: {
@@ -309,9 +319,6 @@ async function sendGameInvitation(tournament_id, player1, player2) {
         credentials: 'include',
         body: JSON.stringify({ player1: player1.player, player2: player2.player, id: tournament_id }),
     });
-    if (response.ok) {
-        console.log(`${player1.nickname}와 ${player2.nickname}에게 게임 초대가 전송되었습니다.`);
-    }
 }
 
 async function createTournamentMatch(tournament_id, player1, player2) {
@@ -324,12 +331,6 @@ async function createTournamentMatch(tournament_id, player1, player2) {
         },
         body : JSON.stringify({tournament_id : tournament_id, apply_user : player1.player, accept_user : player2.player})
     });
-
-    if (t_response.ok) {
-        const t_data = await t_response.json();
-    } else {
-        console.error('토너먼트 매치 생성 실패' + t_response.status);
-    }    
 }
 
 async function updateTournamentInfo(arr) {
@@ -349,10 +350,12 @@ async function updateTournamentInfo(arr) {
     if (response.ok) {
         const data = await response.json();
         let operator;
+        let flag;
         for (let i = 0; i < data.length; ++i) {
             if (equal_arr(arr, data[i].name.split(" "))) {
                 tournament_id = data[i].id;
                 operator = data[i].operator;
+                flag = data[i].is_active;
                 for (let j = 0; j < data[i].participants.length; ++j) {
                     player.push(data[i].participants[j]);
                 }
@@ -378,14 +381,19 @@ async function updateTournamentInfo(arr) {
                 const tournament_start = document.getElementById("button_container");
                 tournament_start.innerHTML = '';
             }
-        } else
+        } else {
             location.href = '/#';
+        }
 
         tour_view(player);
-        
-        if (player_check(player) === false)
+        if (player_check(player) === false) {
             tourstart_view(player);
+        }
+    } else {
+        const error = await response.json();
+        console.error(error);
     }
+
     return { player, tournament_id };
 }
 
@@ -404,7 +412,6 @@ function player_check(player) {
 }
 
 function tour_view(player) {
-
     const final = document.getElementById(`final`);
     final.innerHTML = '';
     for (let i = 1; i <= 2; ++i) {
@@ -439,7 +446,6 @@ function tour_view(player) {
 }
 
 function tourstart_view(player) {
-    
     for (let i = 1; i <= player.length; ++i) {
         if (player[i - 1].level === 1) {
             const final_html = document.getElementById(`final`);
@@ -447,10 +453,10 @@ function tourstart_view(player) {
 
             if (player.length > 2) {
                 if (player.length > 4) {
-                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`);
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
                     semifinal_html.innerHTML = player[i - 1].nickname;
                 } else {
-                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 2)}`);
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 2)}`); // player[1,2] -> semi_final1, player[3,4] -> semi_final2
                     semifinal_html.innerHTML = player[i - 1].nickname;
                 }
             }
@@ -458,7 +464,7 @@ function tourstart_view(player) {
             if (player.length > 4) {
                 if (player.length === 6) {
                     if (i <= 4) {
-                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`);
+                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2
                         quarterfinal_html.innerHTML = player[i - 1].nickname;
                     } else if (i === 5) {
                         const semifinal_html = document.getElementById(`quarter_final3`);
@@ -468,17 +474,17 @@ function tourstart_view(player) {
                         semifinal_html.innerHTML = player[i - 1].nickname;
                     }
                 } else {
-                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`);
+                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
                     quarterfinal_html.innerHTML = player[i - 1].nickname;
                 }
             }
         } else if (player[i - 1].level === 2) {
             if (player.length > 2) {
                 if (player.length > 4) {
-                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`);
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 4)}`); // player[1,2,3,4] -> semi_final1, player[5,6,7,8] -> semi_final2
                     semifinal_html.innerHTML = player[i - 1].nickname;
                 } else {
-                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 2)}`);
+                    const semifinal_html = document.getElementById(`semi_final${Math.ceil(i / 2)}`); // player[1,2] -> semi_final1, player[3,4] -> semi_final2
                     semifinal_html.innerHTML = player[i - 1].nickname;
                 }
             }
@@ -486,17 +492,17 @@ function tourstart_view(player) {
             if (player.length > 4) {
                 if (player.length === 6) {
                     if (i <= 4) {
-                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`);
+                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2
                         quarterfinal_html.innerHTML = player[i - 1].nickname;
-                    } else if (i === 5) { 
+                    } else if (i === 5) {
                         const semifinal_html = document.getElementById(`quarter_final3`);
                         semifinal_html.innerHTML = player[i - 1].nickname;
                     } else {
                         const semifinal_html = document.getElementById(`quarter_final4`);
                         semifinal_html.innerHTML = player[i - 1].nickname;
                     }
-                } else { 
-                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`);
+                } else {
+                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
                     quarterfinal_html.innerHTML = player[i - 1].nickname;
                 }
             }
@@ -504,17 +510,17 @@ function tourstart_view(player) {
             if (player.length > 4) {
                 if (player.length === 6) {
                     if (i <= 4) {
-                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`);
+                        const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2
                         quarterfinal_html.innerHTML = player[i - 1].nickname;
                     } else if (i === 5) {
                         const semifinal_html = document.getElementById(`quarter_final3`);
                         semifinal_html.innerHTML = player[i - 1].nickname;
-                    } else { 
+                    } else {
                         const semifinal_html = document.getElementById(`quarter_final4`);
                         semifinal_html.innerHTML = player[i - 1].nickname;
                     }
                 } else {
-                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); 
+                    const quarterfinal_html = document.getElementById(`quarter_final${Math.ceil(i / 2)}`); // player[1,2] -> quarter_final1, player[3,4] -> quarter_final2, player[5,6] -> quarter_final3, player[7,8] -> quarter_final4
                     quarterfinal_html.innerHTML = player[i - 1].nickname;
                 }
             }
@@ -585,7 +591,6 @@ function tournament_style() {
         align-items: center;
         width: 100%;
         height: 100%;
-        border: 1px solid black;
         position: relative;
     }
     .match .team span {
@@ -653,26 +658,6 @@ function tournament_style() {
         height: 349px;
     }
 
-    .disable-image .image,
-    .disable-name .name,
-    .disable-score .score {
-        display: none !important;
-    }
-    .disable-borders {
-        border-width: 0px !important;
-    }
-    .disable-borders .team {
-        border-width: 0px !important;
-    }
-    .disable-seperator .match-top {
-        border-bottom: 0px !important;
-    }
-    .disable-seperator .match-bottom {
-        border-top: 0px !important;
-    }
-    .disable-seperator .team:first-child {
-        margin-bottom: 0px;
-    }
     .theme-dark {
         border-color: #040607;
     }

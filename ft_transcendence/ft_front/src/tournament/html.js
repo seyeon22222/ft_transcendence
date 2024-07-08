@@ -10,12 +10,10 @@ export function tournament_html() {
                         <div class="match-top team">
                             <span class="image"></span>
                             <span class="name" id="Round_8_1"></span>
-                            <span class="score">2</span>
                         </div>
                         <div class="match-bottom team">
                             <span class="image"></span>
                             <span class="name" id="Round_8_2"></span>
-                            <span class="score">1</span>
                         </div>
                         <div class="match-lines">
                             <div class="line one"></div>
@@ -29,12 +27,10 @@ export function tournament_html() {
                         <div class="match-top team">
                             <span class="image"></span>
                             <span class="name" id="Round_8_3"></span>
-                            <span class="score">1</span>
                         </div>
                         <div class="match-bottom team">
                             <span class="image"></span>
                             <span class="name" id="Round_8_4"></span>
-                            <span class="score">2</span>
                         </div>
                         <div class="match-lines">
                             <div class="line one"></div>
@@ -48,12 +44,10 @@ export function tournament_html() {
                         <div class="match-top team">
                             <span class="image"></span>
                             <span class="name" id="Round_8_5"></span>
-                            <span class="score">2</span>
                         </div>
                         <div class="match-bottom team">
                             <span class="image"></span>
                             <span class="name" id="Round_8_6"></span>
-                            <span class="score">0</span>
                         </div>
                         <div class="match-lines">
                             <div class="line one"></div>
@@ -67,12 +61,10 @@ export function tournament_html() {
                         <div class="match-top team">
                             <span class="image"></span>
                             <span class="name" id="Round_8_7"></span>
-                            <span class="score">2</span>
                         </div>
                         <div class="match-bottom team">
                             <span class="image"></span>
                             <span class="name" id="Round_8_8"></span>
-                            <span class="score">1</span>
                         </div>
                         <div class="match-lines">
                             <div class="line one"></div>
@@ -88,12 +80,10 @@ export function tournament_html() {
                         <div class="match-top team">
                             <span class="image"></span>
                             <span class="name" id="quarter_final1"></span>
-                            <span class="score">1</span>
                         </div>
                         <div class="match-bottom team">
                             <span class="image"></span>
                             <span class="name" id="quarter_final2"></span>
-                            <span class="score">2</span>
                         </div>
                         <div class="match-lines">
                             <div class="line one"></div>
@@ -107,12 +97,10 @@ export function tournament_html() {
                         <div class="match-top team">
                             <span class="image"></span>
                             <span class="name" id="quarter_final3"></span>
-                            <span class="score">1</span>
                         </div>
                         <div class="match-bottom team">
                             <span class="image"></span>
                             <span class="name" id="quarter_final4"></span>
-                            <span class="score">2</span>
                         </div>
                         <div class="match-lines">
                             <div class="line one"></div>
@@ -128,12 +116,10 @@ export function tournament_html() {
                         <div class="match-top team">
                             <span class="image"></span>
                             <span class="name" id="semi_final1"></span>
-                            <span class="score">3</span>
                         </div>
                         <div class="match-bottom team">
                             <span class="image"></span>
                             <span class="name" id="semi_final2"></span>
-                            <span class="score">2</span>
                         </div>
                         <div class="match-lines">
                             <div class="line three"></div>
@@ -164,19 +150,20 @@ export function tournament_html() {
             </div>
 
         </div>
-		
-        <div class="modal" tabindex="-1" style="display: none; color: black;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p></p>
-                    </div>
-                </div>
-            </div>  
+		<div class="modal_container" id="modal_container">
+			<div class="modal" tabindex="-1" style="display: none; color: black;">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title"></h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="test_button"></button>
+						</div>
+						<div class="modal-body">
+							<p></p>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
     `;
 }
