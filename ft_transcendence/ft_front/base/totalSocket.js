@@ -90,6 +90,7 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
     let remaintimer = 5;
     const intervalId = setInterval(async () => {
         const button_text = document.getElementById('acceptBtn');
+        button_text.style.display = 'block';
 		const user_lang = document.getElementById('languageSelector').value;
         if (remaintimer > 0) {
             popupMessage.textContent = `${window.lang[user_lang].message.match_complete} ${message}`;
