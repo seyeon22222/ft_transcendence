@@ -62,7 +62,6 @@ window.lang = {
 			wins: "승리 횟수",
 			loses: "패배 횟수",
 			win_percent: "승률",
-			reflections: "반사율",
 			match_his: "매치 히스토리",
 			recent_match: "최근 매치",
 			recent_match_res: "최근 매치 결과",
@@ -87,7 +86,6 @@ window.lang = {
 			wins: "승리 횟수",
 			loses: "패배 횟수",
 			win_percent: "승률",
-			reflections: "반사율",
 			match_his: "매치 히스토리",
 			recent_match: "최근 매치",
 			recent_match_res: "최근 매치 결과",
@@ -255,7 +253,6 @@ window.lang = {
 			wins: "Wins",
 			loses: "Loses",
 			win_percent: "Win Percentage",
-			reflections: "Reflections",
 			match_his: "MATCH HISTORY",
 			recent_match: "Recent Match",
 			recent_match_res: "Recent Match Result",
@@ -280,7 +277,6 @@ window.lang = {
 			wins: "Wins",
 			loses: "Loses",
 			win_percent: "Win Percentage",
-			reflections: "Reflections",
 			match_his: "MATCH HISTORY",
 			recent_match: "Recent Match",
 			recent_match_res: "Recent Match Results",
@@ -447,7 +443,6 @@ window.lang = {
 			wins: "勝利回数",
 			loses: "負け回数",
 			win_percent: "勝率",
-			reflections: "反射率",
 			match_his: "試合履歴",
 			recent_match: "最近の試合",
 			recent_match_res: "最近の試合結果",
@@ -472,7 +467,6 @@ window.lang = {
 			wins: "勝利回数",
 			loses: "負け回数",
 			win_percent: "勝率",
-			reflections: "反射率",
 			match_his: "試合履歴",
 			recent_match: "最近の試合",
 			recent_match_res: "最近の試合結果",
@@ -612,7 +606,6 @@ async function setLanguage(category) {
 }
 
 function updateTexts(langNow, category) {
-	console.log(category);
 	document.querySelectorAll('[data-translate]').forEach(element => {
 		const key = element.getAttribute('data-translate');
 		element.innerText = lang[langNow][category][key];

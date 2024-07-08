@@ -53,7 +53,7 @@ export async function tournament_view(hash) {
     };
 
     window.tournament_socket.onclose = function(e) {
-        console.log('웹소켓 연결 끊김');
+        
     };
 
     let t_data;
