@@ -85,7 +85,6 @@ export class BotControl {
 		if (this.counter > 1) {
 			this.counter -= 1;
 			this.predict();
-			console.log("PREDICT");
 		}
 		let paddle = this.table.stick[this.player_id];
 		this.table.setInput(this.player_id, Math.sign(this.target_y - paddle.transform.position.z)); // 초보

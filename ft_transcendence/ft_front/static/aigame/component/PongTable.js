@@ -46,14 +46,12 @@ export class PongTable {
 						this.stick[1].transform.position.z = 0;
 						// ball direction set
 						this.fsm_state = "Playing";
-						console.log("Transition to Playing");
 						break;
 					}
 					this.ball.transform.position.x = (this.ball.transform.position.x) * 0.9;
 					this.ball.transform.position.z = (this.ball.transform.position.z) * 0.9; // 중심으로 이동
 					this.stick[0].transform.position.z = this.stick[0].transform.position.z * 0.9;
 					this.stick[1].transform.position.z = this.stick[1].transform.position.z * 0.9;
-					// console.log("Ready:" + Math.round(time));
 					this.fsm_params.push(time - Time.deltaTime);
 				}return;
 				case "Playing":{
@@ -64,7 +62,6 @@ export class PongTable {
 				}return;
 				case "PostScore":{
 					const winner = this.fsm_params.pop();
-					console.log("Winner : " + winner);
 					this.fsm_state = "Ready";
 					this.fsm_params.push(3); //3초
 					break;

@@ -43,13 +43,10 @@ export async function initializeWebsocket() {
             protocol + "//" + window.location.host + "/ws/message/" + user_id + "/"
         );
 
-        console.log(window.i_socket);
         window.i_socket.onopen = function() {
-            console.log("window.i_socket opened");
         };
 
         window.i_socket.onclose = function(event) {
-            console.log("window.i_socket closed:", event);
         };
 
         window.i_socket.onmessage = function (e) {
@@ -62,7 +59,6 @@ export async function initializeWebsocket() {
         }
     } else {
         const error = await response.json();
-        console.log("처음 접속 시 발생해야하는 에러");
     }
 }
 
@@ -71,6 +67,7 @@ export async function check_socket() {
         window.i_socket.close();
         window.i_socket = null;
     }
+    
 }
 
 function openInvitePopup(message, player1, player2, g_type, g_id, data) {
@@ -82,7 +79,9 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
     let remaintimer = 5;
     const intervalId = setInterval(async () => {
         const button_text = document.getElementById('acceptBtn');
+        button_text.style.display = 'block';
 		const user_lang = document.getElementById('languageSelector').value;
+        const csrftoken = Cookies.get('csrftoken');
         if (remaintimer > 0) {
             popupMessage.textContent = `${window.lang[user_lang].message.match_complete} ${message}`;
             button_text.textContent = `${window.lang[user_lang].message.accept}(${remaintimer})`;
@@ -132,11 +131,11 @@ async function m_accept(invitePopup, g_id) {
         const data = await response.json();
         url = data.hash;
         delete_back_show();
-        window.location.href = `/#gamem/${url}`; // 게임 페이지로 이동
+        window.location.href = `/#gamem/${url}`;
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -159,7 +158,7 @@ async function t_accept(invitePopup, player1, player2, g_id) {
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -182,7 +181,7 @@ async function mul_accept(invitePopup, player1, player2, player3, player4, g_id)
         invitePopup.style.display = 'none';
     } else {
         const error = await response.error();
-        console.log(error);
+        console.error(error);
     }
 }
 

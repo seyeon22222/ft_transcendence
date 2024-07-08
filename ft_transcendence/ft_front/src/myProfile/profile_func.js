@@ -43,7 +43,7 @@ export async function dataChange(changeData, csrftoken) {
 		    showModal('profile', 'change_err');
       }
     } catch (error) {
-      console.log("Profile 변경 중 오류 발생 : ", error);
+      console.error("Profile 변경 중 오류 발생 : ", error);
     }
   });
 }
@@ -133,7 +133,7 @@ async function respondToMatch(matchId, response, self_data, csrftoken) {
     fetchMatchList(self_data, csrftoken);
   } else {
     const error = await responseFetch.json();
-    console.log(error);
+    console.error(error);
   }
 }
 

@@ -32,7 +32,6 @@ export class Loader {
 			let bitmap = await createImageBitmap(blob);
 			gl.texSubImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, 0, 0, size, size, gl.RGBA, gl.UNSIGNED_BYTE, bitmap);
 		}
-		console.log(gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_POSITIVE_Z);
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 		return (texture);
 	}
@@ -50,8 +49,6 @@ export class Loader {
 			gl.attachShader(program, vs);
 			gl.attachShader(program, fs);
 			gl.linkProgram(program);
-			console.log(gl.getShaderInfoLog(vs));
-			console.log(gl.getShaderInfoLog(fs));
 			return (program);
 		} catch (error) {
 			console.error(error);

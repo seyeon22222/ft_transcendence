@@ -64,11 +64,9 @@ export async function chat_js(hash) {
     const user_name = data[0].username;
 
     chatSocket.onopen = async function (e) {
-      console.log("WebSocket connection opened:", e);
     };
 
     chatSocket.onclose = function (e) {
-      console.log("WebSocket connection closed:", e);
     };
 
     chatSocket.onerror = function (e) {
@@ -154,7 +152,7 @@ export async function chat_js(hash) {
       messageInputDOM.value = "";
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -175,7 +173,6 @@ async function checkBlockStatus(apply_user, accept_user, temp_csrftoken) {
   if (blockResponse.ok) {
     return false;
   } else {
-    console.error("Block check API error");
     return true;
   }
 }

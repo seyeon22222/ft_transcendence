@@ -38,7 +38,6 @@ export async function recordMessages(hash) {
     body: JSON.stringify(bodyData),
   });
 
-  console.log("test for response!!!");
 
   if (!response.ok) {
     const modal = document.querySelector('.modal');

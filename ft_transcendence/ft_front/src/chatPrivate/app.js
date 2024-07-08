@@ -97,11 +97,9 @@ export async function chatPrivate_js(hash) {
     const user_name = data[0].username;
 
     chatSocket.onopen = async function (e) {
-      console.log("WebSocket connection opened:", e);
     };
 
     chatSocket.onclose = function (e) {
-      console.log("WebSocket connection closed:", e);
     };
 
     chatSocket.onerror = function (e) {
@@ -183,6 +181,6 @@ export async function chatPrivate_js(hash) {
       messageInputDOM.value = "";
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }

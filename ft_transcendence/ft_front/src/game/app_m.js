@@ -45,7 +45,6 @@ class Main {
     Main.stick1 = new Stick([-15, 1.5, 0]);
     Main.stick2 = new Stick([15, 1.5, 0]);
     Main.loop = true;
-    console.log(Main.players);
     let flag = 1;
     // WebSocket 연결 시도
     let ws = new WebSocket(
@@ -65,7 +64,6 @@ class Main {
         ws.close();
         sleep(1000);
         ws = null;
-        console.log("popstate : " + get_hash);
       }
       Main.players = 0;
       window.removeEventListener("resize", handleResize);
@@ -127,7 +125,6 @@ class Main {
     }
 
 		ws.onclose = () => {
-			console.log("ws close : " + get_hash);
 		};
 
     ws.onmessage = async function (e) {
@@ -183,8 +180,6 @@ class Main {
     const canvas = document.getElementById("canvas");
     canvas.height = 909;
     canvas.width = 1678;
-    console.log(canvas.height);
-    console.log(canvas.width);
 
 		const gl = canvas.getContext("webgl2");
 		if (!gl) {
@@ -326,7 +321,6 @@ class Main {
 		Main.program = program;
 
     let mesh2, mesh4;
-    console.log("players: " + Main.players);
     if (Main.players == 1) {
       buffer_view["position"] = pos_view;
       buffer_view["color"] = color_box_view;
@@ -335,7 +329,6 @@ class Main {
       Main.mesh4 = Mesh.from(gl, buffer_view, box1.indices);
     } 
     else {
-      console.log("player: ", 2);
         buffer_view["position"] = pos_view;
         buffer_view["color"] = color_view;
         Main.mesh2 = Mesh.from(gl, buffer_view, box1.indices);
@@ -418,7 +411,6 @@ export async function game_m_js(hash) {
   let match_id = get_list_hash[get_list_hash.length - 1]; //
 
   const csrftoken = Cookies.get("csrftoken");
-  console.log("matchvie/${match_id}", `/matchview/${match_id}`);
   const response = await fetch(`/match/matchview/${match_id}`, {
     //match serializer 반환값 가져옴
     method: "GET",
@@ -430,15 +422,11 @@ export async function game_m_js(hash) {
   });
   if (response.ok) {
     let data = await response.json();
-    console.log(data.player1_uuid, "===", get_list_hash[0]);
-    console.log(data.player2_uuid, "===", get_list_hash[1]);
-    console.log(data.winner_username, "===", "null");
     if (
       data.player1_uuid === get_list_hash[0] && //해당 match_id에 해당하는 player1 , player2 가 hash에 주어진 uuid와 일치하는지 확인
       data.player2_uuid === get_list_hash[1] &&
       data.winner_username === null //winner_username 이 값이 없는지 확인 ->값이 있으면 이미 완료된 게임이므로
     ) {
-      console.log("abc");
       const response_name = await fetch("user/info", {
         method: "GET",
         headers: {
@@ -467,7 +455,6 @@ export async function game_m_js(hash) {
       } else {
         location.href = "/#";
         const error = await response_name.json();
-        console.log("user info API 요청 실패", error);
       }
     } else {
       location.href = "/#";
@@ -475,6 +462,5 @@ export async function game_m_js(hash) {
   } else {
     location.href = "/#";
     const error = await response.json();
-    console.log("match API 요청 실패", error);
   }
 }

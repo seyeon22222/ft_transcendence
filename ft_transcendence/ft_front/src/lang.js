@@ -587,7 +587,6 @@ language.addEventListener("change", async (event) => {
 
 		if (test_res.ok) {
 			data = await test_res.json();
-			console.log(data);
 		}
 	
 		await fetch('user/language', {
