@@ -80,13 +80,27 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
     invitePopup.style.display = 'block';
     
     let remaintimer = 5;
-    const intervalId = setInterval(() => {
+    const intervalId = setInterval(async () => {
         const button_text = document.getElementById('acceptBtn');
 		const user_lang = document.getElementById('languageSelector').value;
         if (remaintimer > 0) {
             popupMessage.textContent = `${window.lang[user_lang].message.match_complete} ${message}`;
             button_text.textContent = `${window.lang[user_lang].message.accept}(${remaintimer})`;
             remaintimer--;
+            const response = await fetch("user/check_login", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrftoken,
+                },
+            })
+            if (response.status !== 200) {
+                clearInterval(intervalId);
+                popupMessage.textContent = '';
+                button_text.textContent = '';
+                button_text.style.display = 'none';
+                return ;
+            }
         } else {
             clearInterval(intervalId);
             button_text.textContent = ``;
