@@ -129,8 +129,6 @@ export async function chat_js(hash) {
           messageWrapper.appendChild(messageText);
           messages_div.appendChild(messageWrapper);
           messages_div.scrollTop = messages_div.scrollHeight;
-        } else {
-		      showModal('chat', 'nomsg_err');
         }
       }
     };
