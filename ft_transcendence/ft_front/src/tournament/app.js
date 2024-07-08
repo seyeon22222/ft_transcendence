@@ -591,7 +591,6 @@ function tournament_style() {
         align-items: center;
         width: 100%;
         height: 100%;
-        border: 1px solid black;
         position: relative;
     }
     .match .team span {
@@ -659,26 +658,6 @@ function tournament_style() {
         height: 349px;
     }
 
-    .disable-image .image,
-    .disable-name .name,
-    .disable-score .score {
-        display: none !important;
-    }
-    .disable-borders {
-        border-width: 0px !important;
-    }
-    .disable-borders .team {
-        border-width: 0px !important;
-    }
-    .disable-seperator .match-top {
-        border-bottom: 0px !important;
-    }
-    .disable-seperator .match-bottom {
-        border-top: 0px !important;
-    }
-    .disable-seperator .team:first-child {
-        margin-bottom: 0px;
-    }
     .theme-dark {
         border-color: #040607;
     }
