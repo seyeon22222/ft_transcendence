@@ -40,16 +40,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
 
         if (self.info.player_count == 0):
             del self.consumers[self.room_group_name]
-            await self.select_tournament()
 
-    @database_sync_to_async
-    def select_tournament(self):
-        tournament_temp = tournament.objects.get(pk=self.tournament_id)
-        if tournament_temp.is_active == False and tournament_temp.completed_matches > 0:
-            return
-        elif tournament_temp.completed_matches != 0:
-            tournament_temp.delete()
-            
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']
