@@ -1,4 +1,7 @@
+import { event_delete_popstate } from "../utilities.js";
+
 export async function match_view(hash) {
+  event_delete_popstate();
   const style = document.getElementById("style");
   style.innerHTML = match_style();
   const matchId = hash.slice(1);

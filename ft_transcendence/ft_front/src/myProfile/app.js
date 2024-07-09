@@ -1,7 +1,8 @@
 import { image_view, game_stat_view, match_info_view, dataChange, fetchMatchList } from './profile_func.js';
-import { check_login } from "../utilities.js"
+import { check_login, event_delete_popstate } from "../utilities.js"
 
 export async function profile_js() {
+	event_delete_popstate();
 	try {
 		const style = document.getElementById("style");
 		style.innerHTML = profile_style_html();

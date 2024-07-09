@@ -12,6 +12,7 @@ import { Vector3 } from "../../static/aigame/util/Vector3.js";
 import { gl } from "../../static/aigame/core/definition.js";
 import { ctx } from "../../static/aigame/core/definition.js";
 import { gl_canvas } from "../../static/aigame/core/definition.js";
+import { event_add_popstate } from "../utilities.js";
 
 window.flag = 0;
 
@@ -84,7 +85,9 @@ async function update() {
 
 export function ai_game_js() {	
 	main();
-	window.addEventListener('popstate', async function () {
-		window.flag = 1;
-	});
+	event_add_popstate(ai_popstate);
+}
+
+function ai_popstate(event) {
+	window.flag = 1;
 }

@@ -1,13 +1,14 @@
-import { check_login, showModal } from "../utilities.js"
+import { check_login, showModal, event_add_popstate} from "../utilities.js"
 
-window.addEventListener("popstate", function () {
+function tournament_view_popstate(event) {
     if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && location.href !== window.tournament_url && window.prevhref !== location.href) {
         window.tournament_socket.close();
         window.tournament_socket = null;
     }
-});
+}
 
 export async function tournament_view(hash) {
+    event_add_popstate(tournament_view_popstate);
     window.tournament_url = location.href;
     const style = document.getElementById("style");
     style.innerHTML = tournament_style();

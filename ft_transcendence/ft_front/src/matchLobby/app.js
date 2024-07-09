@@ -1,7 +1,8 @@
-import { check_login } from "../utilities.js"
+import { check_login, event_delete_popstate } from "../utilities.js"
 import { tournament_list_view, make_tournament, multimatch_list_view, match_list_view} from "./matchLobby_func.js"
 
 export async function matchLobby_view() {
+    event_delete_popstate();
     const style = document.getElementById("style");
     style.innerHTML = `
     body {

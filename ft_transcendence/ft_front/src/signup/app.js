@@ -1,6 +1,7 @@
-import { showModal } from "../utilities.js";
+import { showModal, event_delete_popstate } from "../utilities.js";
 
 export function signup_js() {
+    event_delete_popstate();
     const style = document.getElementById("style");
     signup_style(style);
 

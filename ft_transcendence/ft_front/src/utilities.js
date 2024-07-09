@@ -70,3 +70,15 @@ export function showModal(category, body) {
 	modalBody.setAttribute('data-translate', body);
 	modal.show();
 }
+
+export function event_delete_popstate() {
+	for (const elements of window.event_popstate) {
+		window.removeEventListener('popstate', elements)
+	}
+	window.event_popstate.length = 0;
+}
+
+export function event_add_popstate(event) {
+	window.addEventListener('popstate', event);
+	window.event_popstate.push(event);
+}

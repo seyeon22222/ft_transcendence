@@ -1,10 +1,10 @@
 import { recordMessage } from "./chat_func.js"
-import { check_login, showModal } from "../utilities.js"
+import { check_login, showModal, event_delete_popstate } from "../utilities.js"
 
 let chatSocket;
 
 export async function chat_js(hash) {
-
+  event_delete_popstate();
   const check = await check_login();
   if (check === false) {
       location.href = `/#`;

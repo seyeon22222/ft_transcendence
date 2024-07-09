@@ -1,8 +1,8 @@
 import { initializeWebsocket, check_socket } from "../../base/totalSocket.js";
-import { showModal } from "../utilities.js";
+import { showModal, event_delete_popstate } from "../utilities.js";
 
 export function login_js() {
-  
+  event_delete_popstate();
   const style = document.getElementById("style");
   login_style(style);
 	

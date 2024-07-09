@@ -11,7 +11,7 @@ import { Program } from "../../static/graphics/Program.js";
 import { Shader } from "../../static/graphics/Shader.js";
 import { VertexBuffer } from "../../static/graphics/VertexBuffer.js";
 import { Ball, Stick } from "../../static/phong/ball.js";
-import { delete_back_show } from "../utilities.js";
+import { delete_back_show, event_add_popstate } from "../utilities.js";
 
 class Main {
   static gl = null;
@@ -57,8 +57,7 @@ class Main {
         // 아무것도 하지 않고 대기
       }
     }
-
-    window.addEventListener("popstate", function () {
+    function tournament_popstate(event) {
       // WebSocket 연결 닫기
       if (ws && ws.readyState !== WebSocket.CLOSED) {
         ws.close();
@@ -70,7 +69,9 @@ class Main {
       window.removeEventListener("keyup", handleKeyUp);
       window.removeEventListener("keydown", handleKeyDown);
       Main.loop = false;
-    });
+    }
+
+    event_add_popstate(tournament_popstate);
 
     const handleResize = () => {
       canvas.height = window.innerHeight - 50;

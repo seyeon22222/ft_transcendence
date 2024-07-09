@@ -1,5 +1,7 @@
 import { delete_back_show } from '../src/utilities.js'
 
+window.event_popstate = []
+
 function createInvitePopup() {
     const popupContainer = document.getElementById('popupContainer');
 
