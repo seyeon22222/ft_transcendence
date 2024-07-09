@@ -179,8 +179,8 @@ class Main {
   }
   static entry() {
     const canvas = document.getElementById("canvas");
-    canvas.height = window.innerHeight - 50;
-    canvas.width = window.innerWidth - 50;
+    canvas.height = 909;
+    canvas.width = 1678;
 
     const gl = canvas.getContext("webgl2");
     if (!gl) {
