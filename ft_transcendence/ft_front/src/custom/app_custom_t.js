@@ -3,6 +3,7 @@ import { Ray } from "../../static/phong/Ray.js";
 import { EventManager } from "../../static/Event/EventManager.js";
 import { delete_back_show } from "../utilities.js";
 import { View } from "./app_view_t.js";
+import { event_add_popstate } from "../utilities.js";
 
 class Main {
 	static objects = [];
@@ -15,18 +16,20 @@ class Main {
     	let ws = new WebSocket("wss://" + window.location.host + "/ws/tcustom/" + hash + "/");
 		Main.loop = true;
 
-    	window.addEventListener("popstate", function () {
-      		if (ws && ws.readyState !== WebSocket.CLOSED) {
-        		ws.close();
-        		ws = null;
-      		}
+		function touranment_popstate(event) {
+			if (ws && ws.readyState !== WebSocket.CLOSED) {
+				ws.close();
+				ws = null;
+			  }
 			if (window.tournament_socket && window.tournament_socket.readyState !== WebSocket.CLOSED && location.href !== window.tournament_url && window.prevhref !== location.href) {
 				window.tournament_socket.close();
 				window.tournament_socket = null;
 			}
-      		EventManager.deleteEvent('mouse');
-    		Main.loop = false;
-    	});
+			  EventManager.deleteEvent('mouse');
+			Main.loop = false;
+		}
+		
+		event_add_popstate(touranment_popstate);
     
 		ws.onopen = () => {
 			let message = {message: window.players};

@@ -1,8 +1,9 @@
 import router from "../../base/router.js"
 import { formatDateTime } from "../info/info_func.js";
-import { check_login, showModal } from "../utilities.js"
+import { check_login, showModal, event_delete_popstate } from "../utilities.js"
 
 export async function matchLobby_view() {
+    event_delete_popstate();
     const style = document.getElementById("style");
     style.innerHTML = `
     body {

@@ -3,6 +3,7 @@ import { Ray } from "../../static/phong/Ray.js";
 import { EventManager } from "../../static/Event/EventManager.js";
 import { delete_back_show } from "../utilities.js";
 import { View } from "./app_view_multi.js";
+import { event_add_popstate } from "../utilities.js";
 
 class Main {
 	static objects = [];
@@ -15,14 +16,16 @@ class Main {
     	let ws = new WebSocket("wss://" + window.location.host + "/ws/multicustom/" + hash + "/");
 		Main.loop = true;
 
-		window.addEventListener("popstate", function () {
+		function multi_popstate(event) {
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
 				ws.close();
 				ws = null;
 			}
 			EventManager.deleteEvent('mouse');
 			Main.loop = false;
-		});
+		}
+		
+		event_add_popstate(multi_popstate);
     
 		ws.onopen = () => {
 			let message = {message: window.players};

@@ -1,8 +1,9 @@
 import router from "../../base/router.js"
-import { check_login, delete_back_show, showModal } from "../utilities.js"
+import { check_login, delete_back_show, showModal, event_delete_popstate } from "../utilities.js"
 
 export async function chatLobby_js() {
     delete_back_show();
+    event_delete_popstate();
     const style = document.getElementById("style");
     style.innerHTML = set_style();
 

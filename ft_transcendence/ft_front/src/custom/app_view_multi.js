@@ -2,7 +2,7 @@ import { Setting } from "../../static/graphics/Setting.js";
 import { EventManager } from "../../static/Event/EventManager.js";
 import { MouseEvent } from "../../static/Event/MouseEvent.js";
 import { ObjectManager } from "../../static/phong/ObjectManager.js";
-
+import { event_add_popstate } from "../utilities.js";
 
 export class View {
 	static objects = [];
@@ -19,14 +19,15 @@ export class View {
 
 		let ws = new WebSocket("wss://" + window.location.host + "/ws/multicustom/" + hash + "/");
 		
-		window.addEventListener("popstate", function () {
+		function view_popstate(event) {
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
 				ws.close();
 				ws = null;
 			}
 			EventManager.deleteEvent("mouse");
 			View.loop = false;
-		});
+		}
+		event_add_popstate(view_popstate);
 
 		ws.onopen = () => {
 			let message = {message: window.players};

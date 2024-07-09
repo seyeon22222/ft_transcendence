@@ -1,5 +1,7 @@
-export async function multiMatch_js(hash) {
+import { event_delete_popstate } from "../utilities.js";
 
+export async function multiMatch_js(hash) {
+    event_delete_popstate();
 	const style = document.getElementById("style");
   	style.innerHTML = multiMatch_style();
 

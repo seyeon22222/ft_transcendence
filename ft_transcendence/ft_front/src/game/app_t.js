@@ -2,6 +2,7 @@ import { EventManager } from "../../static/Event/EventManager.js";
 import { Setting } from "../../static/graphics/Setting.js";
 import { ObjectManager } from "../../static/phong/ObjectManager.js";
 import { delete_back_show } from "../utilities.js";
+import { event_add_popstate } from "../utilities.js";
 
 class Main {
 	static objects = [];
@@ -57,7 +58,8 @@ class Main {
 			}
 		}
 
-		window.addEventListener("popstate", function () {
+		
+		function touranment_popstate(event) {
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
 				ws.close();
 				sleep(1000);
@@ -71,7 +73,9 @@ class Main {
 			EventManager.deleteEvent("keyboard");
 			EventManager.deleteEvent("screen");
 			Main.loop = false;
-		});
+		}
+
+		event_add_popstate(touranment_popstate);
 
 		let messageQueue = [];
 		let processingMessages = false;

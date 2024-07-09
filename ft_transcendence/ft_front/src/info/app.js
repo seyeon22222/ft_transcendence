@@ -4,9 +4,10 @@ import {
   select_match_info_view,
 } from "./info_func.js";
 
-import { check_login, showModal } from "../utilities.js";
+import { check_login, showModal, event_delete_popstate } from "../utilities.js";
 
 export async function info_js() {
+  event_delete_popstate();
   let apply_user;
   let accept_user;
   let user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
