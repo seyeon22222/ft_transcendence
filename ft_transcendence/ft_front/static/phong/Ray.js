@@ -1,5 +1,5 @@
 import { Mat4x4, normalizeVec } from "../utils/Mat4x4.js";
-import { Mat4 } from "../utils/Mat4.js"; // comp
+import { Mat4 } from "../utils/Mat4.js";
 
 export class Ray {
     constructor(cam) {

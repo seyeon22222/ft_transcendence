@@ -1,7 +1,6 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import tinfo
-from django.shortcuts import get_object_or_404
 from .models import tournament
 from channels.db import database_sync_to_async
 
@@ -41,23 +40,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
 
         if (self.info.player_count == 0):
             del self.consumers[self.room_group_name]
-            await self.select_tournament()            
-            # await self.delete_tournament()
 
-    @database_sync_to_async
-    def select_tournament(self):
-        tournament_temp = tournament.objects.get(pk=self.tournament_id)
-        if tournament_temp.is_active == False and tournament_temp.completed_matches > 0:
-            return
-        elif tournament_temp.completed_matches != 0:
-            tournament_temp.delete()
-        
-
-    @database_sync_to_async
-    def delete_tournament(self):
-        tournament_temp = tournament.objects.get(pk=self.tournament_id)
-        tournament_temp.delete()
-            
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']

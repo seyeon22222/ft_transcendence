@@ -1,5 +1,3 @@
-// import { check_login } from '../utilities.js'
-
 window.lang = {
 	ko: {
 		home: {
@@ -64,7 +62,6 @@ window.lang = {
 			wins: "승리 횟수",
 			loses: "패배 횟수",
 			win_percent: "승률",
-			reflections: "반사율",
 			match_his: "매치 히스토리",
 			recent_match: "최근 매치",
 			recent_match_res: "최근 매치 결과",
@@ -89,7 +86,6 @@ window.lang = {
 			wins: "승리 횟수",
 			loses: "패배 횟수",
 			win_percent: "승률",
-			reflections: "반사율",
 			match_his: "매치 히스토리",
 			recent_match: "최근 매치",
 			recent_match_res: "최근 매치 결과",
@@ -137,6 +133,15 @@ window.lang = {
 			noti: "채팅방 생성 완료",
 			err: "채팅방 생성 실패",
 		},
+		match: {
+			homebtn: "홈",
+			langbtn: "언어",
+			match_start_button: "매치 시작",
+		},
+		multi: {
+			homebtn: "홈",
+			langbtn: "언어",
+		},
 		matchlobby: {
 			homebtn: "홈",
 			langbtn: "언어",
@@ -162,13 +167,28 @@ window.lang = {
 			dupready_noti: "중복 신청 할 수 없습니다",
 			under_noti: "토너먼트 참가자가 부족합니다",
 			loading_err: "토너먼트 정보를 불러오는데 실패했습니다",
+			no_leader: "방장이 참가하지 않았습니다",
 		},
 		message: {
 			match_complete: "매칭 완료: ",
 			accept: "수락",
 			err: "경고",
 			noti: "알림",
-		}
+		},
+		custom: {
+			homebtn: "홈",
+			langbtn: "언어",
+			startbtn: "시작",
+			title: "설정",
+			width: "너비",
+			height: "높이",
+			degree: "각도",
+			red: "빨강[0~255]",
+			green: "초록[0~255]",
+			blue: "파랑[0~255]",
+			save: "저장",
+			cancel: "취소",
+		},
 	},
 	en: {
 		home: {
@@ -233,7 +253,6 @@ window.lang = {
 			wins: "Wins",
 			loses: "Loses",
 			win_percent: "Win Percentage",
-			reflections: "Reflections",
 			match_his: "MATCH HISTORY",
 			recent_match: "Recent Match",
 			recent_match_res: "Recent Match Result",
@@ -258,7 +277,6 @@ window.lang = {
 			wins: "Wins",
 			loses: "Loses",
 			win_percent: "Win Percentage",
-			reflections: "Reflections",
 			match_his: "MATCH HISTORY",
 			recent_match: "Recent Match",
 			recent_match_res: "Recent Match Results",
@@ -306,6 +324,15 @@ window.lang = {
 			noti: "Chat room creation complete",
 			err: "Failed to create a chat room",
 		},
+		match: {
+			homebtn : "Home",
+			langbtn: "Language",
+			match_start_button: "Match Start",
+		},
+		multi: {
+			homebtn : "Home",
+			langbtn: "Language",
+		},
 		matchlobby: {
 			homebtn: "Home",
 			langbtn: "Language",
@@ -331,11 +358,26 @@ window.lang = {
 			dupready_noti: "You can't make a duplicate application",
 			under_noti: "There are not enough participants in the tournament",
 			loading_err: "Failed to load tournament information",
+			no_leader: "The room leader has not joined",
 		},
 		message: {
 			match_complete: "Matching Completed: ",
 			accept: "Accept",
 			err: "ERROR",
+		},
+		custom: {
+			homebtn : "Home",
+			langbtn: "Language",
+			startbtn: "Start",
+			title: "Setting",
+			width: "width",
+			height: "height",
+			degree: "degree",
+			red: "red[0~255]",
+			green: "green[0~255]",
+			blue: "blue[0~255]",
+			save: "save",
+			cancel: "cancel",
 		}
 	},
 	ja: {
@@ -401,7 +443,6 @@ window.lang = {
 			wins: "勝利回数",
 			loses: "負け回数",
 			win_percent: "勝率",
-			reflections: "反射率",
 			match_his: "試合履歴",
 			recent_match: "最近の試合",
 			recent_match_res: "最近の試合結果",
@@ -426,7 +467,6 @@ window.lang = {
 			wins: "勝利回数",
 			loses: "負け回数",
 			win_percent: "勝率",
-			reflections: "反射率",
 			match_his: "試合履歴",
 			recent_match: "最近の試合",
 			recent_match_res: "最近の試合結果",
@@ -474,6 +514,15 @@ window.lang = {
 			noti: "チャットルーム作成完了",
 			err: "チャットルーム作成失敗",
 		},
+		match: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+			match_start_button: "マッチ開始",
+		},
+		multi: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+		},
 		matchlobby: {
 			homebtn: "ホーム",
 			langbtn: "言語",
@@ -499,12 +548,27 @@ window.lang = {
 			dupready_noti: "重複申請はできません",
 			under_noti: "トーナメント参加者が不足しています",
 			loading_err: "トーナメント情報の読み込みに失敗しました",
+			no_leader: "部屋長は参加しませんでした",
 		},
 		message: {
 			match_complete: "マッチング完了: ",
 			accept: "受諾",
 			err: "エラー",
-		}
+		},
+		custom: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+			startbtn: "スタート",
+			title: "設定",
+			width: "幅 ",
+			height: "高度",
+			degree: "角度",
+			red: "赤色[0~255]",
+			green: "緑色[0~255]",
+			blue: "青色[0~255]",
+			save: "貯蔵",
+			cancel: "キャンセル",
+		},
 	}
 };
 
@@ -512,12 +576,9 @@ let langNow = 'ko';
 
 document.querySelectorAll('.dropdown-item').forEach(item => {
 	item.addEventListener('click', event => {
-	  event.preventDefault(); // 기본 동작(링크 이동) 방지
+	  event.preventDefault();
 	  const selectedValue = event.target.getAttribute('value');
-	//   console.log(`Selected value: ${selectedValue}`);
 	  langNow = selectedValue;
-
-	  // 선택된 값을 드롭다운 버튼에 표시
 	  document.getElementById('languageSelector').textContent = event.target.textContent;
 	});
   });
@@ -542,7 +603,6 @@ async function setLanguage(category) {
 	else
 		langNow = document.getElementById("languageSelector").value;
 	updateTexts(langNow, category);
-	// console.log(langNow, category);
 }
 
 function updateTexts(langNow, category) {
@@ -596,7 +656,6 @@ language.addEventListener("change", async (event) => {
 
 		if (test_res.ok) {
 			data = await test_res.json();
-			// console.log(data);
 		}
 	
 		const response = await fetch('user/language', {
@@ -607,16 +666,12 @@ language.addEventListener("change", async (event) => {
 			},
 			body: JSON.stringify({user_id : data[0].user_id, language: document.getElementById('languageSelector').value})
 		});
-		
-		if (response.ok) {
-			// const t_data = await response.json();
-			// console.log(t_data);
-			// console.log("change!", document.getElementById('languageSelector').value);
-		}
 	}
 	user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
 	category = user_location[0];
 	if (category.length === 0)
 		category = "home";
+	if (category === "customm" || category === "customt" || category === "custommulti")
+		category = "custom";
 	setLanguage(category);
 });

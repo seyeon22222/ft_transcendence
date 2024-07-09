@@ -1,4 +1,9 @@
+import { event_delete_popstate } from "../utilities.js";
+
 export async function match_view(hash) {
+  event_delete_popstate();
+  const style = document.getElementById("style");
+  style.innerHTML = match_style();
   const matchId = hash.slice(1);
   const csrftoken = Cookies.get("csrftoken");
   const response = await fetch(`match/matchview/${matchId}`, {
@@ -16,9 +21,6 @@ export async function match_view(hash) {
     const Button = document.getElementById("button_container");
     match_render(data);
     makeButton(Button, matchId, data, player_data);
-  } else {
-    // const error = await response.json();
-    // alert(error);
   }
 }
 
@@ -32,12 +34,14 @@ function makeButton(Button, matchId, data, player_data) {
     const startButton = document.createElement("button");
     startButton.innerHTML = "매치 시작";
     startButton.id = "match_start_button";
+    startButton.className = "match_start_button";
+    startButton.setAttribute('data-translate', 'match_start_button');
     if (data.is_flag !== false)
       Button.appendChild(startButton);
     
     startButton.addEventListener("click", (event) => start_match(event, matchId, data));
-  } else {
-    const existingButton = document.getElementById("match_start_button");
+    } else {
+      const existingButton = document.getElementById("match_start_button");
       if (existingButton) {
           existingButton.removeEventListener("click", start_match);
           Button.removeChild(existingButton);
@@ -57,11 +61,6 @@ async function start_match(event, matchId, data) {
       credentials: 'include',
       body: JSON.stringify({ player1: data.player1, player2: data.player2, id : matchId, is_flag : false}),
   });
-  if (response.ok) {
-      console.log(`${data.player1_username}와 ${data.player2_username}에게 게임 초대가 전송되었습니다.`);
-  } else {
-    //   alert('게임 초대 전송에 실패했습니다.');
-  }
 }
 
 function match_render(data) {
@@ -111,4 +110,139 @@ async function get_name() {
   }
   
   return (data_name);
+}
+
+function match_style() {
+  return `
+  body {
+  background-color: #333;
+  color: white;
+  font-family: 'Noto Sans KR', sans-serif;
+  }
+  h1 {
+  font-size: 3rem;
+  font-weight: 700;
+      text-align: center;
+      padding: 40px 0;
+  }
+  .match_start_button {
+        background-color: #ffc107;
+      justify-content: center;
+      align-content: center;
+  color: black;
+      padding: 10px 20px;
+      border-radius: 5px;
+      width: 200px;
+      height: 50px;
+      text-align: center;
+  }
+  .theme {
+      height: 100%;
+      width: 100%;
+      position: relative;
+  }
+  .bracket {
+      padding: 40px;
+      margin: 5px;
+  }
+  .bracket {
+      display: flex;
+      flex-direction: row;
+      position: relative;
+      justify-content: center;
+      align-content: center;
+  }
+  .column {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      justify-content: center;
+      align-content: center;
+  }
+  .match {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 240px;
+      max-width: 240px;
+      height: 62px;
+      margin: 12px 24px 12px 0;
+  }
+  .match .match-top {
+      border-radius: 2px 2px 0 0;
+  }
+  .match .match-bottom {
+      border-radius: 0 0 2px 2px;
+  }
+  .match .team {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+  }
+  .match .team span {
+      padding-left: 8px;
+  }
+  .match .team span:last-child {
+      padding-right: 8px;
+  }
+  .match .team:first-child {
+      margin-bottom: -1px;
+  }
+  .match-lines {
+      display: block;
+      position: absolute;
+      top: 50%;
+      bottom: 0;
+      margin-top: 0px;
+      right: -1px;
+  }
+  .match-lines .line {
+      background: red;
+      position: absolute;
+  }
+  .match-lines .line.one {
+      height: 1px;
+      width: 12px;
+  }
+  .match-lines .line.two {
+      height: 44px;
+      width: 1px;
+      left: 11px;
+  }
+  .match-lines .line.three {
+      height: 1px;
+      width: 24px;
+  }
+  .match-lines.alt {
+      left: -12px;
+  }
+  .match:nth-child(even) .match-lines .line.two {
+      transform: translate(0, -100%);
+  }
+  .column:first-child .match-lines.alt {
+      display: none;
+  }
+  .column:last-child .match-lines {
+      display: none;
+  }
+  .column:last-child .match-lines.alt {
+      display: block;
+  }
+  .column:nth-child(2) .match-lines .line.two {
+      height: 88px;
+  }
+  .theme-dark {
+      border-color: #040607;
+  }
+  .theme-dark .match-lines .line {
+      background: #36404e;
+  }
+  .theme-dark .team {
+      background: #232c36;
+  color: #e3e8ef;
+      border-color: #36404e;
+  }
+  `;
 }

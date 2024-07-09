@@ -1,10 +1,10 @@
 import { recordMessages } from "./chat_func.js";
-import { check_login, showModal } from "../utilities.js"
+import { check_login, showModal, event_delete_popstate } from "../utilities.js"
 
-let chatSocket; // 기존 WebSocket 연결을 추적할 변수
+let chatSocket;
 
 export async function chatPrivate_js(hash) {
-  // check login status
+  event_delete_popstate();
   const check = await check_login();
   if (check === false) {
       location.href = `/#`;
@@ -13,7 +13,6 @@ export async function chatPrivate_js(hash) {
 
   setLanguage('chatprivate');
 
-  // get current private room's two username
   const slug = hash.slice(1);
   const csrftoken = Cookies.get("csrftoken");
   let data;
@@ -31,7 +30,6 @@ export async function chatPrivate_js(hash) {
     const user1 = data.user1;
     const user2 = data.user2;
 
-    // check user is not blocked
     const formData = {
       apply_user: user1,
       accept_user: user2,
@@ -47,7 +45,6 @@ export async function chatPrivate_js(hash) {
     });
 
     if (block_response.status !== 200) {
-		// alert("상대방이 차단한 사용자입니다.");
 		const modal = document.querySelector('.modal');
 		showModal('chatprivate', 'isblock_err');
 		modal.addEventListener('hidden.bs.modal', function () {
@@ -81,7 +78,6 @@ export async function chatPrivate_js(hash) {
         "/"
     );
 
-    // get current user's name
     let data;
     const csrftoken = Cookies.get("csrftoken");
     const response = await fetch("user/info", {
@@ -101,22 +97,17 @@ export async function chatPrivate_js(hash) {
     const user_name = data[0].username;
 
     chatSocket.onopen = async function (e) {
-      console.log("WebSocket connection opened:", e);
     };
 
     chatSocket.onclose = function (e) {
-      console.log("WebSocket connection closed:", e);
     };
 
     chatSocket.onerror = function (e) {
-      console.error("WebSocket error:", e);
     };
 
     chatSocket.onmessage = function (e) {
       const data = JSON.parse(e.data);
       if (data.message) {
-
-        // if current hash is not chatprivate, close websocket
         const current_hash = window.location.hash;
         if (current_hash.split("/")[0] !== "#chatprivate" && chatSocket) {
           chatSocket.close();
@@ -187,18 +178,7 @@ export async function chatPrivate_js(hash) {
 
       messageInputDOM.value = "";
     };
-
-    // 홈 버튼 클릭 시 WebSocket 연결 닫기
-    // const home_button = document.getElementById("home");
-    // home_button.onclick = (event) => {
-    //   event.preventDefault();
-    //   if (chatSocket) {
-    //     chatSocket.close();
-    //     chatSocket = null;
-    //   }
-    //   location.href = "/#";
-    // };
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }

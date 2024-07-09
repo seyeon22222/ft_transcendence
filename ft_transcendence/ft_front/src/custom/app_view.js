@@ -1,8 +1,8 @@
-import { Setting } from "../../static/graphics/Setting.js"; // comp
+import { Setting } from "../../static/graphics/Setting.js";
 import { EventManager } from "../../static/Event/EventManager.js";
 import { MouseEvent } from "../../static/Event/MouseEvent.js";
 import { ObjectManager } from "../../static/phong/ObjectManager.js";
-
+import { event_add_popstate } from "../utilities.js";
 
 export class View {
 	static objects = [];
@@ -17,16 +17,17 @@ export class View {
 		View.cam = Setting.setCam();
 		View.loop = true;
 		let ws = new WebSocket("wss://" + window.location.host + "/ws/custom/" + hash + "/");
-		
-		window.addEventListener("popstate", function () {
-			// WebSocket 연결 닫기
+
+		function view_match_popstate(event) {
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
 				ws.close();
 				ws = null;
 			}
 			EventManager.deleteEvent("mouse");
 			View.loop = false;
-		});
+		}
+		
+		event_add_popstate(view_match_popstate);
 
 		ws.onopen = () => {
 			let message = {message: window.players};
@@ -52,7 +53,6 @@ export class View {
 				});
 				if (response.ok) {
 					let data = await response.json();
-					console.log(data);
 					for (var i = 0; i < data.customs.length; i++) {
 						let color = [data.customs[i].r / 255, data.customs[i].g / 255, data.customs[i].b / 255, 1];
 						let pos = [data.customs[i].x, data.customs[i].y, 0, 1];

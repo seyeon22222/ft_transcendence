@@ -1,10 +1,32 @@
 import router from "../../base/router.js"
 import { formatDateTime } from "../info/info_func.js";
-import { check_login, showModal } from "../utilities.js"
+import { check_login, showModal, event_delete_popstate } from "../utilities.js"
 
 export async function matchLobby_view() {
-
-    // check login status
+    event_delete_popstate();
+    const style = document.getElementById("style");
+    style.innerHTML = `
+    body {
+        background-color: #333; /* Dark gray background */
+        color: white;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+    .custom-yellow-btn {
+        background-color: #ffc107;
+        color: white;
+    }
+    .narrow-card {
+        max-width: 400px; /* Adjust this value to make the box narrower or wider */
+    }
+    .center-text { text-align: center; }
+    .spacing {
+        margin-top: 3rem; /* Adjust the value as needed for desired spacing */
+    }
+	.modal {
+		color: #000;
+		display: none;
+	}
+    `;
     const check = await check_login();
     if (check === false) {
         location.href = `/#`;
@@ -28,7 +50,6 @@ export async function matchLobby_view() {
         if (response.ok) {
             data = await response.json();
             container.innerHTML = '';
-            // Append data to container
             data.forEach(tournament => {
                 const tournamentLink = document.createElement('a');
                 tournamentLink.href = `/#tournament/${tournament.name}`;
@@ -53,7 +74,6 @@ export async function matchLobby_view() {
         if (m_response.ok) {
             data = await m_response.json();
             multiMatchcontainer.innerHTML = '';
-            // Append data to container
             data.forEach(multiMatch => {
                 const multiMatchLink = document.createElement('a');
                 multiMatchLink.href = `/#multi/${multiMatch.name}`;
@@ -65,8 +85,6 @@ export async function matchLobby_view() {
             });
         }
 
-
-		// 1:1 매치 리스트 출력 부분
         const matchContainer = document.getElementById("match_list");
         const matchcsrftoken = Cookies.get('csrftoken');
         const matchresponse = await fetch('match/matchview', {
@@ -80,7 +98,6 @@ export async function matchLobby_view() {
         if (matchresponse.ok) {
             const temp_data = await matchresponse.json();
             matchContainer.innerHTML = '';
-            // Append data to container
             temp_data.forEach(match => {
                 if (match.status === "accepted") {
                     const matchLink = document.createElement('a');
@@ -94,7 +111,6 @@ export async function matchLobby_view() {
             });
         }
 
-        // tournament 생성 버튼 이벤트 처리
         const createForm = document.getElementById("tournament_form");
         createForm.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -149,7 +165,6 @@ export async function matchLobby_view() {
 				});
             } else {
                 const data = await res.json();
-                // alert(data.error);
 				showModal('matchlobby', 'create_err');
             }
         })

@@ -128,7 +128,6 @@ class Box:
         d = ballUtils.subDir(next, here)
         d = ballUtils.normalized(d)
         
-        # up
         dn = ballUtils.dot(d, [0, 1, 0])
         os = ballUtils.subDir(aabb.top1, here)
         osn = ballUtils.dot(os, [0, 1, 0])
@@ -142,7 +141,6 @@ class Box:
                 dist = t
                 cp = copy.deepcopy(p)
         
-        # down
         dn = ballUtils.dot(d, [0, -1, 0])
         os = ballUtils.subDir(aabb.bot2, here)
         osn = ballUtils.dot(os, [0, -1, 0])
@@ -157,7 +155,6 @@ class Box:
                 elif abs(t - dist) < MIN:
                     normal = ballUtils.sumDir(normal, [0, -1, 0])
         
-        #right
         dn = ballUtils.dot(d, [1, 0, 0])
         os = ballUtils.subDir(aabb.top2, here)
         osn = ballUtils.dot(os, [1, 0, 0])
@@ -172,7 +169,6 @@ class Box:
                 elif abs(t - dist) < MIN:
                     normal = ballUtils.sumDir(normal, [1, 0, 0])
         
-        #left
         dn = ballUtils.dot(d, [-1, 0, 0])
         os = ballUtils.subDir(aabb.top1, here)
         osn = ballUtils.dot(os, [-1, 0, 0])

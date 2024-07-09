@@ -41,24 +41,10 @@ class tournamentMatch(models.Model):
     player2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='player2_a')
     match_result = models.CharField(default='', max_length=1)
     is_start = models.BooleanField(default=False)
-    # custom = models.ManyToManyField(Custom, related_name='t_cutom')
 
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.tournament.name}"
 
-
-class TournamentMatchCustom(models.Model):
-    match = models.ForeignKey(tournamentMatch, on_delete=models.CASCADE)
-    # custom = models.ForeignKey(Custom, on_delete=models.CASCADE)
-
-    # class Meta:
-    #     # 중복을 허용하지 않음
-    #     unique_together = ('match', 'custom')
-
-    def __str__(self):
-        return f'{self.match.name} - {self.custom.id}'
-
-    
 class Match(models.Model):
 
     STATUS_CHOICES = [
@@ -77,21 +63,9 @@ class Match(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requester = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='requester')
     is_start = models.BooleanField(default=False)
-    # custom = models.ManyToManyField(Custom, through='MatchCustom', related_name='m_custom')
     
     def __str__(self):
         return f"{self.player1.username} vs {self.player2.username} in {self.name}"
-
-# class MatchCustom(models.Model):
-#     match = models.ForeignKey(Match, on_delete=models.CASCADE)
-#     custom = models.ForeignKey(Custom, on_delete=models.CASCADE)
-
-#     class Meta:
-#         # 중복을 허용하지 않음
-#         unique_together = ('match', 'custom')
-
-#     def __str__(self):
-#         return f'{self.match.name} - {self.custom.id}'
     
 class matchmaking(models.Model):
 
@@ -119,21 +93,9 @@ class MultiMatch(models.Model):
     match_result = models.CharField(default='', max_length=1)
     is_active = models.BooleanField(default=True)
     is_start = models.BooleanField(default=False)
-    # custom = models.ManyToManyField(Custom, related_name='mul_custom')
 
     def __str__(self):
         return f"{self.player1.username}, {self.player2.username}, {self.player3.username}, {self.player4.username} in {self.name}"
-
-class MultiMatchCustom(models.Model):
-    match = models.ForeignKey(MultiMatch, on_delete=models.CASCADE)
-    # custom = models.ForeignKey(Custom, on_delete=models.CASCADE)
-
-    # class Meta:
-    #     # 중복을 허용하지 않음
-    #     unique_together = ('match', 'custom')
-
-    def __str__(self):
-        return f'{self.match.name} - {self.custom.id}'
 
 class Custom(models.Model):
     r = models.IntegerField(default=0)

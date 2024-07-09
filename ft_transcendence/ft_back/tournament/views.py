@@ -4,7 +4,7 @@ from rest_framework import status
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from .models import tournament, MyUser, tournamentParticipant, tournamentMatch, Match, matchmaking, MultiMatch, multimatchmaking, Custom
-from .serializers import tournamentSerializer, tournamentMatchSerializer, MatchSerializer, MultiSerializer, CustomSerializer
+from .serializers import tournamentSerializer, tournamentMatchSerializer, MatchSerializer, MultiSerializer
 from ft_user.models import MyUser, GameStat, MatchInfo
 from django.shortcuts import get_object_or_404
 from ft_user.utils import validate_input
@@ -335,7 +335,6 @@ class MatchmakingView(APIView):
             }
         )
 
-
 class multiMatchmakingView(APIView):
     def post(self, request):
         current_username = request.data.get('username')
@@ -414,7 +413,6 @@ class multiMatchmakingView(APIView):
                 }
             )
 
-
 class tournamentInviteView(APIView):
     def post(self, request, tournament_id):
         intournament = get_object_or_404(tournament, pk=tournament_id)
@@ -447,7 +445,6 @@ class tournamentInviteView(APIView):
         )
 
         return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
-    
 
 class MatchInviteView(APIView):
     def post(self, request, match_id):
@@ -485,7 +482,6 @@ class MatchInviteView(APIView):
         
         return Response({'message': '초대 메시지 전송 완료'}, status=status.HTTP_200_OK)
 
-
 class matchGetHash(APIView):
     def get(self, request, match_id):
         try :
@@ -498,9 +494,7 @@ class matchGetHash(APIView):
         except Match.DoesNotExist:
             return Response({'error':'Match not found'}, status=404)
         except Exception as e:
-            print(f"Error in matchGetHash: {e}")
-            return Response({'error':'Internal Server Error'}, status=500)
-        
+            return Response({'error':'Internal Server Error'}, status=500) 
 
 class tournamentHash(APIView):
     def get(self, request, player1, player2, tournament_id):
@@ -512,7 +506,6 @@ class tournamentHash(APIView):
             hash_url = f"{player1_id}_{player2_id}_{tournament_id}"
             return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:
-            print(f"Error in matchGetHash: {e}")
             return Response({'error':'Internal Server Error'}, status=500)
         
 class multiMatchHash(APIView):
@@ -528,10 +521,7 @@ class multiMatchHash(APIView):
             hash_url = f"{player1_id}_{player2_id}_{player3_id}_{player4_id}_{match_id}"
             return Response({'hash': hash_url}, status=status.HTTP_200_OK)
         except Exception as e:
-            print(f"Error in matchGetHash: {e}")
             return Response({'error':'Internal Server Error'}, status=500)
-        
-
 
 class matchResultView(APIView):
 
@@ -769,7 +759,6 @@ class tournamentMatchResultView(APIView):
 
         return Response({'message': 'Tournament match result updated'}, status=status.HTTP_200_OK)
 
-
 class updateMatchCustom(APIView):
     def get(self, request, match_id):
         match = get_object_or_404(Match, id=match_id)
@@ -792,7 +781,6 @@ class updateMatchCustom(APIView):
         
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
 
-
 class updateTournamentCustom(APIView):
    def get(self, request, player1, player2, tournament_id):
         try:
@@ -809,10 +797,8 @@ class updateTournamentCustom(APIView):
         tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
         serializer = tournamentMatchSerializer(tournament_match)
 
-        # 직렬화된 데이터를 Response로 반환
         return Response(serializer.data, status=status.HTTP_200_OK)
    
-
    def post(self, request, player1, player2, tournament_id):
         try:
             player1 = MyUser.objects.get(user_id=player1)
@@ -823,19 +809,12 @@ class updateTournamentCustom(APIView):
             tournament_instance = tournament.objects.get(pk=tournament_id)
         except tournament.DoesNotExist:
             return Response({'error': 'Invalid tournament ID'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        print("Debug1")
-        print(tournament_instance) # 토너먼트의 방의 이름
-        print(player1) # 이름
-        print(player2) # 이름
+
         try:
             tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
         except tournamentMatch.DoesNotExist:
             return Response({'error': 'Invalid tournament Match ID'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        print("Debug2")
-        
-        # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
+
         r = request.data.get('r', 0)
         g = request.data.get('g', 0)
         b = request.data.get('b', 0)
@@ -849,8 +828,6 @@ class updateTournamentCustom(APIView):
             new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h, tournament=tournament_match)
         except :
             return Response({'error': 'Make Error'}, status=status.HTTP_400_BAD_REQUEST)
-        # 새로운 custom 객체 생성
-        
         
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)
 
@@ -859,12 +836,10 @@ class updateMultiCustom(APIView):
     def get(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
         serializer = MultiSerializer(match)
-        # 직렬화된 데이터를 Response로 반환
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, multimatch_id):
         match = get_object_or_404(MultiMatch, id=multimatch_id)
-        # 요청 데이터에서 custom 객체 생성에 필요한 필드 가져오기
         r = request.data.get('r', 0)
         g = request.data.get('g', 0)
         b = request.data.get('b', 0)
@@ -874,7 +849,6 @@ class updateMultiCustom(APIView):
         w = request.data.get('w', 0.0)
         h = request.data.get('h', 0.0)
         
-        # 새로운 custom 객체 생성
         new_custom = Custom.objects.create(r=r, g=g, b=b, x=x, y=y, z=z, w=w, h=h, multi_match=match)
         
         return Response({'message': '장애물 추가 완료'}, status=status.HTTP_200_OK)

@@ -1,22 +1,21 @@
 import { recordMessage } from "./chat_func.js"
-import { check_login, showModal } from "../utilities.js"
+import { check_login, showModal, event_delete_popstate } from "../utilities.js"
 
-let chatSocket; // 기존 WebSocket 연결을 추적할 변수
+let chatSocket;
+
 export async function chat_js(hash) {
-  // check login status
+  event_delete_popstate();
   const check = await check_login();
   if (check === false) {
       location.href = `/#`;
       return;
   }
 
-  // set style
   const style = document.getElementById("style");
   style.innerHTML = set_style();
 
   setLanguage('chat');
 
-  //seycheon_block
   const temp_csrftoken = Cookies.get("csrftoken");
   let temp_data;
   const req_response = await fetch(`user/info`, {
@@ -33,7 +32,7 @@ export async function chat_js(hash) {
     const error = await req_response.json();
     console.error("API 요청 실패", error);
   }
-  //-----------------------
+  
   recordMessage(hash);
   try {
     if (chatSocket) {
@@ -49,7 +48,6 @@ export async function chat_js(hash) {
       protocol + "//" + window.location.host + "/ws/chat/" + room_name + "/"
     );
 
-    // get current user's name
     let data;
     const csrftoken = Cookies.get("csrftoken");
     const response = await fetch("user/info", {
@@ -69,23 +67,18 @@ export async function chat_js(hash) {
     const user_name = data[0].username;
 
     chatSocket.onopen = async function (e) {
-      console.log("WebSocket connection opened:", e);
     };
 
     chatSocket.onclose = function (e) {
-      console.log("WebSocket connection closed:", e);
     };
 
     chatSocket.onerror = function (e) {
-      console.error("WebSocket error:", e);
     };
 
     chatSocket.onmessage = async function (e) {
-      //seycheon_block async 추가
       const data = JSON.parse(e.data);
 
       if (data.message) {
-        //seycheon_block
         const isBlocked = await checkBlockStatus(
           temp_data[0].username,
           data.username,
@@ -100,7 +93,6 @@ export async function chat_js(hash) {
         }
 
         if (!isBlocked) {
-          //-----------------------
           const messages_div = document.getElementById("chat-messages");
           const messageWrapper = document.createElement("div");
           messageWrapper.classList.add(
@@ -138,10 +130,11 @@ export async function chat_js(hash) {
           messages_div.appendChild(messageWrapper);
           messages_div.scrollTop = messages_div.scrollHeight;
         } else {
-		  showModal('chat', 'nomsg_err');
+          // 주석 채팅을 차단당하거나 차단한 사람이 같은 채팅방에 있는 경우 메시지 입력시 팝업메시지가 나옴
+		      // showModal('chat', 'nomsg_err');
         }
       }
-    }; //seycheon_block
+    };
 
     const chatForm = document.getElementById("chat-form");
     chatForm.onsubmit = async (event) => {
@@ -164,23 +157,11 @@ export async function chat_js(hash) {
 
       messageInputDOM.value = "";
     };
-
-    // 홈 버튼 클릭 시 WebSocket 연결 닫기
-    // const home_button = document.getElementById("home");
-    // home_button.onclick = (event) => {
-    //   event.preventDefault();
-    //   if (chatSocket) {
-    //     chatSocket.close();
-    //     chatSocket = null;
-    //   }
-    //   location.href = "/#";
-    // };
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
-// seycheon_block 차단 여부를 확인하는 함수
 async function checkBlockStatus(apply_user, accept_user, temp_csrftoken) {
   const formData = {
     apply_user: apply_user,
@@ -196,14 +177,12 @@ async function checkBlockStatus(apply_user, accept_user, temp_csrftoken) {
   });
 
   if (blockResponse.ok) {
-    return false; // 차단 여부 반환
+    return false;
   } else {
     console.error("Block check API error");
-    return true; // API 요청 실패 시 차단으로 간주
+    return true;
   }
 }
-//-----------------------
-
 
 function set_style() {
   return `

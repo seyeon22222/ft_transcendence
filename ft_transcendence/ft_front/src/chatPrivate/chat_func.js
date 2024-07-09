@@ -5,10 +5,9 @@ export async function recordMessages(hash) {
   let message_data;
   let response;
   const recordMessage = document.getElementById("chat-messages");
-  recordMessage.innerHTML = ""; // 이전 메시지 초기화
+  recordMessage.innerHTML = "";
   const csrftoken = Cookies.get("csrftoken");
 
-  // get current user name
   let temp_data;
   response = await fetch(`user/info`, {
     method: "GET",
@@ -25,7 +24,6 @@ export async function recordMessages(hash) {
     console.error("API 요청 실패", error);
   }
 
-  // check current chatting room is for user
   const bodyData = {
     username: temp_data[0].username,
     slug: slug,
@@ -40,10 +38,7 @@ export async function recordMessages(hash) {
     body: JSON.stringify(bodyData),
   });
 
-  // console.log("test for response!!!");
-
   if (!response.ok) {
-    // alert("Your are not allowed to see this private message channel");
 	const modal = document.querySelector('.modal');
 	showModal('chatprivate', 'notallow_err');
 	modal.addEventListener('hidden.bs.modal', function () {
@@ -51,7 +46,6 @@ export async function recordMessages(hash) {
 	});
   }
 
-  // get previous messages
   const messageResponse = await fetch(`chat/privaterooms/${slug}/`, {
     method: "GET",
     headers: {
@@ -106,9 +100,6 @@ export async function recordMessages(hash) {
       console.error("Message data is not an array:", message_data);
     }
   } else {
-    // const error = await messageResponse.json();
-    // console.error("API error", error);
-    // alert("채팅방에 대한 잘못된 접근입니다");
 	const modal = document.querySelector('.modal');
 	showModal('chatprivate', 'wrongconnect_err');
 	modal.addEventListener('hidden.bs.modal', function () {

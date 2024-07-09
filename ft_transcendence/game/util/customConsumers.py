@@ -6,7 +6,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from . import customInfo
 
 class CustomConsumer(AsyncWebsocketConsumer):
-    consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
+    consumers = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,6 +38,7 @@ class CustomConsumer(AsyncWebsocketConsumer):
         self.info.player_count += 1
 
     async def disconnect(self, close_code):
+        self.info.stop = True
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -46,11 +47,9 @@ class CustomConsumer(AsyncWebsocketConsumer):
         if self.info.player_count == 0:
             del self.consumers[self.room_group_name]
             backend_url = 'http://backend:8000/match/matchview/' + list(self.room_name.split('_'))[-1]
-            params= {
-                    'is_start': True,
-            }
+            params= { 'is_start': True }
             response = requests.post(backend_url, json=params)
-        if self.info.time != -1 :
+        if self.info.time > 0 :
             if self.player == 1:
                 match_result = 2
             elif self.player == 2:
@@ -105,7 +104,8 @@ class CustomConsumer(AsyncWebsocketConsumer):
 
     async def update_time(self):
         while self.info.time >= 0:
-            # 클라이언트로 메시지 보내기
+            if self.info.stop:
+                self.info.time = 0
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -117,7 +117,7 @@ class CustomConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(1)
 
 class TCustomConsumer(AsyncWebsocketConsumer):
-    consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
+    consumers = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -149,6 +149,7 @@ class TCustomConsumer(AsyncWebsocketConsumer):
         self.info.player_count += 1
 
     async def disconnect(self, close_code):
+        self.info.stop = True
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -157,11 +158,9 @@ class TCustomConsumer(AsyncWebsocketConsumer):
         if self.info.player_count == 0:
             del self.consumers[self.room_group_name]
             backend_url = 'http://backend:8000/match/t_matchview/' + list(self.room_name.split('_'))[0] + list(self.room_name.split('_'))[1] + list(self.room_name.split('_'))[-1]
-            params= {
-                    'is_start': True,
-            }
+            params= { 'is_start': True }
             response = requests.post(backend_url, json=params)
-        if self.info.time != -1 :
+        if self.info.time > 0 :
             if self.player == 1:
                 match_result = 2
             elif self.player == 2:
@@ -172,7 +171,7 @@ class TCustomConsumer(AsyncWebsocketConsumer):
                     'match_result': match_result,
                     'player1': list(self.room_name.split('_'))[0],
                     'player2': list(self.room_name.split('_'))[1]
-                }
+            }
             response = requests.post(backend_url, json=game_results)
             
     
@@ -227,7 +226,8 @@ class TCustomConsumer(AsyncWebsocketConsumer):
 
     async def update_time(self):
         while self.info.time >= 0:
-            # 클라이언트로 메시지 보내기
+            if self.info.stop:
+                self.info.time = 0
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -239,7 +239,7 @@ class TCustomConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(1)
 
 class MultiCustomConsumer(AsyncWebsocketConsumer):
-    consumers = {}  # 클래스 변수, Consumer 인스턴스를 저장할 딕셔너리
+    consumers = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -271,6 +271,7 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
         self.info.player_count += 1
 
     async def disconnect(self, close_code):
+        self.info.stop = True
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -279,11 +280,9 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
         if self.info.player_count == 0:
             del self.consumers[self.room_group_name]
             backend_url = 'http://backend:8000/match/multimatchview/' + list(self.room_name.split('_'))[-1]
-            params= {
-                    'is_start': True,
-            }
+            params= { 'is_start': True }
             response = requests.post(backend_url, json=params)
-        if self.info.time != -1 :
+        if self.info.time > 0 :
             if self.player == 1 or self.player == 3:
                 match_result = 2
             elif self.player == 2 or self.player == 4:
@@ -345,7 +344,8 @@ class MultiCustomConsumer(AsyncWebsocketConsumer):
 
     async def update_time(self):
         while self.info.time >= 0:
-            # 클라이언트로 메시지 보내기
+            if self.info.stop:
+                self.info.time = 0
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {

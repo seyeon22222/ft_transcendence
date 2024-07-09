@@ -3,7 +3,6 @@ export class Program {
 	static attribute_location = {
 		"position": 0,
 		"color": 1,
-		// "uv": 1
 	};
 	constructor(gl) {
 		const	program = gl.createProgram();

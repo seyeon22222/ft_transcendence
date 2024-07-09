@@ -1,5 +1,5 @@
-import { Shader } from "./Shader.js"; // comp
-import { Program } from "./Program.js"; // comp
+import { Shader } from "./Shader.js";
+import { Program } from "./Program.js";
 
 export class Pipeline {
     static gl;

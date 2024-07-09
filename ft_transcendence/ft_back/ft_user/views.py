@@ -10,7 +10,7 @@ from ft_user.forms import signForm
 import os
 from django.http import HttpResponse
 from django.core.files.storage import default_storage
-from .utils import get_online_users, validate_input, validate_password, validate_email
+from .utils import validate_input, validate_password, validate_email
 
 class UserViewSet(APIView):
     permission_classes = [IsAuthenticated]
@@ -37,109 +37,6 @@ class SelectUser(APIView):
         queryset = MyUser.objects.all()
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
-
-# class FriendView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request, user_id):
-#         from_user = request.user
-#         to_user = get_object_or_404(MyUser, id=user_id)
-#         serializer = FriendSerializer(data = {'from_user' : from_user, 'to_user' : to_user})
-#         serializer.is_vaild(raise_exception=True)
-#         friend_request = serializer.save()
-#         return Response({"message" : "친구 신청을 보냈습니다"}, status = status.HTTP_201_CREATED)
-
-# class FriendView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request, user_id):
-#         from_user = request.user
-#         to_user = get_object_or_404(MyUser, id=user_id)
-#         serializer = FriendSerializer(data = {'from_user' : from_user, 'to_user' : to_user})
-#         serializer.is_vaild(raise_exception=True)
-#         friend_request = serializer.save()
-#         return Response({"message" : "친구 신청을 보냈습니다"}, status = status.HTTP_201_CREATED)
-    
-# class FriendAcceptView(APIView):
-#     permission_classes = [IsAuthenticated]
-# class FriendAcceptView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request, friend_request_id):
-#         friend_request = get_object_or_404(Friends, id=friend_request_id)
-#         if friend_request.to_user != request.user:
-#             return Response({'message' : "권한이 없습니다."}, status = status.HTTP_403_FORBIDDEN)
-#         if friend_request.status != 'pending':
-#             return Response({'message' : "이미 처리된 요청입니다."}, status = status.HTTP_400_BAD_REQUEST)
-#     def post(self, request, friend_request_id):
-#         friend_request = get_object_or_404(Friends, id=friend_request_id)
-#         if friend_request.to_user != request.user:
-#             return Response({'message' : "권한이 없습니다."}, status = status.HTTP_403_FORBIDDEN)
-#         if friend_request.status != 'pending':
-#             return Response({'message' : "이미 처리된 요청입니다."}, status = status.HTTP_400_BAD_REQUEST)
-
-#         friend_request.status = 'accept'
-#         friend_request.save()
-#         from_user = friend_request.from_user
-#         to_user = friend_request.to_user
-#         from_user.friends.add(to_user)
-#         return Response({'message' : "친구 요청을 수락했습니다."}, status = status.HTTP_200_OK)
-#         friend_request.status = 'accept'
-#         friend_request.save()
-#         from_user = friend_request.from_user
-#         to_user = friend_request.to_user
-#         from_user.friends.add(to_user)
-#         return Response({'message' : "친구 요청을 수락했습니다."}, status = status.HTTP_200_OK)
-    
-# class FriendRejectView(APIView):
-#     permission_classes = [IsAuthenticated]
-# class FriendRejectView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request, friend_request_id):
-#         friend_request = get_object_or_404(Friends, id=friend_request_id)
-#         if friend_request.to_user != request.user:
-#             return Response({'message' : "권한이 없습니다."}, status = status.HTTP_403_FORBIDDEN)
-#         if friend_request.status != 'pending':
-#             return Response({'message' : "이미 처리된 요청입니다."}, status = status.HTTP_400_BAD_REQUEST)
-#     def post(self, request, friend_request_id):
-#         friend_request = get_object_or_404(Friends, id=friend_request_id)
-#         if friend_request.to_user != request.user:
-#             return Response({'message' : "권한이 없습니다."}, status = status.HTTP_403_FORBIDDEN)
-#         if friend_request.status != 'pending':
-#             return Response({'message' : "이미 처리된 요청입니다."}, status = status.HTTP_400_BAD_REQUEST)
-        
-#         friend_request.status = 'reject'
-#         friend_request.save()
-#         friend_request.status = 'reject'
-#         friend_request.save()
-
-#         return Response({'message' : "친구 신청을 거절했습니다."}, status = status.HTTP_200_OK)
-#         return Response({'message' : "친구 신청을 거절했습니다."}, status = status.HTTP_200_OK)
-    
-# class FriendDeleteView(APIView):
-#     permission_classes = [IsAuthenticated]
-# class FriendDeleteView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request, friend_request_id):
-#         friend_request = get_object_or_404(Friends, id=friend_request_id)
-#         if friend_request.to_user != request.user:
-#             return Response({'message' : "권한이 없습니다."}, status = status.HTTP_403_FORBIDDEN)
-#         if friend_request.status != 'accept':
-#             return Response({'message' : "친구가 아닙니다."}, status = status.HTTP_400_BAD_REQUEST)
-#         friend_request.status = 'delete'
-#         friend_request.save()
-#         return Response({'message' : "친구를 삭제했습니다."}, status = status.HTTP_200_OK)
-#     def post(self, request, friend_request_id):
-#         friend_request = get_object_or_404(Friends, id=friend_request_id)
-#         if friend_request.to_user != request.user:
-#             return Response({'message' : "권한이 없습니다."}, status = status.HTTP_403_FORBIDDEN)
-#         if friend_request.status != 'accept':
-#             return Response({'message' : "친구가 아닙니다."}, status = status.HTTP_400_BAD_REQUEST)
-#         friend_request.status = 'delete'
-#         friend_request.save()
-#         return Response({'message' : "친구를 삭제했습니다."}, status = status.HTTP_200_OK)
 
 class User_login(APIView):
 
@@ -315,17 +212,6 @@ class UserBlockCheckRequest(APIView):
             return Response({'error': 'One of the users has blocked the other'}, status=301) # 400 or 404를 하면 콘솔창에 에러가 발생했다고 나와서 임시로 상태 바꿈
 
         return Response({'message': 'Users are not blocking each other'}, status=status.HTTP_200_OK)
-
-#seycheon_online_status
-class GetUsersOnlineStatus(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        current_users = get_online_users()
-        usernames = [user.username for user in current_users]
-        return Response({'online_users': usernames})
-    
-
 
 class LanguageSet(APIView):
     permission_classes = [IsAuthenticated]

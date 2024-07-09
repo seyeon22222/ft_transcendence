@@ -1,5 +1,5 @@
-import { MouseEvent } from "./MouseEvent.js"; // comp
-import { KeyboardEvent } from "./KeyboardEvent.js"; // comp
+import { MouseEvent } from "./MouseEvent.js";
+import { KeyboardEvent } from "./KeyboardEvent.js";
 import { ScreenEvent } from "./ScreenEvent.js";
 
 export class EventManager {
@@ -10,7 +10,7 @@ export class EventManager {
     static setEventMouse(ray, button, objects, id, ws) {
         EventManager.mouse_list.push(new MouseEvent('click', ray, button, objects));
         EventManager.mouse_list.push(new MouseEvent('mousemove', ray));
-        EventManager.mouse_list.push(new MouseEvent('mouseup', null, null, objects));
+        EventManager.mouse_list.push(new MouseEvent('mouseup', ray, null, objects));
         EventManager.mouse_list.push(new MouseEvent('mousedown', ray));
         EventManager.mouse_list.push(new MouseEvent('start', null, null, objects, id, ws));
     }

@@ -1,7 +1,7 @@
-import { showModal } from "../utilities.js";
+import { showModal, event_delete_popstate } from "../utilities.js";
 
 export function signup_js() {
-    // set style
+    event_delete_popstate();
     const style = document.getElementById("style");
     style.innerHTML = `
     body {
@@ -48,15 +48,12 @@ export function signup_js() {
             const response = await fetch('user/sign_up', {
                 method: 'POST',
                 headers: {
-                    // 'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken,
                 },
                 body: formData
-                // body: JSON.stringify({username, password, email})
             });
 
             if (response.ok) {
-				// const data = await response.json();
 				const modal = document.querySelector('.modal');
 				showModal('signup', 'noti');
 				modal.addEventListener('hidden.bs.modal', function () {

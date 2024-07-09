@@ -1,23 +1,13 @@
-import { Pipeline } from "../graphics/Pipeline.js"; // comp
-import { Box } from "../phong/Box.js"; // comp
-import { Mat4 } from "../utils/Mat4.js"; // comp
+import { Pipeline } from "../graphics/Pipeline.js";
+import { Box } from "../phong/Box.js";
+import { Mat4 } from "../utils/Mat4.js";
 
 async function sendTournament(objects, id, ws) {
-    let hash = window.location.hash.slice(1); // "#customt/..."의 '#'을 제거
-    console.log(hash);
-
-    // 해시 값을 슬래시(/)를 기준으로 먼저 분할합니다.
-    let segments = hash.split('/'); // ["customt", "3e4096e9-caac-4c04-9055-91b65d963517_0f6c78a4-eb60-4469-aa97-7da2a75a6269_138"]
-
-    // UUID 부분을 언더스코어(_)로 분할합니다.
-    let uuids = segments[1].split('_'); // ["3e4096e9-caac-4c04-9055-91b65d963517", "0f6c78a4-eb60-4469-aa97-7da2a75a6269", "138"]
-    
-    // player1과 player2의 UUID를 추출합니다.
+    let hash = window.location.hash.slice(1);
+    let segments = hash.split('/');
+    let uuids = segments[1].split('_');
     let player1 = uuids[0];
     let player2 = uuids[1];
-    
-    console.log("Player 1 UUID:", player1);
-    console.log("Player 2 UUID:", player2);
     
     const csrftoken = Cookies.get('csrftoken');
     for (let i = 6; i < objects.length; i++) {
@@ -58,7 +48,6 @@ async function sendMatch(objects, id, ws) {
             'h' : objects[i].height
         }
         const response = await fetch(`/match/updatematchcustom/${id}`, {
-            //match serializer 반환값 가져옴
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -85,9 +74,8 @@ async function sendMulti(objects, id, ws) {
             'w' : objects[i].width,
             'h' : objects[i].height
         }
-        console.log('/match/updatematchcustom/${id}', `/match/updatemulticustom/${id}`);
+        
         const response = await fetch(`/match/updatemulticustom/${id}`, {
-            //match serializer 반환값 가져옴
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -144,7 +132,7 @@ export class MouseEvent {
         else if (type == 'mousedown')
             this.setDown(ray);
         else if (type == 'mouseup')
-            this.setUp(objects);
+            this.setUp(objects, ray);
         else if (type == 'start')
             this.setStart(objects, id, ws);
         else if (type == 'gamestart')
@@ -217,7 +205,6 @@ export class MouseEvent {
                 MouseEvent.obj_idx = 0;
             }
 
-            console.log("loc: ", location[0]);
             if (location[0] === 'customm')
                 await sendMatch(objects, id, ws);
             else if (location[0] === 'customt')
@@ -285,15 +272,20 @@ export class MouseEvent {
         this.m_event = tmp_event;
     }
 
-    setUp(objects) {
-        const modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
-        let tmp_event = () => {
+    setUp(objects, ray) {
+        
+        const modal = this.settingModal();
+        let tmp_event = (event) => {
             if (MouseEvent.new_object === null || MouseEvent.start_flag)
                 return;
+            ray.setRay(event.clientX, event.clientY);
             MouseEvent.m_flag = 0;
             MouseEvent.c_flag = 0;
-            modal.show();
+
+            if (MouseEvent.new_object.collisionRay(ray.ray_des) === true)
+                modal.show();
         }
+
         window.addEventListener('mouseup', tmp_event);
         this.m_event = tmp_event;
 
@@ -331,6 +323,13 @@ export class MouseEvent {
             MouseEvent.new_object = null;
             MouseEvent.obj_idx = 0;
             modal.hide();
+
+            document.getElementById("width").value = 1;
+            document.getElementById("height").value = 1;
+            document.getElementById("degree").value = 0;
+            document.getElementById("red").value = 255;
+            document.getElementById("green").value = 255;
+            document.getElementById("blue").value = 255;
         }
         document.getElementById('save').addEventListener('click', tmp_event);
         this.child1_event = tmp_event;
@@ -340,6 +339,13 @@ export class MouseEvent {
             objects.splice(MouseEvent.obj_idx, 1);
             MouseEvent.new_object = null;
             MouseEvent.obj_idx = 0;
+
+            document.getElementById("width").value = 1;
+            document.getElementById("height").value = 1;
+            document.getElementById("degree").value = 0;
+            document.getElementById("red").value = 255;
+            document.getElementById("green").value = 255;
+            document.getElementById("blue").value = 255;
         }
         document.getElementById('cancel').addEventListener('click', tmp_event);
         this.child2_event = tmp_event;
@@ -350,6 +356,7 @@ export class MouseEvent {
         this.setRed();
         this.setGreen();
         this.setBlue();
+
     }
 
     setWidth() {
@@ -427,5 +434,22 @@ export class MouseEvent {
         this.input_types.push('blue');
         this.input_events.push(tmp_event);
         document.getElementById('blue').addEventListener('input', tmp_event);
+    }
+
+    settingModal() {
+        const langNow = document.getElementById("languageSelector").value;
+        const modal = new bootstrap.Modal(document.querySelector('.modal'));
+        const keyword = {
+            '.modal-title' : 'title', '.width' : 'width', 
+            '.height' : 'height', '.degree' : 'degree',
+            '.red' : 'red', '.green' : 'green', '.blue': 'blue',
+            '.save' : 'save', '.cancel' : 'cancel'};
+        Object.entries(keyword).forEach(([key, value]) => {
+            const set = document.querySelector(`${key}`);
+            set.innerText = window.lang[langNow]['custom'][`${value}`];
+            set.setAttribute('data-translate', `${value}`);
+        });
+        
+        return modal;
     }
 }
