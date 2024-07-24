@@ -1,5 +1,5 @@
 
-class Renderer {
+export class Renderer {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
 		this.transform = gameObject.transform;

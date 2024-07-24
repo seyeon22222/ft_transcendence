@@ -1,5 +1,5 @@
 
-class Transform {
+export class Transform {
 	constructor() {
 		this.position = new Vector3(0, 0, 0);
 		this.rotation = new Vector3(0, 0, 0);

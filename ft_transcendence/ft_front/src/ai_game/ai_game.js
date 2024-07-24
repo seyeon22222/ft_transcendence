@@ -8,7 +8,6 @@ import { ctx } from "../../static/aigame/core/definition.js";
 import { gl_canvas } from "../../static/aigame/core/definition.js";
 import { event_add_popstate } from "../utilities.js";
 import { Scene } from "../../static/aigame/Scene.js";
-
 window.flag = 0;
 
 

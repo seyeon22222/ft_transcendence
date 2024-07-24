@@ -1,5 +1,5 @@
 
-class Stick extends GameObject {
+export class Stick extends GameObject {
 	constructor() {
 		super();
 		this.transform = new Transform();

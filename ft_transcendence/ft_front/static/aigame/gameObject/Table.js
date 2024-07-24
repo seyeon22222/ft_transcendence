@@ -1,5 +1,5 @@
 
-class Table extends GameObject {
+export class Table extends GameObject {
 	constructor() {
 		super();
 		this.children = [

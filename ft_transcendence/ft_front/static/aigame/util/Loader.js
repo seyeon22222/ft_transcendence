@@ -1,5 +1,5 @@
 
-class Loader {
+export class Loader {
 	static async loadTexture(gl, src) {
 		let texture = gl.createTexture();
 		let response = await fetch(src);

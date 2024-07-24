@@ -1,5 +1,5 @@
 
-class Rim extends GameObject {
+export class Rim extends GameObject {
 	constructor() {
 		super();
 		this.transform = new Transform();

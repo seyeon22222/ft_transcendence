@@ -1,5 +1,5 @@
 
-class Screen extends GameObject {
+export class Screen extends GameObject {
 	constructor() {
 		super();
 		this.transform = new Transform();

@@ -4,19 +4,19 @@ class TextureAsset {
 	static test;
 
 	static async init() {
-		TextureAsset.test = await Loader.loadTexture(gl, "file:///D:/Web/Pingpong/skybox/front.jpg");
+		TextureAsset.test = await Loader.loadTexture(gl, "../skybox/front.jpg");
 		TextureAsset.skybox = await Loader.loadCubemap(gl, [
-			"file:///D:/Web/Pingpong/skybox/right.jpg",
-			"file:///D:/Web/Pingpong/skybox/left.jpg",
-			"file:///D:/Web/Pingpong/skybox/top.jpg",
-			"file:///D:/Web/Pingpong/skybox/bottom.jpg",
-			"file:///D:/Web/Pingpong/skybox/front.jpg",
-			"file:///D:/Web/Pingpong/skybox/back.jpg"
+			"../skybox/right.jpg",
+			"../skybox/left.jpg",
+			"../skybox/top.jpg",
+			"../skybox/bottom.jpg",
+			"../skybox/front.jpg",
+			"../skybox/back.jpg"
 		], 2048);
-		TextureAsset.control_albedo = await Loader.loadTexture(gl, "file:///D:/Web/Pingpong/texture/ControlPad_albedo.png");
-		TextureAsset.control_emission = await Loader.loadTexture(gl, "file:///D:/Web/Pingpong/texture/ControlPad_emission.png");
+		TextureAsset.control_albedo = await Loader.loadTexture(gl, "../texture/ControlPad_albedo.png");
+		TextureAsset.control_emission = await Loader.loadTexture(gl, "../texture/ControlPad_emission.png");
 		TextureAsset.screen_emission = gl.createTexture();
-		TextureAsset.screen_background = await Loader.loadTexture(gl, "file:///D:/Web/Pingpong/texture/Screen_bg.png");
+		TextureAsset.screen_background = await Loader.loadTexture(gl, "../texture/Screen_bg.png");
 		gl.bindTexture(gl.TEXTURE_2D, TextureAsset.screen_background);
 		gl.generateMipmap(gl.TEXTURE_2D);
 		gl.bindTexture(gl.TEXTURE_2D, null);

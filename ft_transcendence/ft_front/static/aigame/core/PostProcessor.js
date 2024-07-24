@@ -1,5 +1,5 @@
 
-class PostProcessor {
+export class PostProcessor {
 	static fbo = [null, null];
 	static texture = [null, null];
 	static copy_shader = null; // 1 to 1 copy shader

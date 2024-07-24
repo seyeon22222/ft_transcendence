@@ -1,5 +1,5 @@
 
-class Control extends GameObject {
+export class Control extends GameObject {
 	constructor() {
 		super();
 		this.transform = new Transform();

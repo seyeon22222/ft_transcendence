@@ -1,5 +1,5 @@
 
-class Camera {
+export class Camera {
 	static position = {x: 2.0, y: 0.2, z: 1.4};
 	static lookat = {x: 0, y: 0, z: 1.4};
 	static fov = 60 / 180 * Math.PI;

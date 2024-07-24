@@ -1,5 +1,5 @@
 
-class Ball extends GameObject {
+export class Ball extends GameObject {
 	constructor() {
 		super();
 		this.transform = new Transform();

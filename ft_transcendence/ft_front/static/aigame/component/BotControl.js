@@ -1,5 +1,5 @@
 
-class BotControl {
+export class BotControl {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
 		this.table = null;

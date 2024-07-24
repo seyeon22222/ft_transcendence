@@ -9,7 +9,7 @@ Pause
 }
 */
 
-class PongTable {
+export class PongTable {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
 		this.transform = gameObject.transform;
@@ -123,11 +123,11 @@ class PongTable {
 	updateStick() {
 		const size = this.stick[0].transform.scale.z;
 
-		this.stick[0].transform.position.z = Math.clamp(
+		this.stick[0].transform.position.z = clamp(
 			this.stick[0].transform.position.z + this.stick_velocity[0] * Time.deltaTime,
 			-(this.height - size) / 2, (this.height - size) / 2
 		);
-		this.stick[1].transform.position.z = Math.clamp(
+		this.stick[1].transform.position.z = clamp(
 			this.stick[1].transform.position.z + this.stick_velocity[1] * Time.deltaTime,
 			-(this.height - size) / 2, (this.height - size) / 2
 		);

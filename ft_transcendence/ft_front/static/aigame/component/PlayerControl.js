@@ -1,5 +1,5 @@
 
-class PlayerControl {
+export class PlayerControl {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
 		this.table = null;
