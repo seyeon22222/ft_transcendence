@@ -122,7 +122,7 @@ export class PongScreen {
 				this.ctx.textBaseline = "middle";
 				this.ctx.textAlign = "center";
 				this.ctx.fillStyle = "rgb(210, 255, 255)";
-				this.ctx.font = "bold 110pt Courier";
+				this.ctx.font = "bold 120pt sans-serif";
 				this.ctx.fillText(text, 192, y + 128);
 			}return;
 		}

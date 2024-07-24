@@ -34,7 +34,7 @@ export class Table extends GameObject {
 		this.renderer.count = 1968;
 		
 		this.pong_table.screen = this.children[5].pong_screen;
-		console.log("screen:", this.screen);
+		// console.log("screen:", this.screen);
 
 		this.children[0].renderer.vao = MeshAsset.cube;
 		this.children[1].renderer.vao = MeshAsset.cube;

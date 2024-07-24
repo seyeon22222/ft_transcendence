@@ -42,7 +42,7 @@ export class PongTable {
 						this.stick[1].transform.position.z = 0;
 						// ball direction set
 						this.fsm_state = "Playing";
-						console.log("Transition to Playing");
+						// console.log("Transition to Playing");
 						break;
 					}
 					this.ball_velocity = [-1, Math.random()];
@@ -69,7 +69,7 @@ export class PongTable {
 						this.screen.setState(["Score", 1]);
 					}
 					this.fsm_state = "PostScore";
-					console.log("Winner : " + winner);
+					// console.log("Winner : " + winner);
 					this.fsm_params.push(3);
 				}return;
 				case "PostScore":{
@@ -90,7 +90,7 @@ export class PongTable {
 						break;
 					}
 					this.screen.setState(["PostScore", time, this.score[0], this.score[1]]);
-					console.log("Post score : " + time);
+					// console.log("Post score : " + time);
 					this.fsm_params.push(time - Time.deltaTime);
 				}return;
 				case "GameOver":{
@@ -103,7 +103,7 @@ export class PongTable {
 						return;
 					}
 					this.screen.setState(["GameOver", text, time]);
-					console.log("Game over: ", text);
+					// console.log("Game over: ", text);
 					this.fsm_params.push(text, time - Time.deltaTime);
 				}return;
 				case "Pause":{

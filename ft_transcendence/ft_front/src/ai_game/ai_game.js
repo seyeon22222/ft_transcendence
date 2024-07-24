@@ -17,12 +17,11 @@ let scene = null;
 let loop = false;
 
 async function main() {
-	loop = true;
-	function cleanup_popstate() {
-		Input.cleanup();
-		loop = false;
-	}
-	//event_add_popstate(cleanup_popstate);
+	// function cleanup_popstate() {
+	// 	Input.cleanup();
+	// 	loop = false;
+	// }
+	// //event_add_popstate(cleanup_popstate);
 	canvas_init();
 	Input.init();
 	await MaterialAsset.init();
@@ -53,10 +52,13 @@ async function update() {
 }
 
 export function ai_game_js() {	
+	loop = true;
 	main();
 	event_add_popstate(ai_popstate);
 }
 
 function ai_popstate(event) {
+	Input.cleanup();
+	loop = false;
 	window.flag = 1;
 }

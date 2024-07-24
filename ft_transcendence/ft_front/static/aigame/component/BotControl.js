@@ -88,7 +88,7 @@ export class BotControl {
 		if (this.counter > 1) {
 			this.counter -= 1;
 			this.predict();
-			console.log("PREDICT");
+			//console.log("PREDICT");
 		}
 		let direction = Math.sign(this.target_y - this.racket_y)
 		this.racket_y += direction * Time.deltaTime;

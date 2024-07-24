@@ -58,12 +58,12 @@ export class Loader {
 		}
 
 		gl.linkProgram(program);
-		console.log(gl.getShaderInfoLog(vs));
-		console.log(gl.getShaderInfoLog(fs));
+		// console.log(gl.getShaderInfoLog(vs));
+		// console.log(gl.getShaderInfoLog(fs));
 		return (program);
 	}
 	static async loadMesh(gl, src) {
-		console.log("test ",src);
+		// console.log("test ",src);
 		let json = await (await fetch(src)).json();
 		let vao = gl.createVertexArray();
 
@@ -77,7 +77,7 @@ export class Loader {
 				gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, new Int32Array(data));
 				continue;
 			}
-			console.log(key);
+			// console.log(key);
 			const idx = ["position", "uv", "normal"].indexOf(key);
 
 			if (idx == -1) {
