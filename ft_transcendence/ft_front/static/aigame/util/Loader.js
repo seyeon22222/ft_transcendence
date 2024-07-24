@@ -44,8 +44,8 @@ export class Loader {
 		let fs = gl.createShader(gl.FRAGMENT_SHADER);
 		let program = gl.createProgram();
 
-		gl.shaderSource(vs, await (await fetch(vs_src)).text());
-		gl.shaderSource(fs, await (await fetch(fs_src)).text());
+		gl.shaderSource(vs, await (await fetch(vs_src)).json());
+		gl.shaderSource(fs, await (await fetch(fs_src)).json());
 		gl.compileShader(vs);
 		gl.compileShader(fs);
 		gl.attachShader(program, vs);
@@ -63,6 +63,7 @@ export class Loader {
 		return (program);
 	}
 	static async loadMesh(gl, src) {
+		console.log("test ",src);
 		let json = await (await fetch(src)).json();
 		let vao = gl.createVertexArray();
 
@@ -76,6 +77,7 @@ export class Loader {
 				gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, new Int32Array(data));
 				continue;
 			}
+			console.log(key);
 			const idx = ["position", "uv", "normal"].indexOf(key);
 
 			if (idx == -1) {

@@ -1,4 +1,5 @@
 
+
 export class GameObject {
 	constructor() {
 		this.children = [];

@@ -1,3 +1,9 @@
+import { GameObject } from "./GameObject.js";
+import { Transform } from "../component/Transform.js";
+import { Renderer } from "../component/Renderer.js";
+import { MaterialAsset } from "../asset/MaterialAsset.js";
+import { TextureAsset } from "../asset/TextureAsset.js";
+import { gl } from "../core/definition.js";
 
 export class Control extends GameObject {
 	constructor() {

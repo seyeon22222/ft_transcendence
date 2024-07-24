@@ -7,7 +7,9 @@ import { gl } from "../../static/aigame/core/definition.js";
 import { ctx } from "../../static/aigame/core/definition.js";
 import { gl_canvas } from "../../static/aigame/core/definition.js";
 import { event_add_popstate } from "../utilities.js";
-import { Scene } from "../../static/aigame/Scene.js";
+import { Scene } from "./Scene.js";
+import { canvas_init } from "../../static/aigame/core/definition.js";
+import { Input } from "../../static/aigame/core/Input.js";
 window.flag = 0;
 
 
@@ -21,6 +23,7 @@ async function main() {
 		loop = false;
 	}
 	//event_add_popstate(cleanup_popstate);
+	canvas_init();
 	Input.init();
 	await MaterialAsset.init();
 	await MeshAsset.init();

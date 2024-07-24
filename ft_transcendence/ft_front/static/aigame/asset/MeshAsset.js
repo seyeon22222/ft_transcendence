@@ -1,5 +1,6 @@
-
-class MeshAsset {
+import { Loader } from "../util/Loader.js";
+import { gl } from "../core/definition.js";
+export class MeshAsset {
 	static cube = null;
 	static quad = null;
 	static skybox = null;

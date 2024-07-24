@@ -1,3 +1,8 @@
+import { GameObject } from "./GameObject.js";
+import { Transform } from "../component/Transform.js";
+import { Renderer } from "../component/Renderer.js";
+import { MeshAsset } from "../asset/MeshAsset.js";
+import { MaterialAsset } from "../asset/MaterialAsset.js";
 
 export class ScreenSupport extends GameObject {
 	constructor() {

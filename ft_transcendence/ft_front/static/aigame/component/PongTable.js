@@ -1,13 +1,6 @@
-
-/*
-State {
-Ready
-Playing,
-PostScore,
-GameOver,
-Pause
-}
-*/
+import { Vector3 } from "../util/Vector3.js";
+import { Time } from "../core/Time.js";
+import { clamp } from "../util/MathUtil.js"
 
 export class PongTable {
 	constructor(gameObject) {

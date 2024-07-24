@@ -1,3 +1,17 @@
+import { GameObject } from "./GameObject.js";
+import { Stick } from "./Stick.js";
+import { Ball } from "./Ball.js";
+import { Rim } from "./Rim.js";
+import { Control } from "./Control.js";
+import { Screen } from "./Screen.js";
+import { ScreenSupport } from "./ScreenSupport.js";
+import { Transform } from "../component/Transform.js";
+import { PongTable } from "../component/PongTable.js";
+import { Renderer } from "../component/Renderer.js";
+import { MeshAsset } from "../asset/MeshAsset.js";
+import { MaterialAsset } from "../asset/MaterialAsset.js";
+import { TextureAsset } from "../asset/TextureAsset.js";
+import { gl } from "../core/definition.js";
 
 export class Table extends GameObject {
 	constructor() {

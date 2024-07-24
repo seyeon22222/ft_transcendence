@@ -1,3 +1,12 @@
+import { Table } from "../../static/aigame/gameObject/Table.js";
+import { Player } from "../../static/aigame/gameObject/Player.js";
+import { Bot } from "../../static/aigame/gameObject/Bot.js";
+import { Vector3 } from "../../static/aigame/util/Vector3.js";
+
+import { Time } from "../../static/aigame/core/Time.js";
+import { Camera } from "../../static/aigame/core/Camera.js";
+import { gl } from "../../static/aigame/core/definition.js";
+
 export class Scene {
 	constructor() {
 		this.gameObjects = [

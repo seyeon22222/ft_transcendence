@@ -1,4 +1,4 @@
 
-export function clmap(v, min, max) {
+export function clamp(v, min, max) {
 	return Math.min(Math.max(v, min), max);
 }

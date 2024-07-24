@@ -1,4 +1,6 @@
 
+import { gl } from "../core/definition.js";
+import { TextureAsset } from "../asset/TextureAsset.js";
 export class PongScreen {
 	constructor(gameObject) {
 		this.gameObject = gameObject;

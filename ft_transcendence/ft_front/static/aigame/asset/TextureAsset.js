@@ -1,5 +1,7 @@
+import { Loader } from "../util/Loader.js";
+import { gl } from "../core/definition.js";
 
-class TextureAsset {
+export class TextureAsset {
 	static basic;
 	static test;
 

@@ -1,4 +1,5 @@
-
+import { Loader } from "../util/Loader.js";
+import { gl } from "../core/definition.js";
 export class MaterialAsset {
 	static default;
 	static stick;

@@ -20,11 +20,12 @@ from .views import (
     shader_file,
     mesh_json,
     skybox_image,
+    texture_image,
 )
 
 urlpatterns = [
     path('shader/<str:filename>', shader_file.as_view()),
     path('mesh/<str:filename>', mesh_json.as_view()),
     path('skybox/<str:filename>', skybox_image.as_view()),
-
+    path('texture/<str:filename>', texture_image.as_view()),
 ]

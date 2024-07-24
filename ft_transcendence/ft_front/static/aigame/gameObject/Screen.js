@@ -1,3 +1,11 @@
+import { GameObject } from "./GameObject.js";
+import { Transform } from "../component/Transform.js";
+import { PongScreen } from "../component/PongScreen.js";
+import { Renderer } from "../component/Renderer.js";
+import { MaterialAsset } from "../asset/MaterialAsset.js";
+import { TextureAsset } from "../asset/TextureAsset.js";
+import { Vector3 } from "../util/Vector3.js";
+import { gl } from "../core/definition.js";
 
 export class Screen extends GameObject {
 	constructor() {

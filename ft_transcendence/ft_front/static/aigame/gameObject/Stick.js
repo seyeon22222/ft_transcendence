@@ -1,3 +1,8 @@
+import { GameObject } from "./GameObject.js";
+import { Transform } from "../component/Transform.js";
+import { Renderer } from "../component/Renderer.js";
+import { PongStick } from "../component/PongStick.js";
+import { Vector3 } from "../util/Vector3.js";
 
 export class Stick extends GameObject {
 	constructor() {

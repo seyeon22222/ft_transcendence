@@ -1,3 +1,7 @@
+import { gl,CANVAS_HEIGHT, CANVAS_WIDTH } from "./definition.js";
+import { Loader } from "../util/Loader.js";
+import { MeshAsset } from "../asset/MeshAsset.js";
+
 
 export class PostProcessor {
 	static fbo = [null, null];
@@ -143,11 +147,11 @@ export class PostProcessor {
 			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, PostProcessor.texture[i], 0);
 			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		}
-		PostProcessor.copy_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/copy.fs");
-		PostProcessor.test_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/test.fs");
-		PostProcessor.hblur_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/hblur.fs");
-		PostProcessor.vblur_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/vblur.fs");
-		PostProcessor.blend_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/blend.fs");
-		PostProcessor.tonemap_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/tonemap.fs");
+		PostProcessor.copy_shader = await Loader.loadProgram(gl, "../shader/postprocess.vs", "../shader/copy.fs");
+		PostProcessor.test_shader = await Loader.loadProgram(gl, "../shader/postprocess.vs", "../shader/test.fs");
+		PostProcessor.hblur_shader = await Loader.loadProgram(gl, "../shader/postprocess.vs", "../shader/hblur.fs");
+		PostProcessor.vblur_shader = await Loader.loadProgram(gl, "../shader/postprocess.vs", "../shader/vblur.fs");
+		PostProcessor.blend_shader = await Loader.loadProgram(gl, "../shader/postprocess.vs", "../shader/blend.fs");
+		PostProcessor.tonemap_shader = await Loader.loadProgram(gl, "../shader/postprocess.vs", "../shader/tonemap.fs");
 	}
 }

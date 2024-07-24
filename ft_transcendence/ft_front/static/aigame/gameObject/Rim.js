@@ -1,3 +1,6 @@
+import { GameObject } from "./GameObject.js";
+import { Transform } from "../component/Transform.js";
+import { Renderer } from "../component/Renderer.js";
 
 export class Rim extends GameObject {
 	constructor() {

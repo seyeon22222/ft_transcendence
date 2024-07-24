@@ -1,4 +1,9 @@
-
+import {Matrix} from "../util/Matrix.js";
+import { gl, CANVAS_WIDTH, CANVAS_HEIGHT } from "./definition.js";
+import { MeshAsset } from "../asset/MeshAsset.js";
+import { MaterialAsset } from "../asset/MaterialAsset.js";
+import { TextureAsset } from "../asset/TextureAsset.js";
+import { Vector3 } from "../util/Vector3.js";
 export class Camera {
 	static position = {x: 2.0, y: 0.2, z: 1.4};
 	static lookat = {x: 0, y: 0, z: 1.4};

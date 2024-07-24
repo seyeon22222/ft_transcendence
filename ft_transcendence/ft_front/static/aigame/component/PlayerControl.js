@@ -1,4 +1,4 @@
-
+import { Input } from "../core/Input.js";
 export class PlayerControl {
 	constructor(gameObject) {
 		this.gameObject = gameObject;

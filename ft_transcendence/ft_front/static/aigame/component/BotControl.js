@@ -1,4 +1,4 @@
-
+import { Time } from "../core/Time.js";
 export class BotControl {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
