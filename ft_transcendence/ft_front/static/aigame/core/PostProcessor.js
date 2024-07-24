@@ -1,8 +1,5 @@
-import { gl } from "./definition.js";
-import { Loader } from "../util/Loader.js";
-import { MeshAsset } from "../asset/MeshAsset.js";
 
-export class PostProcessor {
+class PostProcessor {
 	static fbo = [null, null];
 	static texture = [null, null];
 	static copy_shader = null; // 1 to 1 copy shader
@@ -136,7 +133,7 @@ export class PostProcessor {
 			PostProcessor.fbo[i] = gl.createFramebuffer();
 			PostProcessor.texture[i] = gl.createTexture();
 			gl.bindTexture(gl.TEXTURE_2D, PostProcessor.texture[i]);
-			gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA16F, window.CANVAS_WIDTH, window.CANVAS_HEIGHT);
+			gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA16F, CANVAS_WIDTH, CANVAS_HEIGHT);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -146,11 +143,11 @@ export class PostProcessor {
 			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, PostProcessor.texture[i], 0);
 			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		}
-		PostProcessor.copy_shader = await Loader.loadProgram(gl, "./../shader/postprocess.vs", "./../shader/copy.fs");
-		PostProcessor.test_shader = await Loader.loadProgram(gl, "./../shader/postprocess.vs", "./../shader/test.fs");
-		PostProcessor.hblur_shader = await Loader.loadProgram(gl, "./../shader/postprocess.vs", "./../shader/hblur.fs");
-		PostProcessor.vblur_shader = await Loader.loadProgram(gl, "./../shader/postprocess.vs", "./../shader/vblur.fs");
-		PostProcessor.blend_shader = await Loader.loadProgram(gl, "./../shader/postprocess.vs", "./../shader/blend.fs");
-		PostProcessor.tonemap_shader = await Loader.loadProgram(gl, "./../shader/postprocess.vs", "./../shader/tonemap.fs");
+		PostProcessor.copy_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/copy.fs");
+		PostProcessor.test_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/test.fs");
+		PostProcessor.hblur_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/hblur.fs");
+		PostProcessor.vblur_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/vblur.fs");
+		PostProcessor.blend_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/blend.fs");
+		PostProcessor.tonemap_shader = await Loader.loadProgram(gl, "file:///D:/Web/Pingpong/shader/postprocess.vs", "file:///D:/Web/Pingpong/shader/tonemap.fs");
 	}
 }

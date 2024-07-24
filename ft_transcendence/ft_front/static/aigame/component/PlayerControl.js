@@ -1,6 +1,5 @@
-import { Input } from "../core/Input.js";
 
-export class PlayerControl {
+class PlayerControl {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
 		this.table = null;
@@ -8,6 +7,6 @@ export class PlayerControl {
 	}
 	start() {}
 	update() {
-		this.table.setInput(this.player_id, (Input.getKey('q') ? 1 : 0) - (Input.getKey('a') ? 1 : 0));
+		this.table.setInput(this.player_id, (Input.getKey('ArrowRight') ? 1 : 0) - (Input.getKey('ArrowLeft') ? 1 : 0));
 	}
 }

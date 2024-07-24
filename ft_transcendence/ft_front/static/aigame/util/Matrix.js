@@ -1,5 +1,5 @@
 
-export class Matrix {
+class Matrix {
 	static translation(v) {
 		return [
 			1, 0, 0, v.x,
@@ -8,13 +8,38 @@ export class Matrix {
 			0, 0, 0, 1
 		];
 	}
-	static rotation(v) {
+	static rotation(v) {//y x z
+		return Matrix.mul(Matrix.mul(Matrix.rotateY(v.y), Matrix.rotateX(v.x)), Matrix.rotateZ(v.z));
+	}
+	static rotateX(a) {
+		let c = Math.cos(a);
+		let s = Math.sin(a);
 		return [
 			1, 0, 0, 0,
+			0, c, -s, 0,
+			0, s, c, 0,
+			0, 0, 0, 1
+		];
+	}
+	static rotateY(a) {
+		let c = Math.cos(a);
+		let s = Math.sin(a);
+		return [
+			c, 0, s, 0,
 			0, 1, 0, 0,
+			-s, 0, c, 0,
+			0, 0, 0, 1
+		];
+	}
+	static rotateZ(a) {
+		let c = Math.cos(a);
+		let s = Math.sin(a);
+		return [
+			c, -s, 0, 0,
+			s, c, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1
-		];//TODO
+		];
 	}
 	static scale(v) {
 		return [

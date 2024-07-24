@@ -1,6 +1,5 @@
-import { Time } from "../core/Time.js";
 
-export class PongBall {
+class PongBall {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
 		this.transform = gameObject.transform;

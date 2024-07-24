@@ -1,6 +1,5 @@
-import { Vector3 } from "../util/Vector3.js";
-import { Matrix } from "../util/Matrix.js";
-export class Transform {
+
+class Transform {
 	constructor() {
 		this.position = new Vector3(0, 0, 0);
 		this.rotation = new Vector3(0, 0, 0);

@@ -1,5 +1,5 @@
 
-export class GameObject {
+class GameObject {
 	constructor() {
 		this.children = [];
 	}

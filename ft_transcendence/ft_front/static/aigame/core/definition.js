@@ -1,21 +1,14 @@
 
 // const CANVAS_WIDTH = 480;
 // const CANVAS_HEIGHT = 320;
-window.CANVAS_WIDTH = 512;
-window.CANVAS_HEIGHT = 512;
+const CANVAS_WIDTH = 768;
+const CANVAS_HEIGHT = 480;
 
-export let canvas = null;
-export let ctx = null
+const canvas = document.getElementById("canvas");
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
+const ctx = canvas.getContext("2d");
 
-export let gl_canvas = null;
-export let gl = null;
-export function canvas_init() {
-    canvas = document.getElementById("canvas");
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-    ctx = canvas.getContext("2d");
-    
-    gl_canvas = new OffscreenCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-    gl = gl_canvas.getContext("webgl2");
-    gl.getExtension('EXT_color_buffer_float');
-}
+const gl_canvas = new OffscreenCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+const gl = gl_canvas.getContext("webgl2");
+gl.getExtension('EXT_color_buffer_float');

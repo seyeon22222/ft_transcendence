@@ -1,10 +1,10 @@
-import { Time } from "../core/Time.js";
 
-export class BotControl {
+class BotControl {
 	constructor(gameObject) {
 		this.gameObject = gameObject;
 		this.table = null;
 		this.player_id = -1;
+		this.racket_x = 0;
 		this.ball_x = 0;
 		this.ball_y = 0;
 		this.ball_vx = 0;
@@ -23,6 +23,9 @@ export class BotControl {
 		let width = this.table.width;
 		let height = this.table.height;
 
+		this.racket_y = this.table.stick[this.player_id].transform.position.z;
+		this.ball_x = ball_x;
+		this.ball_y = ball_y;
 		while (true) {
 			let min_dt = Number.POSITIVE_INFINITY;
 			let min_type = "None";
@@ -85,8 +88,10 @@ export class BotControl {
 		if (this.counter > 1) {
 			this.counter -= 1;
 			this.predict();
+			console.log("PREDICT");
 		}
-		let paddle = this.table.stick[this.player_id];
-		this.table.setInput(this.player_id, Math.sign(this.target_y - paddle.transform.position.z)); // 초보
+		let direction = Math.sign(this.target_y - this.racket_y)
+		this.racket_y += direction * Time.deltaTime;
+		this.table.setInput(this.player_id, direction); // 초보
 	}
 }

@@ -1,14 +1,8 @@
-import { Matrix } from "../util/Matrix.js";
-import { gl } from "./definition.js";
-import { Vector3 } from "../util/Vector3.js";
-import { MeshAsset } from "../asset/MeshAsset.js";
-import { MaterialAsset } from "../asset/MaterialAsset.js";
-import { TextureAsset } from "../asset/TextureAsset.js";
 
-export class Camera {
-	static position = {x: -1.6, y: 0.2, z: 1.4};
+class Camera {
+	static position = {x: 2.0, y: 0.2, z: 1.4};
 	static lookat = {x: 0, y: 0, z: 1.4};
-	static fov = 90 / 180 * Math.PI;
+	static fov = 60 / 180 * Math.PI;
 	static near = 0.3;
 	static far = 50;
 	static view = Matrix.identity();
@@ -71,12 +65,13 @@ export class Camera {
 		];
 	}
 	static updateProjection() {
+		let aspect_ratio = CANVAS_WIDTH / CANVAS_HEIGHT;
 		let c = 1 / Math.tan(Camera.fov * 0.5);
 		let a = (Camera.near + Camera.far) / (Camera.far - Camera.near);
 		let b = (2 * Camera.near * Camera.far) / (Camera.near - Camera.far);
 
 		Camera.projection = [
-			c, 0, 0, 0,
+			c / aspect_ratio, 0, 0, 0,
 			0, c, 0, 0,
 			0, 0, a, b,
 			0, 0, 1, 0
