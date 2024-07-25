@@ -13,6 +13,8 @@ clean:
 fclean: clean
 	@$(LOG) "fclean"
 	@rm -rf data
+	@rm -rf init_data
+	@unzip init_data.zip
 	@cp -r init_data data
 	@rm -rf ./ft_back/ft_user/migrations/0001_initial.py
 	@rm -rf ./ft_back/chatting/migrations/0001_initial.py
