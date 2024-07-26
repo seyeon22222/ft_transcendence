@@ -1,32 +1,6 @@
 import { delete_back_show } from '../src/utilities.js'
 
-window.event_popstate = []
-
-function createInvitePopup() {
-    const popupContainer = document.getElementById('popupContainer');
-
-    const popupDiv = document.createElement('div');
-    popupDiv.id = 'invitePopup';
-    popupDiv.style.display = 'none';
-
-    const popupContent = document.createElement('div');
-    popupContent.id = 'popupContent';
-
-    const popupMessage = document.createElement('p');
-    popupMessage.id = 'popupMessage';
-
-    const acceptBtn = document.createElement('button');
-    acceptBtn.id = 'acceptBtn';
-
-    popupContent.appendChild(popupMessage);
-    popupContent.appendChild(acceptBtn);
-    popupDiv.appendChild(popupContent);
-    popupContainer.appendChild(popupDiv);
-
-    return popupDiv;
-}
-
-export async function initializeWebsocket() {
+export async function setWebsocket() {
     const csrftoken = Cookies.get('csrftoken');
     const response = await fetch(`user/info`, {
         method: 'GET',
@@ -45,22 +19,17 @@ export async function initializeWebsocket() {
             protocol + "//" + window.location.host + "/ws/message/" + user_id + "/"
         );
 
-        window.i_socket.onopen = function() {
-        };
-
-        window.i_socket.onclose = function(event) {
-        };
-
         window.i_socket.onmessage = function (e) {
             const data = JSON.parse(e.data);
             const player1 = data.player1;
             const player2 = data.player2;
             const g_type = data.g_type;
             const g_id = data.g_id;
-            openInvitePopup(data.message, player1, player2, g_type, g_id, data);
+            InvitePopup(data.message, player1, player2, g_type, g_id, data);
         }
     } else {
         const error = await response.json();
+        console.error("처음 실행 시 발생 오류");
     }
 }
 
@@ -68,11 +37,10 @@ export async function check_socket() {
     if (window.i_socket) {
         window.i_socket.close();
         window.i_socket = null;
-    }
-    
+    }   
 }
 
-function openInvitePopup(message, player1, player2, g_type, g_id, data) {
+function InvitePopup(message, player1, player2, g_type, g_id, data) {
     const popupMessage = document.getElementById('popupMessage');
     
     const invitePopup = document.getElementById('invitePopup');
@@ -104,7 +72,7 @@ function openInvitePopup(message, player1, player2, g_type, g_id, data) {
             }
         } else {
             clearInterval(intervalId);
-            button_text.textContent = ``;
+            button_text.textContent = '';
             if (g_type === 'm')
                 m_accept(invitePopup, g_id);
             else if (g_type === 't')
@@ -186,6 +154,3 @@ async function mul_accept(invitePopup, player1, player2, player3, player4, g_id)
         console.error(error);
     }
 }
-
-createInvitePopup();
-check_socket();

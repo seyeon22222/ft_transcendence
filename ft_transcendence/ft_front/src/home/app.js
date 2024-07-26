@@ -1,9 +1,8 @@
 import router from '../../base/router.js'
 import { check_login } from '../utilities.js'
 import { formatDateTime } from "../info/info_func.js";
-import { check_socket } from '../../base/totalSocket.js';
+import { check_socket } from '../../base/popup.js';
 import { delete_back_show, showModal, event_delete_popstate } from '../utilities.js';
-import { Input } from '../../static/aigame/core/Input.js';
 
 let i_socket;
 

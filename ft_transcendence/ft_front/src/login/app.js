@@ -1,4 +1,4 @@
-import { initializeWebsocket, check_socket } from "../../base/totalSocket.js";
+import { setWebsocket, check_socket } from "../../base/popup.js";
 import { showModal, event_delete_popstate } from "../utilities.js";
 
 export function login_js() {
@@ -41,7 +41,7 @@ export function login_js() {
               const modal = document.querySelector('.modal');
               showModal('login', 'noti');
               check_socket();
-              initializeWebsocket();
+              setWebsocket();
               modal.addEventListener('hidden.bs.modal', function () {
                 location.href = "/#";
 				      });
