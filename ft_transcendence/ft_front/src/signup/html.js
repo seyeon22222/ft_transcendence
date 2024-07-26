@@ -10,7 +10,7 @@ export function signup_html() {
                         <input type="text" class="form-control" name="username" id="username_input" data-translate-placeholder="id_box" placeholder="아이디를 입력하세요">
                     </div>
                     <div class="mb-3">
-                        <label for="emain_input" class="form-label" data-translate="email">이메일</label>
+                        <label for="email_input" class="form-label" data-translate="email">이메일</label>
                         <input type="email" class="form-control" name="email" id="email_input" data-translate-placeholder="email_box" placeholder="이메일을 입력하세요" required>
                     </div>
                     <div class="mb-3">
