@@ -17,9 +17,9 @@ services:
       - transendance
   backend:
     build:
-      dockerfile: ./ft_back/dockerfile
+      dockerfile: ./BackEnd/dockerfile
     volumes:
-      - ./ft_back:/code
+      - ./BackEnd:/code
     env_file:
       - .env
     environment:

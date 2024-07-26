@@ -1,0 +1,22 @@
+FROM python:3
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /code
+
+RUN apt-get update && apt-get install -y netcat-openbsd
+
+COPY ./BackEnd/requirements.txt /code/
+
+RUN pip install --no-cache-dir -r requirements.txt && mkdir -p /etc/ssh
+
+COPY ./BackEnd /code/
+
+COPY --chmod=755 ./BackEnd/entrypoint.sh /code/
+
+EXPOSE 8000
+
+ENTRYPOINT [ "sh" , "/code/entrypoint.sh" ]
+
+CMD [ "daphne" , "-b", "0.0.0.0", "-p", "8000", "backend.asgi:application" ]

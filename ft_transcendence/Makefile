@@ -16,10 +16,10 @@ fclean: clean
 	@rm -rf init_data
 	@unzip init_data.zip
 	@cp -r init_data data
-	@rm -rf ./ft_back/ft_user/migrations/0001_initial.py
-	@rm -rf ./ft_back/chatting/migrations/0001_initial.py
-	@rm -rf ./ft_back/tournament/migrations/0001_initial.py
-	@rm -rf ./ft_back/profile_pictures
+	@rm -rf ./BackEnd/User/migrations/0001_initial.py
+	@rm -rf ./BackEnd/chatting/migrations/0001_initial.py
+	@rm -rf ./BackEnd/tournament/migrations/0001_initial.py
+	@rm -rf ./BackEnd/profile_pictures
 	@rm -rf __MACOSX
 	docker system prune --volumes --all --force
 
