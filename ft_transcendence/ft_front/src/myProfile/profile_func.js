@@ -1,28 +1,59 @@
 import { formatDateTime } from "../info/info_func.js";
 import { change_date, showModal } from "../utilities.js";
 
-export async function dataChange(changeData, csrftoken) {
-  changeData.addEventListener("click", async function (event) {
+export async function profile_page_setting() {
+	try {
+		let data;
+		const csrftoken = Cookies.get('csrftoken');
+		
+		const response = await fetch('user/info', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken,
+			},
+			credentials: 'include',
+		});
+		if (response.ok) {
+			data = await response.json();
+			if (data) {
+				const name = document.getElementById("username_input");
+				const email = document.getElementById("email_input");
+				name.placeholder = data[0].username;
+				email.placeholder = data[0].email;
+
+				profile_image_view(data, csrftoken);
+				profile_game_stat_view(data);
+				profile_match_info_view(data);
+				check_match_list(data, csrftoken);
+			}
+			setLanguage('profile');
+		} else {
+			const error = await response.json();
+			console.error('API 요청 실패', error);
+		}
+
+		const edit_btn = document.getElementById("edit_button");
+		profileChange(edit_btn, csrftoken);
+	} catch (error) {
+		console.error('API 요청 실패', error);
+	}
+}
+
+
+async function profileChange(edit_btn, csrftoken) {
+  edit_btn.addEventListener("click", async function (event) {
     event.preventDefault();
     try {
       const formData = new FormData();
 
-      formData.append(
-        "username",
-        document.getElementById("username_input").value
-      );
+      formData.append("username", document.getElementById("username_input").value);
       formData.append("email", document.getElementById("email_input").value);
 
       if (document.getElementById("new_image_input").files[0]) {
-        formData.append(
-          "profile_picture",
-          document.getElementById("new_image_input").files[0]
-        );
+        formData.append("profile_picture", document.getElementById("new_image_input").files[0]);
       } else {
-        formData.append(
-          "profile_picture",
-          document.getElementById("profile-image").value || ""
-        );
+        formData.append("profile_picture", document.getElementById("profile-image").value || "");
       }
 
       const response = await fetch("user/change_info", {
@@ -48,12 +79,12 @@ export async function dataChange(changeData, csrftoken) {
   });
 }
 
-export async function image_view(data, csrftoken) {
-  const imageContainer = document.getElementById("profile-image");
-  imageContainer.innerHTML = "";
+async function profile_image_view(data, csrftoken) {
+  const profile_image = document.getElementById("profile-image");
+  profile_image.innerHTML = "";
 
   if (data[0].profile_picture) {
-    const img = document.createElement("img");
+    const image = document.createElement("img");
     const response = await fetch(data[0].profile_picture, {
       method: "GET",
       headers: {
@@ -64,16 +95,16 @@ export async function image_view(data, csrftoken) {
     if (response.ok) {
       const imageBlob = await response.blob();
       const imageUrl = URL.createObjectURL(imageBlob);
-      img.src = imageUrl;
-      img.alt = "프로필 이미지";
+      image.src = imageUrl;
+      image.alt = "프로필 이미지";
 
-      imageContainer.appendChild(img);
+      profile_image.appendChild(image);
     }
   }
 }
 
-export function game_stat_view(data) {
-  const gamestatus = document.getElementById("game_status");
+function profile_game_stat_view(data) {
+  const game_stat = document.getElementById("game_status");
   const stats = data[0].game_stat[0] || {
     win_count: 0,
     defeat_count: 0,
@@ -86,30 +117,25 @@ export function game_stat_view(data) {
     createStatElement("승률", stats.win_rate + "%"),
   ];
 
-  statElements.forEach((element) => gamestatus.appendChild(element));
+  statElements.forEach((element) => game_stat.appendChild(element));
 }
 
-export function match_info_view(data) {
-  const match_info = document.getElementById("match_info");
+function profile_match_info_view(data) {
+  const info = document.getElementById("match_info");
 
-  const matchData = data[0].match_info[0] || {
+  const user_matchData = data[0].match_info[0] || {
     match_date: ["-"],
     match_result: ["-"],
   };
   const infoElements = [
-    createInfoElement(
-      "최근 매치",
-      data[0].match_info.length === 0
-        ? matchData.match_date
-        : change_date(matchData.match_date)
-    ),
-    createInfoElement("최근 매치 결과", matchData.match_result),
+    InfoElementcreate("최근 매치", data[0].match_info.length === 0 ? user_matchData.match_date : change_date(user_matchData.match_date)),
+    InfoElementcreate("최근 매치 결과", user_matchData.match_result),
   ];
 
-  infoElements.forEach((element) => match_info.appendChild(element));
+  infoElements.forEach((element) => info.appendChild(element));
 }
 
-async function respondToMatch(matchId, response, self_data, csrftoken) {
+async function respondToMatch(game_id, response, self_data, csrftoken) {
   const now = new Date();
   const startDate = formatDateTime(new Date(now.getTime() + 300));
   const username = self_data[0].username;
@@ -119,7 +145,7 @@ async function respondToMatch(matchId, response, self_data, csrftoken) {
     start_date: startDate,
   };
 
-  const responseFetch = await fetch(`/match/response/${matchId}`, {
+  const game_response = await fetch(`/match/response/${game_id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -128,28 +154,27 @@ async function respondToMatch(matchId, response, self_data, csrftoken) {
     body: JSON.stringify(formData),
   });
 
-  if (responseFetch.ok) {
-    const data = await responseFetch.json();
-    fetchMatchList(self_data, csrftoken);
+  if (game_response.ok) {
+    check_match_list(self_data, csrftoken);
   } else {
-    const error = await responseFetch.json();
+    const error = await game_response.json();
     console.error(error);
   }
 }
 
-export async function match_list_view(self_data, match_data, csrftoken) {
-  const matchListContainer = document.getElementById("1:1_Match_List");
-  matchListContainer.innerHTML = "";
+async function match_list_view(self_data, match_data, csrftoken) {
+  const matchList = document.getElementById("1:1_Match_List");
+  matchList.innerHTML = "";
   match_data.forEach((match) => {
     if (match.status === "pending" && self_data[0].user_id !== match.requester) {
-      const matchElement = document.createElement("div");
-      matchElement.className = "match-item";
-      matchElement.innerHTML = `
+      const match_response = document.createElement("div");
+      match_response.className = "match-item";
+      match_response.innerHTML = `
             <p>${match.player1_username} vs ${match.player2_username}</p>
             <button class="btn btn-outline-light btn-sm accept-button" data-translate="accept" data-match-id="${match.id}">승인</button>
             <button class="btn btn-outline-light btn-sm reject-button" data-translate="reject" data-match-id="${match.id}">거절</button>
             `;
-      matchListContainer.appendChild(matchElement);
+      matchList.appendChild(match_response);
     }
   });
 
@@ -166,7 +191,7 @@ export async function match_list_view(self_data, match_data, csrftoken) {
   });
 }
 
-export async function fetchMatchList(user_data, csrftoken) {
+async function check_match_list(user_data, csrftoken) {
   const response = await fetch("match/selfview", {
     method: "GET",
     headers: {
@@ -190,7 +215,7 @@ function createStatElement(label, value) {
   return element;
 }
 
-function createInfoElement(label, value) {
+function InfoElementcreate(label, value) {
   const keyword = { "최근 매치": "recent_match", "최근 매치 결과": "recent_match_res"};
 
   const element = document.createElement("h4");
