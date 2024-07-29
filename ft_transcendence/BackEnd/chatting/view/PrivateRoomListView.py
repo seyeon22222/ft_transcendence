@@ -25,7 +25,7 @@ class PrivateRoomListView(APIView):
             serializer = PrivateRoomSerializer.PrivateRoomSerializer(private_room)
             return Response(serializer.data, status=200)
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)    
+            return Response(status=301)    
 
     def post(self, request, sender, receiver):
         user1 = MyUser.objects.get(username=sender)

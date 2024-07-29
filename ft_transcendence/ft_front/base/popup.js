@@ -1,4 +1,5 @@
 import { delete_back_show } from '../src/utilities.js'
+import { dictionary } from '../src/language/dictionary.js';
 
 export async function setWebsocket() {
     const csrftoken = Cookies.get('csrftoken');
@@ -27,9 +28,8 @@ export async function setWebsocket() {
             const g_id = data.g_id;
             InvitePopup(data.message, player1, player2, g_type, g_id, data);
         }
-    } else {
-        const error = await response.json();
-        console.error("처음 실행 시 발생 오류");
+    } else if (response.status === 301) {
+        // console.log("Initial Error : 처음 접속 시 발생 에러");
     }
 }
 
@@ -53,8 +53,8 @@ function InvitePopup(message, player1, player2, g_type, g_id, data) {
 		const user_lang = document.getElementById('languageSelector').value;
         const csrftoken = Cookies.get('csrftoken');
         if (remaintimer > 0) {
-            popupMessage.textContent = `${window.lang[user_lang].message.match_complete} ${message}`;
-            button_text.textContent = `${window.lang[user_lang].message.accept}(${remaintimer})`;
+            popupMessage.textContent = `${dictionary[user_lang].message.match_complete} ${message}`;
+            button_text.textContent = `${dictionary[user_lang].message.accept}(${remaintimer})`;
             remaintimer--;
             const response = await fetch("user/check_login", {
                 method: "GET",

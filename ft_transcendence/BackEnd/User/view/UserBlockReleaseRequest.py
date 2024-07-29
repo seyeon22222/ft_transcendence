@@ -2,11 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from ..utils import validate_input, validate_password, validate_email
 from ..model import MyUser
-from django.http import HttpResponse
-from django.core.files.storage import default_storage
-from django.contrib.auth import authenticate, login, logout
 
 class UserBlockReleaseRequest(APIView):
     permission_classes = [IsAuthenticated]
@@ -27,4 +23,4 @@ class UserBlockReleaseRequest(APIView):
             block_relationship.delete()
             return Response({'message': 'User removed from block list'}, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'User not in block list'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'User not in block list'}, status=301)

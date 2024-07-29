@@ -1,3 +1,5 @@
+import { dictionary } from "./language/dictionary.js";
+
 export async function check_login() {
   try {
     const csrftoken = Cookies.get('csrftoken');
@@ -66,7 +68,7 @@ export function showModal(category, body) {
 	const langNow = document.getElementById("languageSelector").value;
 	const modal = new bootstrap.Modal(document.querySelector('.modal'));
 	const modalBody = document.querySelector('.modal .modal-body p');
-	modalBody.innerText = window.lang[langNow][category][body];
+	modalBody.innerText = dictionary[langNow][category][body];
 	modalBody.setAttribute('data-translate', body);
 	modal.show();
 }

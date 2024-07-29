@@ -2,21 +2,28 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotAuthenticated
 from ..serializer import UserSerializer
-from ..utils import validate_input, validate_password, validate_email
 from ..model import MyUser
-from django.http import HttpResponse
-from django.core.files.storage import default_storage
-from django.contrib.auth import authenticate, login, logout
+
 
 class UserViewSet(APIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return MyUser.MyUser.objects.filter(user_id=self.request.user.user_id)
+        try:
+            user = MyUser.MyUser.objects.filter(user_id=self.request.user.user_id)
+        except MyUser.MyUser.DoesNotExist as e:
+            return e
+        
+        return user
 
     def get(self, request):
-        queryset = self.get_queryset()
+        try:
+            queryset = self.get_queryset()
+        except queryset == MyUser.MyUser.DoesNotExist:
+            return Response({'error' : 'Initial Error'}, status=status.status_400_BAD_REQUEST)
+        
         serializer = UserSerializer.UserSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -26,3 +33,8 @@ class UserViewSet(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+    
+    def handle_exception(self, exc):
+        if isinstance(exc, NotAuthenticated):
+            return Response(status=301)
+        return super().handle_exception(exc)

@@ -1,6 +1,7 @@
 import router from "../../base/router.js"
 import { formatDateTime } from "../info/info_func.js";
 import { showModal } from "../utilities.js";
+import { dictionary } from "../language/dictionary.js"
 
 export async function tournament_list_view(container) {
     let data;
@@ -77,7 +78,8 @@ export async function make_tournament() {
             const modal = document.querySelector('.modal');
             const newModal = new bootstrap.Modal(modal);
             const modalBody = document.querySelector('.modal .modal-body p');
-            modalBody.innerHTML = `<span>'${data.name}' </span><span data-translate="tournament_create">${window.lang[langNow].matchlobby.tournament_create}</span>`;
+            const user_lang = document.getElementById('languageSelector').value;
+            modalBody.innerHTML = `<span>'${data.name}' </span><span data-translate="tournament_create">${dictionary[user_lang].matchlobby.tournament_create}</span>`;
             newModal.show();
             modal.addEventListener('hidden.bs.modal', function () {
                 router();
@@ -88,7 +90,7 @@ export async function make_tournament() {
     })
 }
 
-export async function multimatch_list_view(multiMatchcontainer) {
+export async function multimatch_list_view(container) {
     let data;
     const csrftoken = Cookies.get('csrftoken');
     const m_response = await fetch('match/multimatchList', {
@@ -102,7 +104,7 @@ export async function multimatch_list_view(multiMatchcontainer) {
 
     if (m_response.ok) {
         data = await m_response.json();
-        multiMatchcontainer.innerHTML = '';
+        container.innerHTML = '';
         data.forEach(multiMatch => {
             const multiMatchLink = document.createElement('a');
             multiMatchLink.href = `/#multi/${multiMatch.name}`;
@@ -110,13 +112,13 @@ export async function multimatch_list_view(multiMatchcontainer) {
             multiMatchLink.classList.add('multiMatch-link', 'block', 'p-2', 'bg-gray-700', 'text-white', 'rounded', 'mb-2', 'hover:bg-gray-600');
             multiMatchLink.style.marginLeft = '10px';
             multiMatchLink.style.marginRight = '10px';
-            multiMatchcontainer.appendChild(multiMatchLink);
+            container.appendChild(multiMatchLink);
         });
     }
 }
 
 
-export async function match_list_view(matchContainer) {
+export async function match_list_view(container) {
     const matchcsrftoken = Cookies.get('csrftoken');
     const matchresponse = await fetch('match/matchview', {
         method: 'GET',
@@ -128,7 +130,7 @@ export async function match_list_view(matchContainer) {
     });
     if (matchresponse.ok) {
         const temp_data = await matchresponse.json();
-        matchContainer.innerHTML = '';
+        container.innerHTML = '';
         temp_data.forEach(match => {
             if (match.status === "accepted") {
                 const matchLink = document.createElement('a');
@@ -137,7 +139,7 @@ export async function match_list_view(matchContainer) {
                 matchLink.classList.add('match-link', 'block', 'p-2', 'bg-gray-700', 'text-white', 'rounded', 'mb-2', 'hover:bg-gray-600');
                 matchLink.style.marginLeft = '10px';
                 matchLink.style.marginRight = '10px';
-                matchContainer.appendChild(matchLink);
+                container.appendChild(matchLink);
             }
         });
     }

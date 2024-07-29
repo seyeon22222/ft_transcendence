@@ -23,11 +23,6 @@ export function matchLobby_html() {
             </div>
         </div>
 
-
-		<br>
-		<br>
-		<br>
-		<br>
 		<br>
 
         <div class="p-10 lg:p-20 text-center">

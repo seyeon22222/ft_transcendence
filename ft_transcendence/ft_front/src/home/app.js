@@ -3,6 +3,7 @@ import { check_login } from '../utilities.js'
 import { formatDateTime } from "../info/info_func.js";
 import { check_socket } from '../../base/popup.js';
 import { delete_back_show, showModal, event_delete_popstate } from '../utilities.js';
+import { setTextsbyLang } from "../language/language.js";
 
 let i_socket;
 
@@ -38,7 +39,7 @@ export async function home_js() {
             const container = document.getElementById("buttons-container");
             container.innerHTML = home_logout_html();
         }
-		setLanguage("home");
+		setTextsbyLang("home");
     } catch (error) {
         console.error('home 화면에서 오류 발생 : ', error);
     }

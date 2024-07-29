@@ -1,13 +1,14 @@
 import { check_login, event_add_popstate} from "../utilities.js"
 import { tournament_style } from "./t_css.js";
 import { t_popstate_event, startTournament, updateGameInfo, get_user_data, apply_btn_evnet_handler } from "./t_utils.js";
+import { setTextsbyLang } from "../language/language.js";
 
 export async function tournament_view(hash) {
     event_add_popstate(t_popstate_event);
     window.tournament_url = location.href;
     const style = document.getElementById("style");
     style.innerHTML = tournament_style();
-	setLanguage('tournament');
+	setTextsbyLang('tournament');
 
     if (await check_login() === false) {
         location.href = `/#`;

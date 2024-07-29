@@ -1,5 +1,6 @@
 import { recordMessages } from "./chat_func.js";
 import { check_login, showModal, event_delete_popstate } from "../utilities.js"
+import { setTextsbyLang } from "../language/language.js";
 
 let chatSocket;
 
@@ -11,7 +12,7 @@ export async function chatPrivate_js(hash) {
       return;
   }
 
-  setLanguage('chatprivate');
+  setTextsbyLang('chatprivate');
 
   const slug = hash.slice(1);
   const csrftoken = Cookies.get("csrftoken");

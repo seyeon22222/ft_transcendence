@@ -1,4 +1,4 @@
-window.lang = {
+export const dictionary = {
 	ko: {
 		home: {
 			homebtn: "홈",
@@ -160,12 +160,32 @@ window.lang = {
 			under_noti: "토너먼트 참가자가 부족합니다",
 			loading_err: "토너먼트 정보를 불러오는데 실패했습니다",
 		},
+		multi: {
+			homebtn: "홈",
+			langbtn: "언어",
+		},
+		match: {
+			homebtn: "홈",
+			langbtn: "언어",
+		},
+		gamem: {
+			homebtn: "홈",
+			langbtn: "언어",
+		},
+		gamet: {
+			homebtn: "홈",
+			langbtn: "언어",
+		},
+		gamemulti: {
+			homebtn: "홈",
+			langbtn: "언어",
+		},
 		message: {
 			match_complete: "매칭 완료: ",
 			accept: "수락",
 			err: "경고",
 			noti: "알림",
-		}
+		},
 	},
 	en: {
 		home: {
@@ -327,6 +347,26 @@ window.lang = {
 			dupready_noti: "You can't make a duplicate application",
 			under_noti: "There are not enough participants in the tournament",
 			loading_err: "Failed to load tournament information",
+		},
+		multi: {
+			homebtn: "Home",
+			langbtn: "Language",
+		},
+		match: {
+			homebtn: "Home",
+			langbtn: "Language",
+		},
+		gamem: {
+			homebtn: "Home",
+			langbtn: "Language",
+		},
+		gamet: {
+			homebtn: "Home",
+			langbtn: "Language",
+		},
+		gamemulti: {
+			homebtn: "Home",
+			langbtn: "Language",
 		},
 		message: {
 			match_complete: "Matching Completed: ",
@@ -495,6 +535,26 @@ window.lang = {
 			under_noti: "トーナメント参加者が不足しています",
 			loading_err: "トーナメント情報の読み込みに失敗しました",
 		},
+		multi: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+		},
+		match: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+		},
+		gamem: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+		},
+		gamet: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+		},
+		gamemulti: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+		},
 		message: {
 			match_complete: "マッチング完了: ",
 			accept: "受諾",
@@ -502,105 +562,3 @@ window.lang = {
 		}
 	}
 };
-
-let langNow = 'ko';
-
-document.querySelectorAll('.dropdown-item').forEach(item => {
-	item.addEventListener('click', event => {
-	  event.preventDefault();
-	  const selectedValue = event.target.getAttribute('value');
-	  langNow = selectedValue;
-
-	  document.getElementById('languageSelector').textContent = event.target.textContent;
-	});
-  });
-
-async function setLanguage(category) {
-	if (await check_login() === true) {
-		const csrftoken = Cookies.get('csrftoken');
-		const response = await fetch('user/info', {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': csrftoken,
-			},
-		});
-		
-		if (response.ok) {
-			const data = await response.json();
-			langNow = data[0].language;
-			document.getElementById("languageSelector").value = langNow;
-		}
-	}
-	else
-		langNow = document.getElementById("languageSelector").value;
-	updateTexts(langNow, category);
-}
-
-function updateTexts(langNow, category) {
-	document.querySelectorAll('[data-translate]').forEach(element => {
-		const key = element.getAttribute('data-translate');
-		element.innerText = lang[langNow][category][key];
-    });
-
-	document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
-		const key = element.getAttribute('data-translate-placeholder');
-		element.setAttribute('placeholder', lang[langNow][category][key]);
-    });
-}
-
-async function check_login() {
-	try {
-		const csrftoken = Cookies.get('csrftoken');
-		const response = await fetch('user/check_login', {
-		  method: 'GET',
-		  headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': csrftoken,
-		  },
-		});
-	
-		if (response.status === 301) {
-		  return false;
-		}
-		return true;
-	  } catch (error) {
-		console.error('로그인 여부 확인 중 오류 발생 : ', error);
-	  }
-}
-
-const language = document.getElementById("languageSelector");
-language.addEventListener("change", async (event) => {
-	event.preventDefault();
-
-	if (await check_login() === true) {
-		let data;
-		const csrftoken = Cookies.get('csrftoken');
-		const test_res = await fetch(`user/language`, {
-			method : 'GET',
-			headers : {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': csrftoken,
-			},
-			credentials: 'include',
-		});
-
-		if (test_res.ok) {
-			data = await test_res.json();
-		}
-	
-		await fetch('user/language', {
-			method: 'POST',
-			headers: {
-				'Content-Type' : 'application/json',
-				'X-CSRFToken' : csrftoken,
-			},
-			body: JSON.stringify({user_id : data[0].user_id, language: document.getElementById('languageSelector').value})
-		});
-	}
-	user_location = location.hash.slice(1).toLocaleLowerCase().split("/");
-	category = user_location[0];
-	if (category.length === 0)
-		category = "home";
-	setLanguage(category);
-});

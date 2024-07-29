@@ -1,5 +1,6 @@
 import { formatDateTime } from "../info/info_func.js";
 import { change_date, showModal } from "../utilities.js";
+import { setTextsbyLang } from "../language/language.js";
 
 export async function profile_page_setting() {
 	try {
@@ -27,7 +28,7 @@ export async function profile_page_setting() {
 				profile_match_info_view(data);
 				check_match_list(data, csrftoken);
 			}
-			setLanguage('profile');
+			setTextsbyLang('profile');
 		} else {
 			const error = await response.json();
 			console.error('API 요청 실패', error);

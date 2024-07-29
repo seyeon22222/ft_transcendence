@@ -1,5 +1,6 @@
 import { recordMessage } from "./chat_func.js"
 import { check_login, showModal, event_delete_popstate } from "../utilities.js"
+import { setTextsbyLang } from "../language/language.js";
 
 let chatSocket;
 
@@ -14,7 +15,7 @@ export async function chat_js(hash) {
   const style = document.getElementById("style");
   style.innerHTML = set_style();
 
-  setLanguage('chat');
+  setTextsbyLang('chat');
 
   const temp_csrftoken = Cookies.get("csrftoken");
   let temp_data;

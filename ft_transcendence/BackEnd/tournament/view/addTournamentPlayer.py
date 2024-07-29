@@ -26,7 +26,7 @@ class addTournamentPlayer(APIView):
                 participant.level = level
                 participant.save()
                 return Response(status=status.HTTP_200_OK)
-            return Response({'message': '중복 신청 할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': '중복 신청 할 수 없습니다.'}, status=301)
 
         tournament_participant = tournament.tournamentParticipant(tournament=intournament, player=user, nickname=nickname, index=index)
         if level:

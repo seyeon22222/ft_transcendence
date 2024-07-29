@@ -9,7 +9,7 @@ class PrivateRoomDetailView(APIView):
         try:
             private_room = PrivateRoom.PrivateRoom.objects.get(slug=slug)
         except PrivateRoom.PrivateRoom.DoesNotExist:
-            return Response({'error': '그런 1:1 채팅방을 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': '그런 1:1 채팅방을 찾을 수 없습니다.'}, status=301)
         
         messages = PrivateMessage.PrivateMessage.objects.filter(room=private_room)
         private_room_serializer = PrivateRoomSerializer.PrivateRoomSerializer(private_room)

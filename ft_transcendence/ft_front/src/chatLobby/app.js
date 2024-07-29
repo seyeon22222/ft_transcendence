@@ -1,5 +1,7 @@
 import router from "../../base/router.js"
 import { check_login, delete_back_show, showModal, event_delete_popstate } from "../utilities.js"
+import { setTextsbyLang } from "../language/language.js";
+import { dictionary } from "../language/dictionary.js";
 
 export async function chatLobby_js() {
     delete_back_show();
@@ -7,7 +9,7 @@ export async function chatLobby_js() {
     const style = document.getElementById("style");
     style.innerHTML = set_style();
 
-	setLanguage("chatlobby");
+	setTextsbyLang("chatlobby");
     const check = await check_login();
     if (check === false) {
         location.href = `/#`;
@@ -87,7 +89,8 @@ export async function chatLobby_js() {
 				const modal = document.querySelector('.modal');
 				const newModal = new bootstrap.Modal(modal);
 				const modalBody = document.querySelector('.modal .modal-body p');
-				modalBody.innerHTML = `<span>'${data.name}' </span><span data-translate="noti">${window.lang[langNow].chatlobby.noti}</span>`;
+				const user_lang = document.getElementById('languageSelector').value;
+				modalBody.innerHTML = `<span>'${data.name}' </span><span data-translate="noti">${dictionary[user_lang].chatlobby.noti}</span>`;
 				newModal.show();
 				modal.addEventListener('hidden.bs.modal', function () {
 					router();
