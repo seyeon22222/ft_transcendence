@@ -38,7 +38,7 @@ class tournamentMatchResultView(APIView):
         if result == -1:
             return Response({'error': 'Error while handling tournament result'}, status=status.HTTP_400_BAD_REQUEST)
 
-        tournament_match = tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
+        tournament_match = tournamentMatch.tournamentMatch.objects.get(tournament=tournament_instance, player1=player1, player2=player2)
         tournament_match.match_date = match_date
         tournament_match.match_result = match_result
         tournament_match.save()
