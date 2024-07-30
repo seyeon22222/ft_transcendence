@@ -1,4 +1,4 @@
-export function set_style() {
+export function chat_style() {
     return `
       body {
           background-color: #333; /* Dark gray background */

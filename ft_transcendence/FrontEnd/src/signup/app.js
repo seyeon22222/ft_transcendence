@@ -1,7 +1,7 @@
 import { event_delete_popstate } from "../utilities.js";
-import { signup_style } from "./s_css.js";
 import { signUp_event_handler } from "./s_utils.js";
 import { setTextsbyLang } from "../language/language.js";
+import { signup_style } from "../static/signUp_css.js";
 
 export function signup_js() {
     event_delete_popstate();

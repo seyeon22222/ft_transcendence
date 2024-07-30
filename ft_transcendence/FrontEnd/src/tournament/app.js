@@ -1,7 +1,7 @@
 import { check_login, event_add_popstate} from "../utilities.js"
-import { tournament_style } from "./t_css.js";
 import { t_popstate_event, startTournament, updateGameInfo, get_user_data, apply_btn_evnet_handler } from "./t_utils.js";
 import { setTextsbyLang } from "../language/language.js";
+import { tournament_style } from "../static/tournament_css.js";
 
 export async function tournament_view(hash) {
     event_add_popstate(t_popstate_event);

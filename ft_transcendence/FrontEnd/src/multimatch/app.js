@@ -1,5 +1,5 @@
 import { event_delete_popstate } from "../utilities.js";
-import { multiMatch_style } from "./multi_css.js";
+import { multiMatch_style } from "../static/multi_css.js";
 import { get_game_data } from "./multi_utils.js";
 
 export async function multiMatch_js(hash) {

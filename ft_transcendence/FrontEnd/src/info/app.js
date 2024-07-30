@@ -1,5 +1,6 @@
 import { check_login, event_delete_popstate } from "../utilities.js";
-import { ChatHandler, getUserData, MatchHandler, BlockHandler, UnblockHandler, info_style } from "./info_utils.js";
+import { ChatHandler, getUserData, MatchHandler, BlockHandler, UnblockHandler } from "./info_utils.js";
+import { info_style } from "../static/info_css.js";
 
 export async function info_js() {
 	event_delete_popstate();

@@ -1,4 +1,4 @@
-import { set_style } from "./set_style.js";
+import { set_style } from "../static/chatLobby_css.js";
 import { check_login, delete_back_show, event_delete_popstate } from "../utilities.js";
 import { loadRoomList } from "./loadRoomList.js";
 import { loadUserList } from "./loadUserList.js";

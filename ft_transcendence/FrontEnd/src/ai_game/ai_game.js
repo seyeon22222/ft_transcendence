@@ -17,11 +17,7 @@ let scene = null;
 let loop = false;
 
 async function main() {
-	// function cleanup_popstate() {
-	// 	Input.cleanup();
-	// 	loop = false;
-	// }
-	// //event_add_popstate(cleanup_popstate);
+	
 	canvas_init();
 	Input.init();
 	await MaterialAsset.init();

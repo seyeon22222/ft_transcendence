@@ -1,4 +1,3 @@
-
 export function set_style() {
     return `
     body {

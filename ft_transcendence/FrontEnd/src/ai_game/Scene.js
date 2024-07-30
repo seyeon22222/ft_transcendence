@@ -36,6 +36,5 @@ export class Scene {
 		for (let gameObject of this.gameObjects) {
 			gameObject.update(null);
 		}
-		// console.log(gl.getError());
 	}
 }
