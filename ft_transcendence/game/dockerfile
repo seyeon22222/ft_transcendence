@@ -7,11 +7,11 @@ WORKDIR /code
 
 RUN apt-get update && apt-get install -y netcat-openbsd
 
-COPY ./game/requirements.txt /code/
+COPY ./Game/requirements.txt /code/
 
 RUN pip install --no-cache-dir -r requirements.txt && mkdir -p /etc/ssh
 
-COPY ./game /code/
+COPY ./Game /code/
 
 EXPOSE 3000
 

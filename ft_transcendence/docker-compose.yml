@@ -10,9 +10,9 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTSQL_DB: ${DB_NAME}
+      POSTSQL_USER: ${DB_USER}
+      POSTSQL_PASSWORD: ${DB_PASS}
     networks:
       - transendance
   backend:
@@ -23,18 +23,18 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_HOST : ${POSTGRES_HOST}
-      DJANGO_SETTINGS_MODULE : ${DJANGO_SETTINGS_MODULE_back}
+      POSTSQL_HOST : ${POSTSQL_HOST}
+      DJANGO_SETTINGS_MODULE : ${DJANGO_MODU_back}
     depends_on:
       - db
     networks:
       - transendance
   web:
-    build: ./nginx
+    build: ./Nginx
     ports:
       - "8000:80"
     volumes:
-      - ./ft_front:/nginx
+      - ./FrontEnd:/nginx
     env_file:
       - .env
     depends_on:
@@ -49,8 +49,8 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_HOST : ${POSTGRES_HOST}
-      DJANGO_SETTINGS_MODULE : ${DJANGO_SETTINGS_MODULE_game}
+      POSTSQL_HOST : ${POSTSQL_HOST}
+      DJANGO_SETTINGS_MODULE : ${DJANGO_MODU_game}
     networks:
       - transendance
 
