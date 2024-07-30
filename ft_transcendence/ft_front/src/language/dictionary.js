@@ -180,6 +180,10 @@ export const dictionary = {
 			homebtn: "홈",
 			langbtn: "언어",
 		},
+		ai: {
+			homebtn: "홈",
+			langbtn: "언어",
+		},
 		message: {
 			match_complete: "매칭 완료: ",
 			accept: "수락",
@@ -368,6 +372,10 @@ export const dictionary = {
 			homebtn: "Home",
 			langbtn: "Language",
 		},
+		ai: {
+			homebtn: "Home",
+			langbtn: "Language",
+		},
 		message: {
 			match_complete: "Matching Completed: ",
 			accept: "Accept",
@@ -552,6 +560,10 @@ export const dictionary = {
 			langbtn: "言語",
 		},
 		gamemulti: {
+			homebtn: "ホーム",
+			langbtn: "言語",
+		},
+		ai: {
 			homebtn: "ホーム",
 			langbtn: "言語",
 		},

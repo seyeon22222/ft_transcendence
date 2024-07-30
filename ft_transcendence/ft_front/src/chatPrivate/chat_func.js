@@ -1,79 +1,78 @@
 import { showModal } from "../utilities.js";
 
 export async function recordMessages(hash) {
-  const slug = hash.slice(1);
-  let message_data;
-  let response;
-  const recordMessage = document.getElementById("chat-messages");
-  recordMessage.innerHTML = "";
-  const csrftoken = Cookies.get("csrftoken");
+  const roomSlug = hash.slice(1); // (slug) > (roomSlug)
+  let messageData; // (message_data) > (messageData)
+  let fetchResponse; // (response) > (fetchResponse)
+  const chatMessagesElement = document.getElementById("chat-messages"); // (recordMessage) > (chatMessagesElement)
+  chatMessagesElement.innerHTML = "";
+  const csrfToken = Cookies.get("csrftoken"); // (csrftoken) > (csrfToken)
 
-  let temp_data;
-  response = await fetch(`user/info`, {
+  let tempData; // (temp_data) > (tempData)
+  fetchResponse = await fetch(`user/info`, { // (response) > (fetchResponse)
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRFToken": csrftoken,
+      "X-CSRFToken": csrfToken, // (csrftoken) > (csrfToken)
     },
     credentials: "include",
   });
-  if (response.ok) {
-    temp_data = await response.json();
+  if (fetchResponse.ok) { // (response) > (fetchResponse)
+    tempData = await fetchResponse.json(); // (temp_data) > (tempData)
   } else {
-    const error = await response.json();
-    console.error("API 요청 실패", error);
+    const apiError = await fetchResponse.json(); // (error) > (apiError), (response) > (fetchResponse)
+    console.error("API 요청 실패", apiError); // (error) > (apiError)
   }
 
-  const bodyData = {
-    username: temp_data[0].username,
-    slug: slug,
+  const requestBodyData = { // (bodyData) > (requestBodyData)
+    username: tempData[0].username, // (temp_data) > (tempData)
+    slug: roomSlug, // (slug) > (roomSlug)
   };
 
-  response = await fetch(`chat/privaterooms/check/`, {
+  fetchResponse = await fetch(`chat/privaterooms/check/`, { // (response) > (fetchResponse)
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRFToken": csrftoken,
+      "X-CSRFToken": csrfToken, // (csrftoken) > (csrfToken)
     },
-    body: JSON.stringify(bodyData),
+    body: JSON.stringify(requestBodyData), // (bodyData) > (requestBodyData)
   });
 
-
-  if (!response.ok) {
-    const modal = document.querySelector('.modal');
+  if (!fetchResponse.ok) { // (response) > (fetchResponse)
+    const modalElement = document.querySelector('.modal'); // (modal) > (modalElement)
     showModal('chatprivate', 'notallow_err');
-    modal.addEventListener('hidden.bs.modal', function () {
-		location.href = `/#chatlobby`;
-	});
+    modalElement.addEventListener('hidden.bs.modal', function () { // (modal) > (modalElement)
+      location.href = `/#chatlobby`;
+    });
   }
 
-  const messageResponse = await fetch(`chat/privaterooms/${slug}/`, {
+  const messageFetchResponse = await fetch(`chat/privaterooms/${roomSlug}/`, { // (messageResponse) > (messageFetchResponse), (slug) > (roomSlug)
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRFToken": csrftoken,
+      "X-CSRFToken": csrfToken, // (csrftoken) > (csrfToken)
     },
     credentials: "include",
   });
-  if (messageResponse.ok) {
-    message_data = await messageResponse.json();
+  if (messageFetchResponse.ok) { // (messageResponse) > (messageFetchResponse)
+    messageData = await messageFetchResponse.json(); // (message_data) > (messageData)
 
-    if (Array.isArray(message_data.messages)) {
-      message_data.messages.forEach((message) => {
-        const messageWrapper = document.createElement("div");
-        messageWrapper.classList.add(
+    if (Array.isArray(messageData.messages)) { // (message_data) > (messageData)
+      messageData.messages.forEach((chatMessage) => { // (message) > (chatMessage), (message_data) > (messageData)
+        const messageWrapperDiv = document.createElement("div"); // (messageWrapper) > (messageWrapperDiv)
+        messageWrapperDiv.classList.add(
           "message-wrapper",
           "flex",
           "items-center",
           "mb-2"
         );
-        messageWrapper.style.marginLeft = "10px";
-        messageWrapper.style.marginRight = "10px";
+        messageWrapperDiv.style.marginLeft = "10px"; // (messageWrapper) > (messageWrapperDiv)
+        messageWrapperDiv.style.marginRight = "10px"; // (messageWrapper) > (messageWrapperDiv)
 
-        const userinfo = document.createElement("a");
-        userinfo.href = `/#info/${message.username}`;
-        userinfo.textContent = message.username;
-        userinfo.classList.add(
+        const userInfoLink = document.createElement("a"); // (userinfo) > (userInfoLink)
+        userInfoLink.href = `/#info/${chatMessage.username}`; // (userinfo) > (userInfoLink), (message) > (chatMessage)
+        userInfoLink.textContent = chatMessage.username; // (userinfo) > (userInfoLink), (message) > (chatMessage)
+        userInfoLink.classList.add(
           "room-link",
           "p-2",
           "bg-gray-700",
@@ -82,9 +81,9 @@ export async function recordMessages(hash) {
           "hover:bg-gray-600"
         );
 
-        const messageText = document.createElement("span");
-        messageText.textContent = ": " + message.content;
-        messageText.classList.add(
+        const messageTextSpan = document.createElement("span"); // (messageText) > (messageTextSpan)
+        messageTextSpan.textContent = ": " + chatMessage.content; // (messageText) > (messageTextSpan), (message) > (chatMessage)
+        messageTextSpan.classList.add(
           "message-content",
           "p-2",
           "bg-gray-300",
@@ -92,19 +91,36 @@ export async function recordMessages(hash) {
           "rounded"
         );
 
-        messageWrapper.appendChild(userinfo);
-        messageWrapper.appendChild(messageText);
+        messageWrapperDiv.appendChild(userInfoLink); // (messageWrapper) > (messageWrapperDiv), (userinfo) > (userInfoLink)
+        messageWrapperDiv.appendChild(messageTextSpan); // (messageWrapper) > (messageWrapperDiv), (messageText) > (messageTextSpan)
 
-        recordMessage.appendChild(messageWrapper);
+        chatMessagesElement.appendChild(messageWrapperDiv); // (recordMessage) > (chatMessagesElement), (messageWrapper) > (messageWrapperDiv)
       });
     } else {
-      console.error("Message data is not an array:", message_data);
+      console.error("Message data is not an array:", messageData); // (message_data) > (messageData)
     }
   } else {
-    const modal = document.querySelector('.modal');
+    const modalElement = document.querySelector('.modal'); // (modal) > (modalElement)
     showModal('chatprivate', 'wrongconnect_err');
-    modal.addEventListener('hidden.bs.modal', function () {
-		location.href = "/#chatlobby";
-	});
+    modalElement.addEventListener('hidden.bs.modal', function () { // (modal) > (modalElement)
+      location.href = "/#chatlobby";
+    });
   }
 }
+/*
+1. `slug` > `roomSlug`
+2. `message_data` > `messageData`
+3. `response` > `fetchResponse`
+4. `recordMessage` > `chatMessagesElement`
+5. `csrftoken` > `csrfToken`
+6. `temp_data` > `tempData`
+7. `error` > `apiError`
+8. `bodyData` > `requestBodyData`
+9. `modal` > `modalElement`
+10. `messageResponse` > `messageFetchResponse`
+11. `message` > `chatMessage`
+12. `messageWrapper` > `messageWrapperDiv`
+13. `userinfo` > `userInfoLink`
+14. `messageText` > `messageTextSpan`
+
+*/
