@@ -1,13 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from ..model import MyUser
 from ..utils import validate_input, validate_password, validate_email
 from User.forms import signForm
-from django.http import HttpResponse
-from django.core.files.storage import default_storage
-from django.contrib.auth import authenticate, login, logout
 
 class Sign_up(APIView):
 

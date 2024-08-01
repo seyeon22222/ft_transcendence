@@ -1,13 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from ..serializer import UserSerializer
 from ..model import MyUser
-from ..utils import validate_input, validate_password, validate_email
-from django.http import HttpResponse
-from django.core.files.storage import default_storage
-from django.contrib.auth import authenticate, login, logout
+from ..utils import validate_input, validate_password
+from django.contrib.auth import authenticate, login
 
 class User_login(APIView):
 

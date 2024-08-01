@@ -10,8 +10,6 @@ python3 manage.py makemigrations chatting
 python3 manage.py migrate chatting
 python3 manage.py makemigrations tournament
 python3 manage.py migrate tournament
-# echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$DB_USER', '', '$DB_PASS')" | python manage.py shell
-
 python3 manage.py migrate
 
 exec "$@"
